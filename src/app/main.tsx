@@ -6,13 +6,17 @@ import { queryClient } from './queryClient.ts';
 
 import App from './App.tsx';
 import './index.css';
+
 import { AuthProvider } from '@/context/AuthProvider.tsx';
+import AppThemeProvider from '@/theme/ThemeProvider.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <App />
+        <AppThemeProvider>
+          <App />
+        </AppThemeProvider>
       </AuthProvider>
     </QueryClientProvider>
   </BrowserRouter>
