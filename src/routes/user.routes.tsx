@@ -3,9 +3,10 @@ import { Route } from "react-router";
 import UserLayout from "@/layouts/user/UserLayout";
 import UserProtected from "@/auth/UserProtected";
 import { USER_ROUTES, PUBLIC_ROUTES } from "@/constants/routes";
+import Home from "@/features/user/home/pages/Home";
 
 // === Placeholder components (replace later) ===
-const Home = () => <div>Home page</div>;
+// const Home = () => <div>Home page</div>;
 const Shop = () => <div>User Shop</div>;
 const ProductDetails = () => <div>Product Details</div>;
 const Cart = () => <div>Cart</div>;
