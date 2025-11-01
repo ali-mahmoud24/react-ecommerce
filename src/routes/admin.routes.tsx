@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { Route } from "react-router";
 import AdminLayout from "@/layouts/admin/AdminLayout";
-import AdminProtected from "@/auth/AdminProtected";
+// import AdminProtected from "@/auth/AdminProtected";
 import { ADMIN_ROUTES } from "@/constants/routes";
 
 // === Placeholder components ===
@@ -17,9 +17,9 @@ export const adminRoutes = (
     <Route
       path={ADMIN_ROUTES.ROOT}
       element={
-        <AdminProtected>
+        // <AdminProtected>
           <AdminLayout />
-        </AdminProtected>
+        // </AdminProtected>
       }
     >
       <Route index element={<Dashboard />} />
