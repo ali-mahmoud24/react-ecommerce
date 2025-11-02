@@ -59,10 +59,19 @@ export default function UsersTable() {
     page,
     pageSize,
     sortModel,
-    filterModel,
+    // filterModel,
   );
+
+  const totalDocs =
+    data?.paginationResult.numberOfPages && data?.paginationResult.limit
+      ? data.paginationResult.numberOfPages * data.paginationResult.limit
+      : 0;
+
   const rows = data?.data ?? [];
-  const rowCount = data?.paginationResult?.results ?? rows.length;
+  // const rowCount = data?.paginationResult?.totalDocs ?? rows.length;
+
+  const rowCount = totalDocs;
+
 
   const deleteMutation = useDeleteUserMutation();
   const createMutation = useCreateUserMutation();
@@ -293,9 +302,9 @@ export default function UsersTable() {
           <Button
             variant="contained"
             onClick={handleCreateSubmit}
-            disabled={createMutation.isLoading}
+            // disabled={createMutation.isLoading}
           >
-            {createMutation.isLoading ? 'Creating...' : 'Create'}
+            {/* {createMutation.isLoading ? 'Creating...' : 'Create'} */}
           </Button>
         </DialogActions>
       </Dialog>

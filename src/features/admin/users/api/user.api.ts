@@ -4,23 +4,22 @@ import type { User, CreateUserDto, UpdateUserDto } from '../types/user.type';
 const RESOURCE = '/users';
 
 export interface PaginatedUsersResponse {
-  status?: string; 
+  status?: string;
   results: number;
   paginationResult: {
     currentPage: number;
     limit: number;
     numberOfPages: number;
-    totalDocs?: number;
+    next?: number;
   };
   data: User[];
 }
 
+export async function fetchPaginatedUsers(page: number = 1, limit: number = 10, sort?: string) {
+  const params: Record<string, string | number> = { page, limit };
 
-
-export async function fetchPaginatedUsers(page = 1, limit = 10, sort?: string, search?: string) {
-  const params: any = { page, limit };
   if (sort) params.sort = sort;
-  if (search) params.keyword = search;
+
   const { data } = await http.get<PaginatedUsersResponse>('/users', { params });
   return data;
 }

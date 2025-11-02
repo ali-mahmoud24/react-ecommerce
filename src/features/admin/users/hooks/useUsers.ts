@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   fetchPaginatedUsers,
   fetchUsers,
@@ -6,36 +6,30 @@ import {
   createUser,
   updateUser,
   deleteUser,
+  type PaginatedUsersResponse,
 } from '../api/user.api';
 import type { User, CreateUserDto, UpdateUserDto } from '../types/user.type';
+import type { GridSortModel } from '@mui/x-data-grid';
 
 // Query key
 export const USERS_QK = ['users'] as const;
 
-export function usePaginatedUsersQuery(
-  page: number,
-  limit: number,
-  sortModel?: any[],
-  filterModel?: any,
-) {
-  let sortParam: string | undefined;
-  if (sortModel?.length > 0) {
-    sortParam = sortModel.map((s) => (s.sort === 'desc' ? `-${s.field}` : s.field)).join(',');
-  }
+function buildSortParam(sortModel: GridSortModel): string | undefined {
+  if (!sortModel.length) return undefined;
+  const { field, sort } = sortModel[0];
+  return sort === 'asc' ? field : `-${field}`;
+}
 
-  let keyword: string | undefined;
-  if (filterModel?.items?.length > 0) {
-    const first = filterModel.items.find((it: any) => it.value);
-    if (first) keyword = String(first.value);
-  }
+export function usePaginatedUsersQuery(page: number, limit: number, sortModel: GridSortModel) {
+  const sort = buildSortParam(sortModel);
 
-  return useQuery({
-    queryKey: ['users', { page, limit, sortParam, keyword }],
-    queryFn: () => fetchPaginatedUsers(page, limit, sortParam, keyword),
-    // placeholderData: keepPreviousData, // ✅ keeps previous page data while new loads
-    keepPreviousData: true,
-    staleTime: 5 * 60 * 1000, // ✅ don’t refetch within 5 minutes
-    gcTime: 30 * 60 * 1000, // ✅ cache pages for 30 minutes before GC cleanup
+  return useQuery<PaginatedUsersResponse>({
+    queryKey: ['users', page, limit, sort],
+    queryFn: () => fetchPaginatedUsers(page, limit, sort),
+    placeholderData: (prev) => prev,
+    staleTime: 30_000,
+    retry: 1,
+    enabled: page > 0 && limit > 0,
   });
 }
 
@@ -76,9 +70,6 @@ export function useCreateUserMutation() {
       const prev = qc.getQueryData<User[]>(USERS_QK) ?? [];
 
       const optimistic: User = {
-        _id: `temp-${Date.now()}`,
-        createdAt: new Date().toISOString(),
-        role: 'user',
         ...payload,
       };
 
@@ -110,7 +101,7 @@ export function useUpdateUserMutation() {
 
       qc.setQueryData<User[]>(
         USERS_QK,
-        prev.map((u) => (u._id === id ? { ...u, ...payload } : u)),
+        prev.map((u) => (u.id === id ? { ...u, ...payload } : u)),
       );
 
       return { prev };
@@ -137,7 +128,7 @@ export function useDeleteUserMutation() {
 
       qc.setQueryData<User[]>(
         USERS_QK,
-        prev.filter((u) => u._id !== id),
+        prev.filter((u) => u.id !== id),
       );
 
       return { prev };

@@ -1,9 +1,10 @@
 export interface User {
-  _id: string;
+  id: string;
   name: string;
   email: string;
   role: string;
   createdAt: string;
+  profileImageUrl?: string;
 }
 export interface CreateUserDto {
   firstName: string;
