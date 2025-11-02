@@ -5,11 +5,14 @@ export interface User {
   role: string;
   createdAt: string;
 }
-
 export interface CreateUserDto {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
+  passwordConfirm: string;
+  role: string;
+  profileImageUrl?: string;
 }
 
 export interface UpdateUserDto {

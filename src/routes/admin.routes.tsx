@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { Route } from "react-router";
 import AdminLayout from "@/layouts/admin/AdminLayout";
-import AdminProtected from "@/auth/AdminProtected";
+// import AdminProtected from "@/auth/AdminProtected";
 import { ADMIN_ROUTES } from "@/constants/routes";
 
 import UsersPage from "@/features/admin/users/pages/UsersPage";
@@ -11,7 +11,6 @@ const AdminLogin = () => <div>Admin Login</div>;
 const Dashboard = () => <div>Admin Dashboard</div>;
 const ManageProducts = () => <div>Admin Products</div>;
 const Orders = () => <div>Admin Orders</div>;
-const Users = () => <div>Admin Users</div>;
 
 export const adminRoutes = (
   <>

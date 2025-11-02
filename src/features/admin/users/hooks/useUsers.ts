@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import {
   fetchPaginatedUsers,
   fetchUsers,
@@ -9,23 +9,35 @@ import {
 } from '../api/user.api';
 import type { User, CreateUserDto, UpdateUserDto } from '../types/user.type';
 
-
 // Query key
 export const USERS_QK = ['users'] as const;
 
-// 🆕 Paginated version
+export function usePaginatedUsersQuery(
+  page: number,
+  limit: number,
+  sortModel?: any[],
+  filterModel?: any,
+) {
+  let sortParam: string | undefined;
+  if (sortModel?.length > 0) {
+    sortParam = sortModel.map((s) => (s.sort === 'desc' ? `-${s.field}` : s.field)).join(',');
+  }
 
-export function usePaginatedUsersQuery(page: number, limit: number) {
-  console.log("Fetching users...", { page, limit }); // 👈 Add this line
+  let keyword: string | undefined;
+  if (filterModel?.items?.length > 0) {
+    const first = filterModel.items.find((it: any) => it.value);
+    if (first) keyword = String(first.value);
+  }
 
   return useQuery({
-    queryKey: ['users', page, limit],
-    queryFn: () => fetchPaginatedUsers(page + 1, limit),
+    queryKey: ['users', { page, limit, sortParam, keyword }],
+    queryFn: () => fetchPaginatedUsers(page, limit, sortParam, keyword),
+    // placeholderData: keepPreviousData, // ✅ keeps previous page data while new loads
     keepPreviousData: true,
+    staleTime: 5 * 60 * 1000, // ✅ don’t refetch within 5 minutes
+    gcTime: 30 * 60 * 1000, // ✅ cache pages for 30 minutes before GC cleanup
   });
 }
-
-
 
 // ==========================
 //         QUERIES
@@ -98,7 +110,7 @@ export function useUpdateUserMutation() {
 
       qc.setQueryData<User[]>(
         USERS_QK,
-        prev.map((u) => (u._id === id ? { ...u, ...payload } : u))
+        prev.map((u) => (u._id === id ? { ...u, ...payload } : u)),
       );
 
       return { prev };
@@ -125,7 +137,7 @@ export function useDeleteUserMutation() {
 
       qc.setQueryData<User[]>(
         USERS_QK,
-        prev.filter((u) => u._id !== id)
+        prev.filter((u) => u._id !== id),
       );
 
       return { prev };
