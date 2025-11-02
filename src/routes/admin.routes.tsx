@@ -4,6 +4,8 @@ import AdminLayout from "@/layouts/admin/AdminLayout";
 import AdminProtected from "@/auth/AdminProtected";
 import { ADMIN_ROUTES } from "@/constants/routes";
 
+import UsersPage from "@/features/admin/users/pages/UsersPage";
+
 // === Placeholder components ===
 const AdminLogin = () => <div>Admin Login</div>;
 const Dashboard = () => <div>Admin Dashboard</div>;
@@ -17,9 +19,9 @@ export const adminRoutes = (
     <Route
       path={ADMIN_ROUTES.ROOT}
       element={
-        <AdminProtected>
+        // <AdminProtected>
           <AdminLayout />
-        </AdminProtected>
+        // </AdminProtected>
       }
     >
       <Route index element={<Dashboard />} />
@@ -33,11 +35,12 @@ export const adminRoutes = (
       />
       <Route
         path={ADMIN_ROUTES.USERS.replace("/admin/", "")}
-        element={<Users />}
+        element={<UsersPage />}
       />
+
     </Route>
 
     {/* Login outside layout */}
-    <Route path={ADMIN_ROUTES.LOGIN} element={<AdminLogin />} />
+    {/* <Route path={ADMIN_ROUTES.LOGIN} element={<AdminLogin />} /> */}
   </>
 );

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
+  fetchPaginatedUsers,
   fetchUsers,
   fetchUserById,
   createUser,
@@ -8,8 +9,23 @@ import {
 } from '../api/user.api';
 import type { User, CreateUserDto, UpdateUserDto } from '../types/user.type';
 
+
 // Query key
 export const USERS_QK = ['users'] as const;
+
+// 🆕 Paginated version
+
+export function usePaginatedUsersQuery(page: number, limit: number) {
+  console.log("Fetching users...", { page, limit }); // 👈 Add this line
+
+  return useQuery({
+    queryKey: ['users', page, limit],
+    queryFn: () => fetchPaginatedUsers(page + 1, limit),
+    keepPreviousData: true,
+  });
+}
+
+
 
 // ==========================
 //         QUERIES
