@@ -5,6 +5,7 @@ export const PUBLIC_ROUTES = {
   HOME: "/",
   LOGIN: "/login",
   REGISTER: "/register",
+  FORGOTPASS:"/forgot-password"
 } as const;
 
 // =====================

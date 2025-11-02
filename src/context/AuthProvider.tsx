@@ -6,9 +6,7 @@ type AuthProviderProps = {
 };
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [token, setToken] = useState<string | null>(
-    localStorage.getItem('token')
-  );
+  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
   const [user, setUser] = useState<User | null>(() => {
     const storedUser = localStorage.getItem('user');
     return storedUser ? JSON.parse(storedUser) : null;
@@ -32,7 +30,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setUser(null);
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    if (token) {
+      import('@/lib/axios').then(({ default: http }) => {
+        http.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      });
+    } else {
+      import('@/lib/axios').then(({ default: http }) => {
+        delete http.defaults.headers.common['Authorization'];
+      });
+    }
+  }, [token]);
 
   return (
     <AuthContext.Provider
