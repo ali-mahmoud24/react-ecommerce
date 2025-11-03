@@ -19,5 +19,5 @@ createRoot(document.getElementById('root')!).render(
         </AppThemeProvider>
       </AuthProvider>
     </QueryClientProvider>
-  </BrowserRouter>
+  </BrowserRouter>,
 );
