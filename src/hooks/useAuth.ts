@@ -1,10 +1,17 @@
-import { useAuthContext } from '@/hooks/useAuthContext';
+import { useContext } from 'react';
+import { AuthContext } from '@/context/AuthContext';
 
 export function useAuth() {
-  const { user, token, isAuthenticated, login, logout } = useAuthContext();
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+
+  const { user, token, isAuthenticated, login, logout, updateUser } = context;
 
   const isAdmin = user?.role === 'admin';
   const isUser = user?.role === 'user';
+  const fullName = user?.fullName || `${user?.firstName} ${user?.lastName}`;
 
   return {
     user,
@@ -12,7 +19,9 @@ export function useAuth() {
     isAuthenticated,
     isAdmin,
     isUser,
+    fullName,
     login,
     logout,
+    updateUser,
   };
 }

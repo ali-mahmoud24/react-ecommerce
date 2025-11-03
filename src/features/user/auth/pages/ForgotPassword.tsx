@@ -1,153 +1,96 @@
 import { Link as RouterLink } from 'react-router-dom';
-import { Email } from '@mui/icons-material';
 import {
   Box,
   Typography,
   TextField,
   Link,
-  useTheme,
   Paper,
-  Button as MUIButton,
-  CircularProgress,
+  Button,
+  Alert,
 } from '@mui/material';
-import { motion } from 'framer-motion';
+import Spinner from '@/components/ui/Spinner';
 import { useForgotPassword } from '../hooks/useForgotPassword';
 import { PUBLIC_ROUTES } from '@/constants/routes';
-import { useThemeContext } from '@/theme/useThemeContext';
 
 export default function ForgotPassword() {
-  const { register, handleSubmit, onSubmit, errors, isLoading, success } = useForgotPassword();
-  const theme = useTheme();
-  useThemeContext();
+  const { form, onSubmit, isLoading, isSuccess, error } = useForgotPassword();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = form;
 
   return (
     <Box
-      component={motion.div}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
       sx={{
-        minHeight: '80vh',
         display: 'flex',
-        alignItems: 'center',
         justifyContent: 'center',
-        bgcolor: theme.palette.background.default,
+        alignItems: 'center',
+        minHeight: '100vh',
+        backgroundColor: 'background.default',
         px: 2,
-        py: 4,
       }}
     >
       <Paper
-        elevation={4}
+        elevation={8}
         sx={{
+          p: 4,
+          maxWidth: 400,
           width: '100%',
-          maxWidth: 420,
-          p: { xs: 4, sm: 5 },
-          backgroundColor: theme.palette.background.paper,
-          color: theme.palette.text.primary,
+          textAlign: 'center',
         }}
       >
-        {/* ===== Header ===== */}
-        <Typography
-          variant="h4"
-          textAlign="center"
-          sx={{ fontWeight: 700, mb: 1 }}
-        >
-          Forgot Password?
+        <Typography variant="h4" fontWeight="bold" gutterBottom>
+          Forgot Password
+        </Typography>
+        
+        <Typography variant="body1" color="textSecondary" sx={{ mb: 4 }}>
+          Enter your email and we'll send you a reset code
         </Typography>
 
-        <Typography
-          variant="body2"
-          textAlign="center"
-          sx={{ mb: 4, color: theme.palette.text.secondary }}
-        >
-          Enter your email address below, and we’ll send you a link to reset your password.
-        </Typography>
+        {isSuccess && (
+          <Alert severity="success" sx={{ mb: 3 }}>
+            Reset code has been sent to your email!
+          </Alert>
+        )}
 
-        {/* ===== Form ===== */}
-        <Box
-          component="form"
-          onSubmit={handleSubmit(onSubmit)}
-          noValidate
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 3,
-          }}
-        >
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {error.message}
+          </Alert>
+        )}
+
+        <Box component="form" onSubmit={handleSubmit(onSubmit)}>
           <TextField
+            fullWidth
             label="Email Address"
             type="email"
-            fullWidth
-            variant="outlined"
+            {...register('email')}
             error={!!errors.email}
             helperText={errors.email?.message}
-            {...register('email', { required: 'Email is required' })}
-            InputProps={{
-              startAdornment: (
-                <Email
-                  sx={{ color: theme.palette.text.secondary, mr: 1 }}
-                />
-              ),
-            }}
+            sx={{ mb: 3 }}
           />
 
-          {/* ===== Submit Button ===== */}
-          <MUIButton
+          <Button
             type="submit"
             fullWidth
             variant="contained"
+            size="large"
             disabled={isLoading}
-            sx={{
-              py: 1.2,
-              fontWeight: 600,
-              borderRadius: 2,
-              backgroundColor: theme.palette.primary.main,
-              color: theme.palette.primary.contrastText,
-              '&:hover': {
-                backgroundColor: theme.palette.primary.dark,
-              },
-            }}
           >
-            {isLoading ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : (
-              'Send Reset Link'
-            )}
-          </MUIButton>
-
-          {/* ===== Success Message ===== */}
-          {success && (
-            <Typography
-              color="success.main"
-              textAlign="center"
-              fontWeight={600}
-              mt={1}
-            >
-              ✅ A reset link has been sent to your email!
-            </Typography>
-          )}
+            {isLoading ? <Spinner size="sm" /> : 'Send Reset Code'}
+          </Button>
         </Box>
 
-        {/* ===== Footer ===== */}
-        <Typography
-          variant="body2"
-          textAlign="center"
-          sx={{
-            mt: 3,
-            color: theme.palette.text.secondary,
-          }}
-        >
+        <Typography variant="body2" sx={{ mt: 3 }}>
           Remember your password?{' '}
           <Link
             component={RouterLink}
             to={PUBLIC_ROUTES.LOGIN}
             underline="hover"
-            sx={{
-              fontWeight: 600,
-              color: theme.palette.primary.main,
-            }}
+            fontWeight="bold"
           >
-            Sign in
+            Back to Sign In
           </Link>
         </Typography>
       </Paper>

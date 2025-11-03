@@ -6,8 +6,8 @@ import { USER_ROUTES, PUBLIC_ROUTES } from '@/constants/routes';
 import Home from '@/features/user/home/pages/Home';
 import Login from '@/features/user/auth/pages/Login';
 import Register from '@/features/user/auth/pages/Register';
-import Profile from '@/features/user/auth/pages/Profile';
 import ForgotPassword from '@/features/user/auth/pages/ForgotPassword';
+import ProfileDashboard from '@/features/user/profile/pages/ProfileDashboard';
 
 // === Placeholder components (replace later) ===
 // const Home = () => <div>Home page</div>;
@@ -36,16 +36,7 @@ export const userRoutes = (
         path={USER_ROUTES.PROFILE.replace('/', '')}
         element={
           <UserProtected>
-            <Profile />
-          </UserProtected>
-        }
-      />
-
-      <Route
-        path={USER_ROUTES.PROFILE.replace('/', '')}
-        element={
-          <UserProtected>
-            <Profile />
+            <ProfileDashboard />
           </UserProtected>
         }
       />

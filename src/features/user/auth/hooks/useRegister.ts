@@ -1,19 +1,15 @@
+import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { PUBLIC_ROUTES } from '@/constants/routes';
-import { api } from '@/utils/api';
-
-interface RegisterFormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
+import { zodResolver } from '@hookform/resolvers/zod';
+import { registerApi } from '../api/auth.api';
+import { useAuth } from '@/hooks/useAuth';
+import { registerSchema, type RegisterFormData } from '../schemas/auth.schema';
 
 export const useRegister = () => {
+  const { login } = useAuth();
+
   const form = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -23,31 +19,32 @@ export const useRegister = () => {
     },
   });
 
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-
-  const onSubmit = async (data: RegisterFormData) => {
-    if (data.password !== data.confirmPassword) {
-      form.setError('confirmPassword', { message: 'Passwords do not match' });
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      await api.post('/auth/register', data);
-      navigate(PUBLIC_ROUTES.LOGIN);
+  const mutation = useMutation({
+    mutationFn: registerApi,
+    onSuccess: (data) => {
+      login(data.token, data.data);
+    },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      console.error(error);
-      alert(error?.response?.data?.message || 'Something went wrong');
-    } finally {
-      setIsLoading(false);
-    }
+    onError: (error: any) => {
+      const errorMessage =
+        error.response?.data?.message || error.message || 'Registration failed. Please try again.';
+      form.setError('root', { message: errorMessage });
+    },
+  });
+
+  const onSubmit = (data: RegisterFormData) => {
+    mutation.mutate(data);
   };
 
   const registerWithGoogle = () => {
-    window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
+    console.log('Google registration clicked');
   };
 
-  return { form, onSubmit, registerWithGoogle, isLoading };
+  return {
+    form,
+    onSubmit,
+    isLoading: mutation.isPending,
+    error: mutation.error,
+    registerWithGoogle,
+  };
 };

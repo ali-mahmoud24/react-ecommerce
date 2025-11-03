@@ -1,15 +1,14 @@
 import axios from 'axios';
-import { toast } from 'react-hot-toast';
 
 const http = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v2',
   withCredentials: true,
+  timeout: 10000,
 });
 
-// Request interceptor to add auth token
 http.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('auth_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -17,25 +16,19 @@ http.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
-// Response interceptor to handle errors
 http.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('auth_user');
       window.location.href = '/login';
     }
-    
-    if (error.response?.data?.message) {
-      toast.error(error.response.data.message);
-    }
-    
     return Promise.reject(error);
-  }
+  },
 );
 
 export default http;

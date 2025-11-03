@@ -1,36 +1,47 @@
+import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { api } from '@/utils/api';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { loginApi } from '../api/auth.api';
+import { useAuth } from '@/hooks/useAuth';
+import { loginSchema, type LoginFormData } from '../schemas/auth.schema';
 
-interface LoginFormData {
-  email: string;
-  password: string;
-}
+export const useLogin = () => {
+  const { login } = useAuth();
 
-export function useLogin() {
-  const form = useForm<LoginFormData>();
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
 
-  const onSubmit = async (data: LoginFormData) => {
-    try {
-      setIsLoading(true);
-      await api.post('/auth/login', data);
-      localStorage.setItem('isLoggedIn', 'true');
-      navigate('/');
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      console.error(error);
-      alert(error?.response?.data?.message || 'Login failed');
-    } finally {
-      setIsLoading(false);
-    }
+  const mutation = useMutation({
+    mutationFn: loginApi,
+    onSuccess: (data) => {
+      login(data.token, data.data);
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      const errorMessage = error.response?.data?.message || error.message || 'Login failed. Please try again.';
+      form.setError('root', { message: errorMessage });
+    },
+  });
+
+  const onSubmit = (data: LoginFormData) => {
+    mutation.mutate(data);
   };
 
   const loginWithGoogle = () => {
-    window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
+    // Redirect to Google OAuth
+    console.log('Google login clicked');
   };
 
-  return { form, onSubmit, isLoading, loginWithGoogle };
-}
+  return {
+    form,
+    onSubmit,
+    isLoading: mutation.isPending,
+    error: mutation.error,
+    loginWithGoogle,
+  };
+};

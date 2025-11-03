@@ -1,38 +1,39 @@
+import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
-import { useState } from 'react';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { forgotPasswordApi } from '../api/auth.api';
+import { type ForgotPasswordFormData, forgotPasswordSchema } from '../schemas/auth.schema';
 
-const schema = z.object({
-  email: z.string().email('Enter a valid email address'),
-});
+export const useForgotPassword = () => {
+  const form = useForm<ForgotPasswordFormData>({
+    resolver: zodResolver(forgotPasswordSchema),
+    defaultValues: {
+      email: '',
+    },
+  });
 
-type FormData = z.infer<typeof schema>;
+  const mutation = useMutation({
+    mutationFn: forgotPasswordApi,
+    onSuccess: () => {
+      console.log('Password reset code sent to email');
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      const errorMessage =
+        error.response?.data?.message || 'Failed to send reset code. Please try again.';
+      form.setError('root', { message: errorMessage });
+    },
+  });
 
-export function useForgotPassword() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<FormData>({ resolver: zodResolver(schema) });
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-
-  const onSubmit = async (data: FormData) => {
-    setIsLoading(true);
-    setSuccess(false);
-
-    // Simulate API delay
-    await new Promise((res) => setTimeout(res, 1500));
-
-    console.log('Password reset link sent to:', data.email);
-
-    setIsLoading(false);
-    setSuccess(true);
-    reset();
+  const onSubmit = (data: ForgotPasswordFormData) => {
+    mutation.mutate(data);
   };
 
-  return { register, handleSubmit, onSubmit, errors, isLoading, success };
-}
+  return {
+    form,
+    onSubmit,
+    isLoading: mutation.isPending,
+    isSuccess: mutation.isSuccess,
+    error: mutation.error,
+  };
+};

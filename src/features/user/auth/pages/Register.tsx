@@ -1,222 +1,137 @@
 import { Link as RouterLink } from 'react-router-dom';
 import {
-  TextField,
-  Button,
-  CircularProgress,
-  Typography,
   Box,
+  Typography,
+  TextField,
+  Link,
+  Paper,
   Divider,
-  useTheme,
+  Button,
+  Alert,
+  Grid,
 } from '@mui/material';
 import { Google } from '@mui/icons-material';
-import { motion } from 'framer-motion';
+import Spinner from '@/components/ui/Spinner';
 import { useRegister } from '../hooks/useRegister';
 import { PUBLIC_ROUTES } from '@/constants/routes';
-import { useThemeContext } from '@/theme/useThemeContext';
 
 export default function Register() {
-  const { form, onSubmit, registerWithGoogle, isLoading } = useRegister();
+  const { form, onSubmit, isLoading, error, registerWithGoogle } = useRegister();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = form;
 
-  const theme = useTheme();
-  useThemeContext();
-
   return (
     <Box
       sx={{
-        position: 'relative',
-        minHeight: '100vh',
         display: 'flex',
+        justifyContent: 'center',
         alignItems: 'center',
-        justifyContent: { xs: 'center', md: 'flex-end' },
-        backgroundImage: 'url("/src/assets/images/auth-side.png")',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        px: { xs: 2, sm: 4 },
-        py: { xs: 4, sm: 8 },
-        overflow: 'hidden',
+        minHeight: '100vh',
+        backgroundColor: 'background.default',
+        px: 2,
       }}
     >
-      {/* ===== Overlay for better readability ===== */}
-      <Box
+      <Paper
+        elevation={8}
         sx={{
-          position: 'absolute',
-          inset: 0,
-          backgroundColor: 'rgba(0,0,0,0.45)',
-          zIndex: 0,
-        }}
-      />
-
-      {/* ===== Floating Form Card ===== */}
-      <Box
-        component={motion.div}
-        initial={{ opacity: 0, x: 50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.6 }}
-        sx={{
-          position: 'relative',
-          zIndex: 2,
+          p: 4,
+          maxWidth: 500,
           width: '100%',
-          maxWidth: 440,
-          backgroundColor: theme.palette.background.paper,
-          borderRadius: 0.5,
-          boxShadow:
-            theme.palette.mode === 'light'
-              ? '0 8px 30px rgba(0,0,0,0.1)'
-              : '0 8px 25px rgba(255,255,255,0.1)',
-          p: { xs: 4, sm: 5 },
-          mx: { xs: 0, md: 6 },
         }}
       >
-        <Typography
-          variant="h5"
-          fontWeight={700}
-          textAlign="center"
-          gutterBottom
-          sx={{ color: theme.palette.text.primary }}
-        >
-          Create Your Account
+        <Typography variant="h4" fontWeight="bold" gutterBottom align="center">
+          Create Account
         </Typography>
 
-        <Typography
-          variant="body2"
-          textAlign="center"
-          mb={4}
-          sx={{ color: theme.palette.text.secondary }}
-        >
-          Join us today and start your journey!
+        <Typography variant="body1" color="textSecondary" align="center" sx={{ mb: 4 }}>
+          Join us today and get started
         </Typography>
 
-        {/* ===== Form ===== */}
-        <Box
-          component="form"
-          onSubmit={handleSubmit(onSubmit)}
-          noValidate
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2.5,
-          }}
-        >
-          <TextField
-            label="First Name"
-            fullWidth
-            {...register('firstName', { required: 'First name is required' })}
-            error={!!errors.firstName}
-            helperText={errors.firstName?.message}
-          />
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {error.message}
+          </Alert>
+        )}
+
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mb: 3 }}>
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                label="First Name"
+                {...register('firstName')}
+                error={!!errors.firstName}
+                helperText={errors.firstName?.message}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                label="Last Name"
+                {...register('lastName')}
+                error={!!errors.lastName}
+                helperText={errors.lastName?.message}
+              />
+            </Grid>
+          </Grid>
 
           <TextField
-            label="Last Name"
             fullWidth
-            {...register('lastName', { required: 'Last name is required' })}
-            error={!!errors.lastName}
-            helperText={errors.lastName?.message}
-          />
-
-          <TextField
             label="Email Address"
             type="email"
-            fullWidth
-            {...register('email', { required: 'Email is required' })}
+            {...register('email')}
             error={!!errors.email}
             helperText={errors.email?.message}
+            sx={{ mt: 2, mb: 2 }}
           />
 
           <TextField
+            fullWidth
             label="Password"
             type="password"
-            fullWidth
-            {...register('password', {
-              required: 'Password is required',
-              minLength: { value: 6, message: 'Minimum 6 characters' },
-            })}
+            {...register('password')}
             error={!!errors.password}
             helperText={errors.password?.message}
+            sx={{ mb: 2 }}
           />
 
           <TextField
+            fullWidth
             label="Confirm Password"
             type="password"
-            fullWidth
-            {...register('confirmPassword', {
-              required: 'Please confirm your password',
-            })}
+            {...register('confirmPassword')}
             error={!!errors.confirmPassword}
             helperText={errors.confirmPassword?.message}
+            sx={{ mb: 3 }}
           />
 
-          {/* ===== Submit ===== */}
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            fullWidth
-            sx={{
-              mt: 2,
-              py: 1.2,
-              borderRadius: 2,
-              fontWeight: 600,
-              textTransform: 'none',
-            }}
-            disabled={isLoading}
-          >
-            {isLoading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Create Account'}
-          </Button>
-
-          {/* ===== Divider ===== */}
-          <Divider sx={{ my: 3, color: theme.palette.text.secondary }}>or</Divider>
-
-          {/* ===== Google Auth ===== */}
-          <Button
-            variant="outlined"
-            fullWidth
-            startIcon={<Google />}
-            onClick={registerWithGoogle}
-            sx={{
-              py: 1.2,
-              borderRadius: 2,
-              fontWeight: 600,
-              textTransform: 'none',
-              color: theme.palette.text.primary,
-              borderColor: theme.palette.divider,
-              '&:hover': {
-                backgroundColor:
-                  theme.palette.mode === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.08)',
-              },
-            }}
-          >
-            Continue with Google
+          <Button type="submit" fullWidth variant="contained" size="large" disabled={isLoading}>
+            {isLoading ? <Spinner size="sm" /> : 'Create Account'}
           </Button>
         </Box>
 
-        {/* ===== Footer ===== */}
-        <Typography
-          variant="body2"
-          textAlign="center"
-          mt={3}
-          sx={{ color: theme.palette.text.secondary }}
+        <Divider sx={{ my: 3 }}>or</Divider>
+
+        <Button
+          fullWidth
+          variant="outlined"
+          startIcon={<Google />}
+          onClick={registerWithGoogle}
+          size="large"
         >
+          Continue with Google
+        </Button>
+
+        <Typography variant="body2" align="center" sx={{ mt: 3 }}>
           Already have an account?{' '}
-          <Box
-            component={RouterLink}
-            to={PUBLIC_ROUTES.LOGIN}
-            sx={{
-              color: theme.palette.primary.main,
-              fontWeight: 600,
-              textDecoration: 'none',
-              '&:hover': { opacity: 0.8 },
-            }}
-          >
+          <Link component={RouterLink} to={PUBLIC_ROUTES.LOGIN} underline="hover" fontWeight="bold">
             Sign in
-          </Box>
+          </Link>
         </Typography>
-      </Box>
+      </Paper>
     </Box>
   );
 }
