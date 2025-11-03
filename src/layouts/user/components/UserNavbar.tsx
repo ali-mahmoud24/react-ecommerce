@@ -83,7 +83,7 @@ export default function Navbar() {
   const isLoggedIn = false; // <--- change this dynamically later
 
   const navLinks = [
-    { label: 'Products', href: '', active: true },
+    { label: 'Products', href: '/products', active: true },
     { label: 'Categories', href: '' },
     { label: 'Brands', href: '' },
     { label: 'Cart', href: '' },
@@ -117,7 +117,9 @@ export default function Navbar() {
             href={link.href}
             selected={link.active}
             onClick={handleDrawerToggle}
-            sx={{ borderRadius: '10px' }}
+            sx={{
+              borderRadius: '10px',
+            }}
           >
             <ListItemText
               primary={link.label}
@@ -153,6 +155,7 @@ export default function Navbar() {
           color: theme.palette.text.primary,
           borderBottom: `1px solid ${theme.palette.divider}`,
           padding: '0.25rem',
+          borderRadius: 0,
         }}
       >
         <Toolbar
@@ -165,11 +168,7 @@ export default function Navbar() {
         >
           {/* Logo */}
           <Box display="flex" alignItems="center" gap={1}>
-            <img
-              src={logo}
-              alt="Ecommerce Logo"
-              style={{ width: '40px', height: '40px', borderRadius: '8px' }}
-            />
+            <img src={logo} alt="Ecommerce Logo" style={{ width: '40px', height: '40px' }} />
             <Typography
               variant="h6"
               sx={{
@@ -210,9 +209,9 @@ export default function Navbar() {
 
           {/* Right section */}
           <Box display="flex" alignItems="center" gap={1}>
-            {/* Search (Desktop) */}
+            {/* Search (Desktop view) */}
             <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-              <Search>
+              <Search sx={{ display: { xs: 'none', md: 'block' }, width: 200 }}>
                 <SearchIconWrapper>
                   <SearchIcon />
                 </SearchIconWrapper>
@@ -286,7 +285,7 @@ export default function Navbar() {
         </Toolbar>
       </AppBar>
 
-      {/* Mobile Drawer */}
+      {/* Drawer for Mobile */}
       <Drawer
         anchor="right"
         open={mobileOpen}
