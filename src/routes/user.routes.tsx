@@ -1,14 +1,15 @@
 /* eslint-disable react-refresh/only-export-components */
-import { Route } from 'react-router';
-import UserLayout from '@/layouts/user/UserLayout';
-import UserProtected from '@/auth/UserProtected';
-import { USER_ROUTES, PUBLIC_ROUTES } from '@/constants/routes';
+import { Route } from "react-router";
+import UserLayout from "@/layouts/user/UserLayout";
+import UserProtected from "@/auth/UserProtected";
+import { USER_ROUTES, PUBLIC_ROUTES } from "@/constants/routes";
+
+import Home from "@/features/user/home/pages/Home";
 import Products from '@/features/user/products/pages/Products';
 import ProductDetails from '@/features/user/products/pages/ProductDetails';
 
+
 // === Placeholder components (replace later) ===
-const Home = () => <div>Home page</div>;
-// const ProductDetails = () => <div>Product Details</div>;
 const Cart = () => <div>Cart</div>;
 const Profile = () => <div>User Profile</div>;
 const Login = () => <div>User Login</div>;

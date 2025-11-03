@@ -6,6 +6,7 @@ export type Product = {
   description: string;
   price: number;
   imageCoverUrl: string;
+    imageUrls: string[];
   numOfRatings: number;
 };
 

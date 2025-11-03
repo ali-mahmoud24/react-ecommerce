@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Card,
   CardContent,
   CardMedia,
@@ -8,38 +7,76 @@ import {
   Rating,
   Skeleton,
   Typography,
+  useTheme,
 } from '@mui/material';
+
 import { useProduct } from '../hooks/useProducts';
 import { useNavigate } from 'react-router';
+import { useState, useMemo } from 'react';
+import ProductFilter from '../components/ProductFilter';
 
 export default function ProductList() {
+  const theme = useTheme();
   const { data, isLoading } = useProduct();
   const navigate = useNavigate();
 
-  const handleClick = (id: string) => {
-    navigate(`/product/${id}`);
+  const [priceFilter, setPriceFilter] = useState<number[]>([0, 100000]);
+  const [rating, setRating] = useState<number>(0);
+
+  const handleClick = (id: string) => navigate(`/product/${id}`);
+
+  const handleReset = () => {
+    setPriceFilter([0, 100000]);
+    setRating(0);
   };
 
+  const filteredProducts = useMemo(() => {
+    return (
+      data?.filter(
+        (p) => p.price >= priceFilter[0] && p.price <= priceFilter[1] && p.numOfRatings >= rating,
+      ) || []
+    );
+  }, [data, priceFilter, rating]);
+
   return (
-    <>
-      <Grid container spacing={3} justifyContent="center" p={4}>
+    <Box
+      display="flex"
+      gap={4}
+      p={4}
+      bgcolor="#fafafa"
+      sx={{ backgroundColor: theme.palette.background.default }}
+    >
+      {/* ==== SIDEBAR ==== */}
+      <ProductFilter
+        priceFilter={priceFilter}
+        onPriceChange={(_, newValue) => setPriceFilter(newValue as number[])}
+        rating={rating}
+        onRatingChange={(_, newValue) => setRating(newValue || 0)}
+        onReset={handleReset}
+      />
+
+      {/* ==== PRODUCTS GRID ==== */}
+      <Grid container spacing={3} justifyContent="flex-start" flex={1}>
         {isLoading
-          ? // 🦴 Skeleton Loader
-            Array.from(new Array(8)).map((_, index) => (
-              <Grid key={index} xs={12} sm={6} md={4} lg={3}>
+          ? Array.from(new Array(8)).map((_, index) => (
+              <Grid key={index} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
                 <Card
                   sx={{
-                    width: 250,
-                    borderRadius: 3,
+                    width: 230,
                     boxShadow: 2,
+                    overflow: 'hidden',
+                    // bgcolor: '#fff',
                   }}
                 >
                   <Skeleton
                     variant="rectangular"
                     height={200}
-                    sx={{ borderTopLeftRadius: 12, borderTopRightRadius: 12 }}
+                    sx={{
+                      animation: 'pulse 1.2s ease-in-out infinite',
+                      // bgcolor: theme.palette.background.default,
+                    }}
                   />
-                  <CardContent sx={{ textAlign: 'center' }}>
+                  <CardContent sx={{ textAlign: 'center' ,bgcolor: theme.palette.background.default,}}>
                     <Skeleton variant="text" width="80%" sx={{ mx: 'auto' }} />
                     <Skeleton variant="text" width="60%" sx={{ mx: 'auto' }} />
                     <Skeleton variant="rectangular" height={36} sx={{ borderRadius: 2, mt: 2 }} />
@@ -47,18 +84,21 @@ export default function ProductList() {
                 </Card>
               </Grid>
             ))
-          : data?.map((product) => (
-              <Grid key={product.id} xs={12} sm={6} md={4} lg={3}>
+          : filteredProducts.map((product) => (
+              <Grid key={product.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
                 <Card
-                  onClick={() => {
-                    handleClick(product.id);
-                  }}
+                  onClick={() => handleClick(product.id)}
                   sx={{
                     cursor: 'pointer',
                     width: 250,
-                    boxShadow: 2,
-                    transition: '0.3s',
-                    '&:hover': { transform: 'scale(1.03)' },
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                    color: theme.palette.text.primary,
+
+                    // '&:hover': {
+                    //   transform: 'translateY(-5px)',
+                    //   boxShadow: '0 6px 18px rgba(0,0,0,0.15)',
+                    // },
                   }}
                 >
                   <CardMedia
@@ -66,50 +106,41 @@ export default function ProductList() {
                     image={product.imageCoverUrl}
                     alt={product.title}
                     sx={{
-                      backgroundColor: '#f8f8f8',
                       height: 200,
+                      objectFit: 'cover',
+                      backgroundColor: '#f0f0f0',
                     }}
                   />
-
-                  <CardContent sx={{ textAlign: 'center' }}>
-                    <Typography variant="subtitle1" fontWeight="bold" noWrap>
+                  <CardContent sx={{ textAlign: 'center', color: theme.palette.text.primary }}>
+                    <Typography variant="subtitle1" fontWeight="bold" noWrap sx={{ mb: 0.5 }}>
                       {product.title}
                     </Typography>
-
                     <Box display="flex" justifyContent="center" alignItems="center" mt={1}>
-                      <Rating value={product.numOfRatings} precision={0.5} readOnly size="small" />
-                      <Typography variant="body2" ml={0.5}>
+                      <Rating
+                        value={product.numOfRatings}
+                        precision={0.5}
+                        readOnly
+                        size="small"
+                        // sx={{ color: 'black' }}
+                      />
+                      <Typography variant="body2" ml={0.5} color="text.secondary">
                         {product.numOfRatings.toFixed(1)} / 5
                       </Typography>
                     </Box>
-
-                    <Typography variant="subtitle1" fontWeight="bold" mt={1}>
+                    <Typography
+                      variant="subtitle1"
+                      fontWeight="bold"
+                      mt={1}
+                      color="black"
+                      sx={{ textAlign: 'center', color: theme.palette.text.primary }}
+                    >
                       ${product.price}
                     </Typography>
-
-                    <Button
-                      variant="outlined"
-                      // color="black"
-                      fullWidth
-                      sx={{
-                        mt: 1,
-                        borderRadius: 2,
-                        color: 'white',
-                        bgcolor: 'black',
-                        '&:hover': {
-                          bgcolor: 'white',
-                          color: 'black',
-                          borderColor: 'black',
-                        },
-                      }}
-                    >
-                      Add To Cart
-                    </Button>
                   </CardContent>
                 </Card>
               </Grid>
             ))}
       </Grid>
-    </>
+    </Box>
   );
 }
