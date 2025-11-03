@@ -8,7 +8,7 @@ type UserProtectedProps = {
 };
 
 export default function UserProtected({ children }: UserProtectedProps) {
-  const isLoggedIn = false; // TODO: replace with real auth logic
+  const isLoggedIn = true; // TODO: replace with real auth logic
 
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
