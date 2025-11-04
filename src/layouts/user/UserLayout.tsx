@@ -1,4 +1,3 @@
-// src/layouts/UserLayout.tsx
 import { Outlet } from "react-router";
 import Navbar from "./components/UserNavbar";
 import Footer from "./components/UserFooter";

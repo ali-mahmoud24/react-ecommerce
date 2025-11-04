@@ -12,7 +12,7 @@ export const PUBLIC_ROUTES = {
 // =====================
 export const USER_ROUTES = {
   ROOT: "/",
-  SHOP: "/shop",
+  PRODUCTS: "/products",
   PRODUCT: (id = ":id") => `/product/${id}`,
   CART: "/cart",
   PROFILE: "/profile",
