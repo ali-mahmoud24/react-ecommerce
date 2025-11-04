@@ -32,10 +32,12 @@ export default function Footer() {
                 <Grid
                     container
                     spacing={4}
-                    justifyContent="space-between"
                 >
                     {/* Brand Info */}
-                    <Grid item xs={12} sm={12} md={6} lg={4}>
+                    <Grid
+                        size={{ xs: 12, sm: 4, md: 2.4 }}
+                        sx={{ textAlign: { xs: "center", sm: "center", md: "left" } }}
+                    >
                         <Typography
                             variant="h6"
                             fontWeight={700}
@@ -45,9 +47,8 @@ export default function Footer() {
                             Ecommerce
                         </Typography>
                         <Typography
-                            variant="body2"
+                            variant="body1"
                             color="text.secondary"
-                            sx={{ maxWidth: 260 }}
                         >
                             We have clothes that suit your style and which you’re proud to
                             wear. From women to men.
@@ -55,7 +56,10 @@ export default function Footer() {
                     </Grid>
 
                     {/* Company */}
-                    <Grid item xs={12} sm={12} md={6} lg={4}>
+                    <Grid
+                        size={{ xs: 12, sm: 4, md: 2.4 }}
+                        sx={{ textAlign: { xs: "center", sm: "center", md: "left" } }}
+                    >
                         <Typography
                             variant="subtitle2"
                             fontWeight={700}
@@ -79,7 +83,10 @@ export default function Footer() {
                     </Grid>
 
                     {/* Help Center */}
-                    <Grid item xs={12} sm={12} md={6} lg={4}>
+                    <Grid
+                        size={{ xs: 12, sm: 4, md: 2.4 }}
+                        sx={{ textAlign: { xs: "center", sm: "center", md: "left" } }}
+                    >
                         <Typography
                             variant="subtitle2"
                             fontWeight={700}
@@ -105,7 +112,10 @@ export default function Footer() {
                     </Grid>
 
                     {/* Legal */}
-                    <Grid item xs={12} sm={12} md={6} lg={4}>
+                    <Grid
+                        size={{ xs: 12, sm: 4, md: 2.4 }}
+                        sx={{ textAlign: { xs: "center", sm: "center", md: "left" } }}
+                    >
                         <Typography
                             variant="subtitle2"
                             fontWeight={700}
@@ -131,7 +141,10 @@ export default function Footer() {
                     </Grid>
 
                     {/* Download */}
-                    <Grid item xs={12} sm={12} md={6} lg={4}>
+                    <Grid
+                        size={{ xs: 12, sm: 4, md: 2.4 }}
+                        sx={{ textAlign: { xs: "center", sm: "center", md: "left" } }}
+                    >
                         <Typography
                             variant="subtitle2"
                             fontWeight={700}
