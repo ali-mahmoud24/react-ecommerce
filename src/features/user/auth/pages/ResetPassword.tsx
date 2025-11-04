@@ -3,10 +3,21 @@ import { Box, Typography, TextField, Link, Paper, Button, Alert, Grid } from '@m
 import Spinner from '@/components/ui/Spinner';
 import { useResetPassword } from '../hooks/useResetPassword';
 import { PUBLIC_ROUTES } from '@/constants/routes';
-import { useState } from 'react';
+import { useEffect, useState } from 'react'; // Import useEffect
+import toast from 'react-hot-toast';
 
 export default function ResetPassword() {
-  const { form, onSubmit, verifyResetCode, isLoading, isSuccess, error } = useResetPassword();
+  const {
+    form,
+    onSubmit,
+    verifyResetCode,
+    isVerificationPending,
+    isResetPending,
+    isVerificationSuccess,
+    verificationError,
+    resetError,
+  } = useResetPassword();
+
   const {
     register,
     handleSubmit,
@@ -14,20 +25,27 @@ export default function ResetPassword() {
     watch,
   } = form;
 
-  const [codeVerified, setCodeVerified] = useState(false);
+  const [codeVerifiedLocally, setCodeVerifiedLocally] = useState(false);
   const email = watch('email');
+  const resetCode = watch('resetCode');
+
+  // Effect to automatically update local state when verification is successful from the hook
+  useEffect(() => {
+    if (isVerificationSuccess) {
+      setCodeVerifiedLocally(true);
+      toast.success('Reset code verified! You can now set your new password.');
+    }
+  }, [isVerificationSuccess]);
 
   const handleVerifyCode = async () => {
-    const resetCode = watch('resetCode');
-    if (!email || !resetCode) return;
-
-    try {
-      await verifyResetCode(email, resetCode);
-      setCodeVerified(true);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      // Error handled in the mutation
+    if (!email || !resetCode) {
+      // Manual error handling for fields not covered by onSubmit/schema for verify
+      if (!email) form.setError('email', { type: 'manual', message: 'Email is required' });
+      if (!resetCode)
+        form.setError('resetCode', { type: 'manual', message: 'Reset code is required' });
+      return;
     }
+    verifyResetCode({ email, resetCode });
   };
 
   return (
@@ -58,15 +76,21 @@ export default function ResetPassword() {
           Enter your email, reset code, and new password
         </Typography>
 
-        {isSuccess && (
+        {isVerificationSuccess && ( // Display success after verification
           <Alert severity="success" sx={{ mb: 3 }}>
-            Password reset successfully! Redirecting...
+            Code verified. Please set your new password.
           </Alert>
         )}
 
-        {error && (
+        {/* Display errors from verification or reset mutations */}
+        {verificationError && (
           <Alert severity="error" sx={{ mb: 3 }}>
-            {error.message}
+            {verificationError.message}
+          </Alert>
+        )}
+        {resetError && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {resetError.message}
           </Alert>
         )}
 
@@ -79,7 +103,7 @@ export default function ResetPassword() {
             error={!!errors.email}
             helperText={errors.email?.message}
             sx={{ mb: 2 }}
-            disabled={codeVerified}
+            disabled={codeVerifiedLocally || isVerificationPending || isResetPending} // Disable if verified or pending
           />
 
           <Grid container spacing={2} sx={{ mb: 2 }}>
@@ -90,22 +114,28 @@ export default function ResetPassword() {
                 {...register('resetCode')}
                 error={!!errors.resetCode}
                 helperText={errors.resetCode?.message}
-                disabled={codeVerified}
+                disabled={codeVerifiedLocally || isVerificationPending || isResetPending} // Disable if verified or pending
               />
             </Grid>
             <Grid item xs={4}>
               <Button
                 variant="outlined"
                 onClick={handleVerifyCode}
-                disabled={!email || !watch('resetCode') || codeVerified}
+                disabled={
+                  !email ||
+                  !resetCode ||
+                  codeVerifiedLocally ||
+                  isVerificationPending ||
+                  isResetPending
+                }
                 sx={{ height: '56px', width: '100%' }}
               >
-                Verify
+                {isVerificationPending ? <Spinner size="sm" /> : 'Verify'}
               </Button>
             </Grid>
           </Grid>
 
-          {codeVerified && (
+          {codeVerifiedLocally && ( // Only show password fields if code is verified
             <>
               <TextField
                 fullWidth
@@ -115,6 +145,7 @@ export default function ResetPassword() {
                 error={!!errors.newPassword}
                 helperText={errors.newPassword?.message}
                 sx={{ mb: 2 }}
+                disabled={isResetPending}
               />
 
               <TextField
@@ -125,6 +156,7 @@ export default function ResetPassword() {
                 error={!!errors.confirmPassword}
                 helperText={errors.confirmPassword?.message}
                 sx={{ mb: 3 }}
+                disabled={isResetPending}
               />
             </>
           )}
@@ -134,9 +166,9 @@ export default function ResetPassword() {
             fullWidth
             variant="contained"
             size="large"
-            disabled={isLoading || !codeVerified}
+            disabled={!codeVerifiedLocally || isResetPending} // Only enable submit after code verified
           >
-            {isLoading ? <Spinner size="sm" /> : 'Reset Password'}
+            {isResetPending ? <Spinner size="sm" /> : 'Reset Password'}
           </Button>
         </Box>
 

@@ -11,7 +11,7 @@ import { loginSchema, type LoginFormData } from '../schemas/auth.schema';
 
 export function useLogin() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login } = useAuth(); // Use the login function from AuthContext
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -24,12 +24,13 @@ export function useLogin() {
   const loginMutation = useMutation({
     mutationFn: (values: LoginFormData) => authAPI.login(values),
     onSuccess: ({ data }: { data: User }) => {
-      // backend sets httpOnly cookie. frontend sets user in context.
-      login(data);
+      // Backend sets httpOnly cookie. Frontend sets user in context.
+      login(data); // Call the login function from AuthContext
       toast.success(`Welcome back, ${data.firstName}!`);
-      navigate('/');
+      navigate('/'); // Navigate to home or dashboard after successful login
     },
     onError: (err: unknown) => {
+      // The auth.api.ts formatError function already extracts a good message
       const message = err instanceof Error ? err.message : 'Login failed';
       toast.error(message);
     },

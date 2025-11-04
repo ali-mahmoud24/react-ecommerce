@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 import type { User } from '@/context/AuthContext';
 
 export const useRegister = () => {
-  const { login } = useAuth();
+  const { login } = useAuth(); // Use the login function from AuthContext
   const navigate = useNavigate();
 
   const form = useForm<RegisterFormData>({
@@ -28,15 +28,15 @@ export const useRegister = () => {
     mutationFn: (data: RegisterFormData) =>
       authAPI.register({
         firstName: data.firstName,
-        lastName: data.lastName,
+        lastName: data.lastName, // Ensure lastName is passed
         email: data.email,
         password: data.password,
       }),
     onSuccess: (res) => {
-      const user = res.data as User;
-      login(user);
+      const user = res.data as User; // Assuming res.data contains the User object
+      login(user); // Call the login function from AuthContext
       toast.success(`Welcome, ${user.firstName}!`);
-      navigate('/');
+      navigate('/'); // Navigate to home or dashboard after successful registration
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'Registration failed';
@@ -52,6 +52,6 @@ export const useRegister = () => {
     form,
     onSubmit,
     isLoading: mutation.isPending,
-    error: mutation.error,
+    error: mutation.error, // Expose error for Alert component
   };
 };
