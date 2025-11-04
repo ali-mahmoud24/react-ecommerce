@@ -1,7 +1,7 @@
 export const formatCurrency = (
   value: number,
   currency: string = "EGP",
-  locale: string = "en-EG"
+  locale: string = "ar-EG"
 ): string => {
   if (isNaN(value)) return "0";
 

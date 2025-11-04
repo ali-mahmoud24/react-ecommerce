@@ -2,7 +2,7 @@ import { Box, Typography, Button, useTheme, Grid } from "@mui/material";
 import { motion } from "framer-motion";
 import bgImage from "@/assets/images/landing.svg";
 
-export default function Landing() {
+export default function LandingSection() {
     const theme = useTheme();
 
     return (
@@ -48,8 +48,8 @@ export default function Landing() {
                     sx={{
                         fontWeight: 900,
                         mb: 3,
-                        lineHeight: { lg: "60px" },
-                        fontSize: { xs: "1.875rem", sm: "3rem" },
+                        lineHeight: "60px",
+                        fontSize: { xs: "2rem", sm: "3rem", md: "4rem" },
                     }}
                 >
                     FIND CLOTHES THAT MATCHES YOUR STYLE
@@ -78,7 +78,8 @@ export default function Landing() {
                     sx={{
                         px: 8,
                         py: 1.5,
-                        fontWeight: "bold",
+                        fontWeight: 500,
+                        borderRadius: theme.shape.borderRadius,
                         boxShadow: theme.palette.mode === "light"
                             ? theme.palette.text.primary
                             : theme.palette.primary.main,
@@ -87,7 +88,7 @@ export default function Landing() {
                                 theme.palette.mode === "light"
                                     ? theme.palette.text.primary
                                     : theme.palette.primary.main,
-                        },
+                        }
                     }
                     }
                 >
@@ -108,7 +109,7 @@ export default function Landing() {
                         { value: "2,000+", label: "High-Quality Products" },
                         { value: "30,000+", label: "Happy Customers" },
                     ].map((item) => (
-                        <Grid size={{ xs: 12, sm: 4 }} key={item.label}>
+                        <Grid item xs={12} sm={4} key={item.label}>
                             <Typography
                                 variant="h3"
                                 sx={{
@@ -154,7 +155,7 @@ export default function Landing() {
                         xs: "auto", md: "100vh"
                     },
                     minHeight: {
-                        xs: "auto", md: "auto"
+                        xs: "60vh", md: "auto"
                     },
                     backgroundImage: `url(${bgImage})`,
                     backgroundSize: {
@@ -162,7 +163,6 @@ export default function Landing() {
                     },
                     backgroundPosition: "center",
                     backgroundRepeat: "no-repeat",
-                    display: { xs: "none", md: "block" },
                 }}
             />
         </Box >
