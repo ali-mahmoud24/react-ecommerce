@@ -8,14 +8,14 @@ interface SpinnerProps {
 export default function Spinner({ size = 'md', className = '' }: SpinnerProps) {
   const sizeMap = {
     sm: 20,
-    md: 40,
-    lg: 60,
+    md: 32,
+    lg: 48,
   };
 
   return (
-    <CircularProgress 
-      size={sizeMap[size]} 
-      className={className} 
+    <CircularProgress
+      size={sizeMap[size]}
+      className={className}
     />
   );
 }

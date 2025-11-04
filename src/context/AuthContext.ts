@@ -1,3 +1,4 @@
+// context/AuthContext.ts
 import { createContext } from 'react';
 
 export type UserAddress = {
@@ -25,18 +26,18 @@ export type User = {
   active: boolean;
   wishlist: string[];
   addresses: UserAddress[];
-  fullName?: string;
   createdAt?: string;
   updatedAt?: string;
 };
 
 export type AuthContextType = {
   user: User | null;
-  token: string | null;
   isAuthenticated: boolean;
-  login: (token: string, user: User) => void;
+  login: (user: User) => void;
   logout: () => void;
   updateUser: (user: User) => void;
+  setUser: (user: User | null) => void;
+  isLoading: boolean;
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);

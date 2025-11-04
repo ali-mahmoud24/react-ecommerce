@@ -23,10 +23,13 @@ import CloseIcon from '@mui/icons-material/Close';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import LogoutIcon from '@mui/icons-material/Logout';
+import InventoryIcon from '@mui/icons-material/Inventory';
 import { useThemeContext } from '@/theme/useThemeContext';
 import { useState } from 'react';
 import logo from '@/assets/images/logo.jpg';
 
+import { useAuth } from '@/hooks/useAuth';
 // ========== STYLED COMPONENTS ==========
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -74,13 +77,10 @@ export default function Navbar() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const theme = useTheme();
   const { mode, toggleTheme } = useThemeContext();
-
+  const { isAuthenticated } = useAuth();
   const handleDrawerToggle = () => setMobileOpen((prev) => !prev);
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
-
-  // TODO: Replace with real auth state from context or Redux
-  const isLoggedIn = false; // <--- change this dynamically later
 
   const navLinks = [
     { label: 'Products', href: '', active: true },
@@ -237,7 +237,8 @@ export default function Navbar() {
             </IconButton>
 
             {/* Auth Buttons / User Menu */}
-            {isLoggedIn ? (
+            {isAuthenticated ? (
+              // how to use isAuthenticated here ????
               <>
                 <IconButton onClick={handleMenuOpen}>
                   <Avatar alt="User" src="/profile.jpg" />
@@ -247,12 +248,48 @@ export default function Navbar() {
                   open={Boolean(anchorEl)}
                   onClose={handleMenuClose}
                   PaperProps={{
-                    sx: { borderRadius: 2, mt: 1, minWidth: 160 },
+                    sx: { borderRadius: 0.25, mt: 1, minWidth: 160 },
                   }}
                 >
-                  <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-                  <MenuItem onClick={handleMenuClose}>Orders</MenuItem>
-                  <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
+                  <MenuItem onClick={handleMenuClose}>
+                    <Button
+                      href="/profile"
+                      startIcon={<AccountCircleIcon />}
+                      sx={{
+                        textTransform: 'none',
+                        fontWeight: 500,
+                        borderRadius: 2,
+                      }}
+                    >
+                      Profile
+                    </Button>
+                  </MenuItem>
+                  <MenuItem onClick={handleMenuClose}>
+                    <Button
+                      href="/orders"
+                      startIcon={<InventoryIcon />}
+                      sx={{
+                        textTransform: 'none',
+                        fontWeight: 500,
+                        borderRadius: 2,
+                      }}
+                    >
+                      Orders
+                    </Button>
+                  </MenuItem>
+                  <MenuItem onClick={handleMenuClose}>
+                    <Button
+                      href="/logout"
+                      startIcon={<LogoutIcon />}
+                      sx={{
+                        textTransform: 'none',
+                        fontWeight: 500,
+                        borderRadius: 2,
+                      }}
+                    >
+                      Logout
+                    </Button>
+                  </MenuItem>
                 </Menu>
               </>
             ) : (

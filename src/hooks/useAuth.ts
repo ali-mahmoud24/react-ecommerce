@@ -7,15 +7,15 @@ export function useAuth() {
     throw new Error('useAuth must be used within an AuthProvider');
   }
 
-  const { user, token, isAuthenticated, login, logout, updateUser } = context;
+  const { user, isAuthenticated, login, logout, updateUser, isLoading } = context;
 
   const isAdmin = user?.role === 'admin';
   const isUser = user?.role === 'user';
-  const fullName = user?.fullName || `${user?.firstName} ${user?.lastName}`;
+  const fullName = user ? `${user.firstName} ${user.lastName}` : '';
+  const isLoadingProfile = isLoading;
 
   return {
     user,
-    token,
     isAuthenticated,
     isAdmin,
     isUser,
@@ -23,5 +23,6 @@ export function useAuth() {
     login,
     logout,
     updateUser,
+    isLoadingProfile,
   };
 }

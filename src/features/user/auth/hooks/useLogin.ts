@@ -1,11 +1,16 @@
-import { useMutation } from '@tanstack/react-query';
+// src/features/user/auth/hooks/useLogin.ts
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { loginApi } from '../api/auth.api';
+import { useMutation } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
+import { authAPI } from '../api/auth.api';
+import type { User } from '@/context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { loginSchema, type LoginFormData } from '../schemas/auth.schema';
 
-export const useLogin = () => {
+export function useLogin() {
+  const navigate = useNavigate();
   const { login } = useAuth();
 
   const form = useForm<LoginFormData>({
@@ -16,32 +21,25 @@ export const useLogin = () => {
     },
   });
 
-  const mutation = useMutation({
-    mutationFn: loginApi,
-    onSuccess: (data) => {
-      login(data.token, data.data);
+  const loginMutation = useMutation({
+    mutationFn: (values: LoginFormData) => authAPI.login(values),
+    onSuccess: ({ data }: { data: User }) => {
+      // backend sets httpOnly cookie. frontend sets user in context.
+      login(data);
+      toast.success(`Welcome back, ${data.firstName}!`);
+      navigate('/');
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onError: (error: any) => {
-      const errorMessage = error.response?.data?.message || error.message || 'Login failed. Please try again.';
-      form.setError('root', { message: errorMessage });
+    onError: (err: unknown) => {
+      const message = err instanceof Error ? err.message : 'Login failed';
+      toast.error(message);
     },
   });
 
-  const onSubmit = (data: LoginFormData) => {
-    mutation.mutate(data);
-  };
-
-  const loginWithGoogle = () => {
-    // Redirect to Google OAuth
-    console.log('Google login clicked');
-  };
+  const onSubmit = (values: LoginFormData) => loginMutation.mutate(values);
 
   return {
     form,
     onSubmit,
-    isLoading: mutation.isPending,
-    error: mutation.error,
-    loginWithGoogle,
+    isLoading: loginMutation.isPending,
   };
-};
+}

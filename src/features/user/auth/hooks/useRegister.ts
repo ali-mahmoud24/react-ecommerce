@@ -1,12 +1,17 @@
+// src/features/user/auth/hooks/useRegister.ts
 import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { registerApi } from '../api/auth.api';
+import { authAPI } from '../api/auth.api';
 import { useAuth } from '@/hooks/useAuth';
 import { registerSchema, type RegisterFormData } from '../schemas/auth.schema';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import type { User } from '@/context/AuthContext';
 
 export const useRegister = () => {
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -20,15 +25,22 @@ export const useRegister = () => {
   });
 
   const mutation = useMutation({
-    mutationFn: registerApi,
-    onSuccess: (data) => {
-      login(data.token, data.data);
+    mutationFn: (data: RegisterFormData) =>
+      authAPI.register({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        password: data.password,
+      }),
+    onSuccess: (res) => {
+      const user = res.data as User;
+      login(user);
+      toast.success(`Welcome, ${user.firstName}!`);
+      navigate('/');
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onError: (error: any) => {
-      const errorMessage =
-        error.response?.data?.message || error.message || 'Registration failed. Please try again.';
-      form.setError('root', { message: errorMessage });
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : 'Registration failed';
+      toast.error(message);
     },
   });
 
@@ -36,15 +48,10 @@ export const useRegister = () => {
     mutation.mutate(data);
   };
 
-  const registerWithGoogle = () => {
-    console.log('Google registration clicked');
-  };
-
   return {
     form,
     onSubmit,
     isLoading: mutation.isPending,
     error: mutation.error,
-    registerWithGoogle,
   };
 };

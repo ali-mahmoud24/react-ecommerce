@@ -24,7 +24,7 @@ export default function ResetPassword() {
     try {
       await verifyResetCode(email, resetCode);
       setCodeVerified(true);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       // Error handled in the mutation
     }
@@ -83,7 +83,7 @@ export default function ResetPassword() {
           />
 
           <Grid container spacing={2} sx={{ mb: 2 }}>
-            <Grid size={{ xs: 8 }}>
+            <Grid item xs={8}>
               <TextField
                 fullWidth
                 label="Reset Code"
@@ -93,7 +93,7 @@ export default function ResetPassword() {
                 disabled={codeVerified}
               />
             </Grid>
-            <Grid size={{ xs: 4 }}>
+            <Grid item xs={4}>
               <Button
                 variant="outlined"
                 onClick={handleVerifyCode}

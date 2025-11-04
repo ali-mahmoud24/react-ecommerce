@@ -1,39 +1,22 @@
+// src/features/user/auth/hooks/useForgotPassword.ts
 import { useMutation } from '@tanstack/react-query';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { forgotPasswordApi } from '../api/auth.api';
-import { type ForgotPasswordFormData, forgotPasswordSchema } from '../schemas/auth.schema';
+import { authAPI } from '../api/auth.api';
+import toast from 'react-hot-toast';
 
-export const useForgotPassword = () => {
-  const form = useForm<ForgotPasswordFormData>({
-    resolver: zodResolver(forgotPasswordSchema),
-    defaultValues: {
-      email: '',
-    },
-  });
-
+export function useForgotPassword() {
   const mutation = useMutation({
-    mutationFn: forgotPasswordApi,
-    onSuccess: () => {
-      console.log('Password reset code sent to email');
+    mutationFn: (payload: { email: string }) => authAPI.forgotPassword({ email: payload.email }),
+    onSuccess: (res) => {
+      toast.success(res.message || 'Reset code sent to email');
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onError: (error: any) => {
-      const errorMessage =
-        error.response?.data?.message || 'Failed to send reset code. Please try again.';
-      form.setError('root', { message: errorMessage });
+    onError: (err: unknown) => {
+      const message = err instanceof Error ? err.message : 'Request failed';
+      toast.error(message);
     },
   });
-
-  const onSubmit = (data: ForgotPasswordFormData) => {
-    mutation.mutate(data);
-  };
 
   return {
-    form,
-    onSubmit,
+    send: (email: string) => mutation.mutate({ email }),
     isLoading: mutation.isPending,
-    isSuccess: mutation.isSuccess,
-    error: mutation.error,
   };
-};
+}

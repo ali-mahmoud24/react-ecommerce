@@ -1,57 +1,86 @@
-import React, { useState, useEffect, type ReactNode } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { AuthContext, type User } from './AuthContext';
+import { authAPI } from '@/features/user/auth/api/auth.api'; // optional: to verify token on load
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
+type Props = { children: React.ReactNode };
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export default function AuthProvider({ children }: Props) {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
+  const isAuthenticated = !!user;
+
+  // 🔹 Load user from localStorage when the app starts
   useEffect(() => {
-    const storedToken = localStorage.getItem('auth_token');
-    const storedUser = localStorage.getItem('auth_user');
-
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
-      setIsAuthenticated(true);
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+      } catch (e) {
+        console.error('Error parsing stored user:', e);
+        localStorage.removeItem('user');
+      }
     }
+    setIsLoading(false);
   }, []);
 
-  const login = (newToken: string, newUser: User) => {
-    setToken(newToken);
-    setUser(newUser);
-    setIsAuthenticated(true);
+  // 🔹 Sync user state with localStorage on every change
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
+    }
+  }, [user]);
 
-    localStorage.setItem('auth_token', newToken);
-    localStorage.setItem('auth_user', JSON.stringify(newUser));
-  };
+  // 🔹 Login
+  const login = useCallback((userData: User) => {
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
+  }, []);
 
-  const logout = () => {
-    setToken(null);
+  // 🔹 Logout
+  const logout = useCallback(() => {
     setUser(null);
-    setIsAuthenticated(false);
+    localStorage.removeItem('user');
+  }, []);
 
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('auth_user');
-  };
-
-  const updateUser = (updatedUser: User) => {
+  // 🔹 Update user profile (for example after edit)
+  const updateUser = useCallback((updatedUser: User) => {
     setUser(updatedUser);
-    localStorage.setItem('auth_user', JSON.stringify(updatedUser));
-  };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+  }, []);
 
-  const value = {
-    user,
-    token,
-    isAuthenticated,
-    login,
-    logout,
-    updateUser,
-  };
+  // 🔹 Optionally: verify active session on load (if backend supports /auth/me)
+  useEffect(() => {
+    const verifyUser = async () => {
+      try {
+        const data = await authAPI.me();
+        if (data) setUser(data);
+      } catch {
+        logout();
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (localStorage.getItem('user')) verifyUser();
+    else setIsLoading(false);
+  }, [logout]);
+
+  const value = useMemo(
+    () => ({
+      user,
+      isAuthenticated,
+      login,
+      logout,
+      updateUser,
+      setUser,
+      isLoading,
+    }),
+    [user, isAuthenticated, login, logout, updateUser, isLoading],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
+}
