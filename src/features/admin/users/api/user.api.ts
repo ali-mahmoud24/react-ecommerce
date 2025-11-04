@@ -10,7 +10,9 @@ export interface PaginatedUsersResponse {
     currentPage: number;
     limit: number;
     numberOfPages: number;
-    next?: number;
+    totalDocs: number
+    next: number | null;
+    previous: number | null;
   };
   data: User[];
 }
@@ -31,7 +33,7 @@ export async function fetchUsers() {
 
 export async function fetchUserById(id: string) {
   const { data } = await http.get<User>(`${RESOURCE}/${id}`);
-  return data;
+  return data.data;
 }
 
 export async function createUser(payload: CreateUserDto) {

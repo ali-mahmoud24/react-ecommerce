@@ -1,129 +1,81 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   DataGrid,
   type GridColDef,
   type GridPaginationModel,
   type GridSortModel,
   type GridFilterModel,
+  gridClasses,
 } from '@mui/x-data-grid';
 import {
-  Box,
   Stack,
-  Typography,
   Button,
   Chip,
-  IconButton,
   Tooltip,
+  IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
-  MenuItem,
+  Typography,
 } from '@mui/material';
 import { CheckCircle, Cancel, AdminPanelSettings, Person, Delete } from '@mui/icons-material';
+import AddIcon from '@mui/icons-material/Add';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import { useSnackbar } from 'notistack';
-
-import {
-  usePaginatedUsersQuery,
-  useDeleteUserMutation,
-  useCreateUserMutation,
-} from '../hooks/useUsers';
+import { usePaginatedUsersQuery, useDeleteUserMutation } from '../hooks/useUsers';
+import PageContainer from './PageContainer';
+import { useNavigate } from 'react-router';
 
 export default function UsersTable() {
+  const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
+
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: 5,
   });
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
   const [filterModel, setFilterModel] = useState<GridFilterModel>({ items: [] });
-  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; userId?: string }>({
-    open: false,
-  });
-  const [createDialog, setCreateDialog] = useState(false);
-  const [newUser, setNewUser] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    role: '',
-    profileImageUrl: '',
-  });
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name?: string } | null>(null);
 
-  const { enqueueSnackbar } = useSnackbar();
   const page = paginationModel.page + 1;
   const pageSize = paginationModel.pageSize;
 
-  const { data, isLoading, refetch } = usePaginatedUsersQuery(
-    page,
-    pageSize,
-    sortModel,
-    // filterModel,
-  );
-
-  const totalDocs =
-    data?.paginationResult.numberOfPages && data?.paginationResult.limit
-      ? data.paginationResult.numberOfPages * data.paginationResult.limit
-      : 0;
+  const { data, isLoading, refetch } = usePaginatedUsersQuery(page, pageSize, sortModel);
+  const deleteMutation = useDeleteUserMutation();
 
   const rows = data?.data ?? [];
-  // const rowCount = data?.paginationResult?.totalDocs ?? rows.length;
+  const rowCount = data?.paginationResult.totalDocs;
 
-  const rowCount = totalDocs;
+  const handleCreateClick = useCallback(() => {
+    navigate('/admin/users/new');
+  }, [navigate]);
 
+  // ✅ Confirmation-based delete handler
+  const handleRowDelete = useCallback(
+    (user: any) => async () => {
+      setDeleteTarget({ id: user.id, name: user.fullName });
+    },
+    [],
+  );
 
-  const deleteMutation = useDeleteUserMutation();
-  const createMutation = useCreateUserMutation();
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const confirmDelete = () => {
+    if (!deleteTarget?.id) return;
 
-  // Delete handler
-  const handleDelete = () => {
-    if (!deleteDialog.userId) return;
-    deleteMutation.mutate(deleteDialog.userId, {
+    deleteMutation.mutate(deleteTarget.id, {
       onSuccess: () => {
-        enqueueSnackbar('User deleted successfully', { variant: 'success' });
-        setDeleteDialog({ open: false });
-        refetch();
+        enqueueSnackbar(`User "${deleteTarget.name}" deleted successfully.`, {
+          variant: 'success',
+        });
       },
-      onError: () => enqueueSnackbar('Failed to delete user', { variant: 'error' }),
+      onError: (err) => {
+        enqueueSnackbar(`Failed to delete user. ${(err as Error).message}`, { variant: 'error' });
+      },
+      onSettled: () => {
+        setDeleteTarget(null);
+      },
     });
-  };
-
-  // Create handler
-  const handleCreateSubmit = () => {
-    const newErrors: Record<string, string> = {};
-    if (!newUser.firstName.trim()) newErrors.firstName = 'First name is required';
-    if (!newUser.lastName.trim()) newErrors.lastName = 'Last name is required';
-    if (!newUser.email.trim()) newErrors.email = 'Email is required';
-    if (!newUser.password) newErrors.password = 'Password is required';
-    if (!newUser.confirmPassword) newErrors.confirmPassword = 'Confirm password';
-    if (newUser.password !== newUser.confirmPassword)
-      newErrors.confirmPassword = 'Passwords do not match';
-    if (!newUser.role) newErrors.role = 'Role is required';
-    if (Object.keys(newErrors).length > 0) return setErrors(newErrors);
-
-    setErrors({});
-    createMutation.mutate(
-      { ...newUser, passwordConfirm: newUser.confirmPassword },
-      {
-        onSuccess: () => {
-          enqueueSnackbar('User created successfully', { variant: 'success' });
-          setCreateDialog(false);
-          setNewUser({
-            firstName: '',
-            lastName: '',
-            email: '',
-            password: '',
-            confirmPassword: '',
-            role: '',
-            profileImageUrl: '',
-          });
-          refetch();
-        },
-        onError: () => enqueueSnackbar('Failed to create user', { variant: 'error' }),
-      },
-    );
   };
 
   const columns: GridColDef[] = [
@@ -142,7 +94,7 @@ export default function UsersTable() {
             size="small"
           />
         ) : (
-          <Chip icon={<Person fontSize="small" />} label="User" color="default" size="small" />
+          <Chip icon={<Person fontSize="small" />} label="User" size="small" />
         ),
     },
     {
@@ -174,140 +126,97 @@ export default function UsersTable() {
       width: 120,
       sortable: false,
       renderCell: (params) => (
-        <Stack direction="row" spacing={1}>
-          <Tooltip title="Delete user">
-            <IconButton
-              color="error"
-              onClick={() => setDeleteDialog({ open: true, userId: params.row.id })}
-            >
-              <Delete fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Stack>
+        <Tooltip title="Delete user">
+          <IconButton color="error" onClick={handleRowDelete(params.row)}>
+            <Delete fontSize="small" />
+          </IconButton>
+        </Tooltip>
       ),
     },
   ];
 
   return (
-    <Box sx={{ height: 600, width: '100%', p: 3 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="h5" fontWeight="bold">
-          Users
-        </Typography>
-        <Button variant="contained" color="primary" onClick={() => setCreateDialog(true)}>
-          + Add User
-        </Button>
-      </Stack>
+    <>
+      <PageContainer
+        title="Manage Users"
+        breadcrumbs={[{ title: 'Users', path: '/admin/users' }]}
+        actions={
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <Tooltip title="Reload data" placement="right" enterDelay={1000}>
+              <div>
+                <IconButton size="small" aria-label="refresh" onClick={() => refetch()}>
+                  <RefreshIcon />
+                </IconButton>
+              </div>
+            </Tooltip>
+            <Button variant="contained" onClick={handleCreateClick} startIcon={<AddIcon />}>
+              Create
+            </Button>
+          </Stack>
+        }
+      >
+        <DataGrid
+          rows={rows}
+          rowCount={rowCount}
+          columns={columns}
+          pagination
+          sortingMode="server"
+          filterMode="server"
+          paginationMode="server"
+          paginationModel={paginationModel}
+          onPaginationModelChange={setPaginationModel}
+          sortModel={sortModel}
+          onSortModelChange={setSortModel}
+          filterModel={filterModel}
+          onFilterModelChange={setFilterModel}
+          disableRowSelectionOnClick
+          loading={isLoading}
+          getRowId={(row) => row.id}
+          pageSizeOptions={[5, 10, 25]}
+          showToolbar
+          onRowClick={(params, event) => {
+            // ✅ Prevent clicks on buttons (like delete)
+            const target = event.target as HTMLElement;
+            if (target.closest('button, svg, path')) return;
 
-      <DataGrid
-        sx={{ borderRadius: '6px', border: '1px solid #bebcbcff', boxShadow: 'none' }}
-        loading={isLoading}
-        rows={rows}
-        columns={columns}
-        getRowId={(row) => row.id}
-        paginationModel={paginationModel}
-        onPaginationModelChange={setPaginationModel}
-        paginationMode="server"
-        rowCount={rowCount}
-        pageSizeOptions={[5, 10, 25]}
-        sortingMode="server"
-        sortModel={sortModel}
-        onSortModelChange={setSortModel}
-        filterMode="server"
-        filterModel={filterModel}
-        onFilterModelChange={setFilterModel}
-        disableRowSelectionOnClick
-      />
+            // ✅ Navigate to details page
+            navigate(`/admin/users/${params.row.id}`);
+          }}
+          sx={{
+            borderRadius: '6px',
+            border: '1px solid #bebcbcff',
+            boxShadow: 'none',
+            [`& .${gridClasses.columnHeader}, & .${gridClasses.cell}`]: {
+              outline: 'transparent',
+            },
+            [`& .${gridClasses.columnHeader}:focus-within, & .${gridClasses.cell}:focus-within`]: {
+              outline: 'none',
+            },
+            [`& .${gridClasses.row}:hover`]: {
+              cursor: 'pointer',
+            },
+          }}
+          slotProps={{
+            baseIconButton: { size: 'small' },
+          }}
+        />
+      </PageContainer>
 
-      {/* Delete Dialog */}
-      <Dialog open={deleteDialog.open} onClose={() => setDeleteDialog({ open: false })}>
-        <DialogTitle>Confirm Delete</DialogTitle>
-        <DialogContent>Are you sure you want to delete this user?</DialogContent>
+      {/* ✅ Delete confirmation dialog */}
+      <Dialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)}>
+        <DialogTitle>Delete User?</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete <b>{deleteTarget?.name}</b>?
+          </Typography>
+        </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteDialog({ open: false })}>Cancel</Button>
-          <Button color="error" variant="contained" onClick={handleDelete}>
+          <Button onClick={() => setDeleteTarget(null)}>Cancel</Button>
+          <Button onClick={confirmDelete} color="error" variant="contained">
             Delete
           </Button>
         </DialogActions>
       </Dialog>
-
-      {/* Add User Dialog */}
-      <Dialog open={createDialog} onClose={() => setCreateDialog(false)} fullWidth maxWidth="sm">
-        <DialogTitle>Add New User</DialogTitle>
-        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-          <TextField
-            label="First Name"
-            fullWidth
-            value={newUser.firstName}
-            onChange={(e) => setNewUser({ ...newUser, firstName: e.target.value })}
-            error={!!errors.firstName}
-            helperText={errors.firstName}
-          />
-          <TextField
-            label="Last Name"
-            fullWidth
-            value={newUser.lastName}
-            onChange={(e) => setNewUser({ ...newUser, lastName: e.target.value })}
-            error={!!errors.lastName}
-            helperText={errors.lastName}
-          />
-          <TextField
-            label="Email"
-            fullWidth
-            type="email"
-            value={newUser.email}
-            onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-            error={!!errors.email}
-            helperText={errors.email}
-          />
-          <TextField
-            label="Password"
-            fullWidth
-            type="password"
-            value={newUser.password}
-            onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-            error={!!errors.password}
-            helperText={errors.password}
-          />
-          <TextField
-            label="Confirm Password"
-            fullWidth
-            type="password"
-            value={newUser.confirmPassword}
-            onChange={(e) => setNewUser({ ...newUser, confirmPassword: e.target.value })}
-            error={!!errors.confirmPassword}
-            helperText={errors.confirmPassword}
-          />
-          <TextField
-            select
-            label="Role"
-            fullWidth
-            value={newUser.role}
-            onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-            error={!!errors.role}
-            helperText={errors.role}
-          >
-            <MenuItem value="admin">Admin</MenuItem>
-            <MenuItem value="user">User</MenuItem>
-          </TextField>
-          <TextField
-            label="Profile Image URL (optional)"
-            fullWidth
-            value={newUser.profileImageUrl}
-            onChange={(e) => setNewUser({ ...newUser, profileImageUrl: e.target.value })}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setCreateDialog(false)}>Cancel</Button>
-          <Button
-            variant="contained"
-            onClick={handleCreateSubmit}
-            // disabled={createMutation.isLoading}
-          >
-            {/* {createMutation.isLoading ? 'Creating...' : 'Create'} */}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+    </>
   );
 }

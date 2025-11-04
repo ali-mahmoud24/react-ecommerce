@@ -1,6 +1,8 @@
 export interface User {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
+  fullName: string;
   email: string;
   role: string;
   createdAt: string;
@@ -13,11 +15,12 @@ export interface CreateUserDto {
   password: string;
   passwordConfirm: string;
   role: string;
-  profileImageUrl?: string;
 }
 
 export interface UpdateUserDto {
-  name?: string;
+  firstName?: string;
+  lastName?: string;
   email?: string;
+  password?: string;
   role?: string;
 }

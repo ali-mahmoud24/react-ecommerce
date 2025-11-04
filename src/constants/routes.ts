@@ -28,4 +28,5 @@ export const ADMIN_ROUTES = {
   PRODUCTS: "/admin/products",
   ORDERS: "/admin/orders",
   USERS: "/admin/users",
+  USERS_NEW: "/admin/users/new",
 } as const;

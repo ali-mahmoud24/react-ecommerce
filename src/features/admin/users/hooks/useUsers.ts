@@ -24,7 +24,7 @@ export function usePaginatedUsersQuery(page: number, limit: number, sortModel: G
   const sort = buildSortParam(sortModel);
 
   return useQuery<PaginatedUsersResponse>({
-    queryKey: ['users', page, limit, sort],
+    queryKey: [...USERS_QK, page, limit, sort],
     queryFn: () => fetchPaginatedUsers(page, limit, sort),
     placeholderData: (prev) => prev,
     staleTime: 30_000,
