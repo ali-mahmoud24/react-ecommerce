@@ -20,11 +20,12 @@ import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import { useThemeContext } from '@/theme/useThemeContext';
 import { useState } from 'react';
+import { Link } from 'react-router';
 import logo from '@/assets/images/logo.jpg';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
-  borderRadius: theme.shape.borderRadius,
+  borderRadius: '20px',
   backgroundColor:
     theme.palette.mode === 'light'
       ? alpha(theme.palette.common.black, 0.05)
@@ -37,6 +38,9 @@ const Search = styled('div')(({ theme }) => ({
   },
   width: '100%',
   [theme.breakpoints.up('md')]: {
+    width: '180px',
+  },
+  [theme.breakpoints.up('lg')]: {
     width: '500px',
   },
 }));
@@ -70,11 +74,11 @@ export default function Navbar() {
   const handleDrawerToggle = () => setMobileOpen((prev) => !prev);
 
   const navLinks = [
-    { label: 'Products', href: '/products', active: true },
-    { label: 'Categories', href: '' },
-    { label: 'Brands', href: '' },
-    { label: 'Cart', href: '' },
-    { label: 'Wishlist', href: '' },
+    { label: 'Products', to: '/products', active: true },
+    { label: 'Categories', to: '/categories' },
+    { label: 'Brands', to: '/brands' },
+    { label: 'Cart', to: '/cart' },
+    { label: 'Wishlist', to: '/wishlist' },
   ];
 
   const drawer = (
@@ -102,8 +106,8 @@ export default function Navbar() {
         {navLinks.map((link) => (
           <ListItemButton
             key={link.label}
-            component="a"
-            href={link.href}
+            component={Link}
+            to={link.to}
             selected={link.active}
             onClick={handleDrawerToggle}
             sx={{
@@ -127,7 +131,7 @@ export default function Navbar() {
             <SearchIcon />
           </SearchIconWrapper>
           <StyledInputBase
-            placeholder="Search for products..."
+            placeholder="Search for products"
             inputProps={{ 'aria-label': 'search' }}
           />
         </Search>
@@ -138,8 +142,8 @@ export default function Navbar() {
   return (
     <>
       <AppBar
-        position="static"
-        elevation={3}
+        position="sticky"
+        elevation={0}
         sx={{
           bgcolor: theme.palette.background.default,
           color: theme.palette.text.primary,
@@ -153,23 +157,25 @@ export default function Navbar() {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            px: { xs: 2, md: 4 },
+            px: 2,
           }}
         >
           {/* Logo */}
-          <Box display="flex" alignItems="center" gap={1}>
-            <img src={logo} alt="Ecommerce Logo" style={{ width: '40px', height: '40px' }} />
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: 600,
-                fontSize: '1.5rem',
-                color: theme.palette.text.primary,
-              }}
-            >
-              Ecommerce
-            </Typography>
-          </Box>
+          <Link to="/" style={{ textDecoration: 'none' }}>
+            <Box display="flex" alignItems="center" gap={1}>
+              <img src={logo} alt="Ecommerce Logo" style={{ width: '40px', height: '40px' }} />
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 600,
+                  fontSize: '1.5rem',
+                  color: theme.palette.text.primary,
+                }}
+              >
+                Ecommerce
+              </Typography>
+            </Box>
+          </Link>
 
           {/* Nav Links (Desktop view) */}
           <Box
@@ -184,8 +190,8 @@ export default function Navbar() {
             {navLinks.map((link) => (
               <Typography
                 key={link.label}
-                component="a"
-                href={link.href}
+                component={Link}
+                to={link.to}
                 sx={{
                   textDecoration: 'none',
                   color: link.active ? theme.palette.primary.main : theme.palette.text.primary,
@@ -201,13 +207,14 @@ export default function Navbar() {
           <Box display="flex" alignItems="center" gap={1}>
             {/* Search (Desktop view) */}
             <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-              <Search sx={{ display: { xs: 'none', md: 'block' }, width: 200 }}>
+              <Search>
                 <SearchIconWrapper>
                   <SearchIcon />
                 </SearchIconWrapper>
                 <StyledInputBase
-                  placeholder="Search for products..."
+                  placeholder="Search for products"
                   inputProps={{ 'aria-label': 'search' }}
+                  sx={{ fontSize: '14px' }}
                 />
               </Search>
             </Box>

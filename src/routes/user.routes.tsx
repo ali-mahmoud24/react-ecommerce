@@ -1,13 +1,13 @@
 /* eslint-disable react-refresh/only-export-components */
-import { Route } from "react-router";
-import UserLayout from "@/layouts/user/UserLayout";
-import UserProtected from "@/auth/UserProtected";
-import { USER_ROUTES, PUBLIC_ROUTES } from "@/constants/routes";
+import { Route } from 'react-router';
+import UserLayout from '@/layouts/user/UserLayout';
+import UserProtected from '@/auth/UserProtected';
+import { USER_ROUTES, PUBLIC_ROUTES } from '@/constants/routes';
+import Home from '@/features/user/home/pages/Home';
 
-import Home from "@/features/user/home/pages/Home";
+import Home from '@/features/user/home/pages/Home';
 import Products from '@/features/user/products/pages/Products';
-import ProductDetails from '@/features/user/products/pages/ProductDetails';
-
+import ProductDetailsPage from '@/features/user/products/pages/ProductDetailsPage';
 
 // === Placeholder components (replace later) ===
 const Cart = () => <div>Cart</div>;
@@ -21,7 +21,7 @@ export const userRoutes = (
     <Route path={USER_ROUTES.ROOT} element={<UserLayout />}>
       <Route index element={<Home />} />
       <Route path={USER_ROUTES.PRODUCTS.replace('/', '')} element={<Products />} />
-      <Route path={USER_ROUTES.PRODUCT()} element={<ProductDetails />} />
+      <Route path={USER_ROUTES.PRODUCT()} element={<ProductDetailsPage />} />
 
       <Route
         path={USER_ROUTES.CART.replace('/', '')}
