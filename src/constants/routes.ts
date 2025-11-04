@@ -2,10 +2,6 @@
 // Public Routes
 // =====================
 export const PUBLIC_ROUTES = {
-  HOME: "/",
-  LOGIN: "/login",
-  REGISTER: "/register",
-  FORGOTPASS:"/forgot-password"
   HOME: '/',
   LOGIN: '/login',
   REGISTER: '/register',
