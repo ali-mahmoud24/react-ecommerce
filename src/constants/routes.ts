@@ -2,9 +2,9 @@
 // Public Routes
 // =====================
 export const PUBLIC_ROUTES = {
-  HOME: "/",
-  LOGIN: "/login",
-  REGISTER: "/register",
+  HOME: '/',
+  LOGIN: '/login',
+  REGISTER: '/register',
 } as const;
 
 // =====================
@@ -12,7 +12,7 @@ export const PUBLIC_ROUTES = {
 // =====================
 export const USER_ROUTES = {
   ROOT: "/",
-  SHOP: "/shop",
+  PRODUCTS: "/products",
   PRODUCT: (id = ":id") => `/product/${id}`,
   CART: "/cart",
   PROFILE: "/profile",
@@ -28,4 +28,5 @@ export const ADMIN_ROUTES = {
   PRODUCTS: "/admin/products",
   ORDERS: "/admin/orders",
   USERS: "/admin/users",
+  USERS_NEW: "/admin/users/new",
 } as const;
