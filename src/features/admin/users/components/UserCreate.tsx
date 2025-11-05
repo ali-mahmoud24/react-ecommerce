@@ -2,26 +2,29 @@ import { useNavigate } from 'react-router';
 import { useSnackbar } from 'notistack';
 import PageContainer from './PageContainer';
 import UserForm from './UserForm';
+import { useCreateUserMutation } from '../hooks/useUsers';
 
 export default function UserCreate() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
+  const createMutation = useCreateUserMutation();
 
-  const handleSubmit = async (formData: FormData) => {
-    try {
-      const res = await fetch('http://localhost:8000/api/v2/users', {
-        method: 'POST',
-        body: formData, // <-- send as form-data
-      });
-
-      if (!res.ok) throw new Error('Failed to create user');
-
-      enqueueSnackbar('User created successfully!', { variant: 'success' });
-      navigate('/admin/users');
-    } catch (error) {
-      enqueueSnackbar((error as Error).message, { variant: 'error' });
-    }
+  const handleSubmit = (formData: FormData) => {
+    createMutation.mutate(formData, {
+      onSuccess: () => {
+        navigate('/admin/users');
+        enqueueSnackbar('User created!', { variant: 'success' });
+      },
+      onError: (err) => {
+        enqueueSnackbar(
+          err?.response?.data?.errors?.[0]?.msg || err.message || 'Failed to create user',
+          { variant: 'error' },
+        );
+      },
+    });
   };
+
+  <UserForm onSubmit={handleSubmit} />;
 
   return (
     <PageContainer

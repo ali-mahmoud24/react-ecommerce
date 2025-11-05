@@ -7,7 +7,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useState } from 'react';
 
 interface UserFormProps {
-  onSubmit: (data: FormData) => Promise<void>;
+  onSubmit: (data: FormData) => void;
 }
 
 export default function UserForm({ onSubmit }: UserFormProps) {
@@ -19,6 +19,7 @@ export default function UserForm({ onSubmit }: UserFormProps) {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<UserFormData>({
+    mode: 'onBlur',
     resolver: zodResolver(userSchema),
     defaultValues: {
       firstName: '',
@@ -32,7 +33,7 @@ export default function UserForm({ onSubmit }: UserFormProps) {
 
   const handleBack = () => navigate('/admin/users');
 
-  const handleFormSubmit = async (data: UserFormData) => {
+  const handleFormSubmit = (data: UserFormData) => {
     const formData = new FormData();
 
     Object.entries(data).forEach(([key, value]) => {
@@ -41,17 +42,11 @@ export default function UserForm({ onSubmit }: UserFormProps) {
       }
     });
 
-    // ✅ The profile image will now exist in `data.profileImage`
     if (data.profileImage && data.profileImage[0]) {
       formData.append('profileImage', data.profileImage[0]);
     }
 
-    console.log('Form data object:', data);
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
-    }
-
-    await onSubmit(formData);
+    onSubmit(formData);
   };
 
   return (
@@ -154,8 +149,13 @@ export default function UserForm({ onSubmit }: UserFormProps) {
         <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={handleBack}>
           Back
         </Button>
-        <Button variant="contained" type="submit" disabled={isSubmitting} sx={{ minWidth: 120 }}>
-          {isSubmitting ? 'Saving...' : 'Create'}
+        <Button
+          variant="contained"
+          type="submit"
+          disabled={isSubmitting} // disable during submission
+          sx={{ minWidth: 120 }}
+        >
+          {isSubmitting ? 'Creating...' : 'Create'}
         </Button>
       </Stack>
     </Box>

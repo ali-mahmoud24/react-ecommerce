@@ -1,26 +1,20 @@
 import http from '@/lib/axios';
-import type { User, CreateUserDto, UpdateUserDto } from '../types/user.type';
+import type { User, UpdateUserDto, PaginatedUsersResponse, UserResponse } from '../types/user.type';
 
 const RESOURCE = '/users';
 
-export interface PaginatedUsersResponse {
-  status?: string;
-  results: number;
-  paginationResult: {
-    currentPage: number;
-    limit: number;
-    numberOfPages: number;
-    totalDocs: number
-    next: number | null;
-    previous: number | null;
-  };
-  data: User[];
-}
-
-export async function fetchPaginatedUsers(page: number = 1, limit: number = 10, sort?: string) {
+export async function fetchPaginatedUsers(
+  page = 1,
+  limit = 10,
+  sort?: string,
+  filters?: Record<string, string | boolean>,
+  keyword?: string,
+) {
   const params: Record<string, string | number> = { page, limit };
 
   if (sort) params.sort = sort;
+  if (keyword) params.keyword = keyword;
+  if (filters) Object.assign(params, filters);
 
   const { data } = await http.get<PaginatedUsersResponse>('/users', { params });
   return data;
@@ -32,12 +26,12 @@ export async function fetchUsers() {
 }
 
 export async function fetchUserById(id: string) {
-  const { data } = await http.get<User>(`${RESOURCE}/${id}`);
+  const { data } = await http.get<UserResponse>(`${RESOURCE}/${id}`);
   return data.data;
 }
 
-export async function createUser(payload: CreateUserDto) {
-  const { data } = await http.post(RESOURCE, payload, { withCredentials: true });
+export async function createUser(formData: FormData) {
+  const { data } = await http.post(RESOURCE, formData);
   return data;
 }
 
