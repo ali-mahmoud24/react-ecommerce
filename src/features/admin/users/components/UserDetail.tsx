@@ -1,4 +1,5 @@
-import * as React from 'react';
+import { useNavigate, useParams } from 'react-router';
+import { useState } from 'react';
 import {
   Alert,
   Box,
@@ -9,19 +10,21 @@ import {
   Paper,
   Stack,
   Typography,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
 } from '@mui/material';
+
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useNavigate, useParams } from 'react-router';
+
 import dayjs from 'dayjs';
+
 import PageContainer from './PageContainer';
+import UserAvatar from './UserAvatar';
+import ConfirmDialog from './ConfirmDeleteDialog';
+import InfoCard from './InfoCard';
+import RoleBadge from './RoleBadge';
 import { useSnackbar } from 'notistack';
-import { useUserByIdQuery, useDeleteUserMutation } from '../hooks/useUsers'; // adjust path if needed
+import { useUserByIdQuery, useDeleteUserMutation } from '../hooks/useUsers';
 
 export default function UserDetail() {
   const { id } = useParams();
@@ -30,29 +33,24 @@ export default function UserDetail() {
 
   const { data: user, isLoading, isError, error } = useUserByIdQuery(id!);
   const deleteMutation = useDeleteUserMutation();
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const [confirmOpen, setConfirmOpen] = React.useState(false);
-
-  const handleBack = () => navigate('/admin/users');
-  const handleEdit = () => navigate(`/admin/users/${id}/edit`);
-  const handleDeleteClick = () => setConfirmOpen(true);
-
-  const handleConfirmDelete = async () => {
+  const handleDelete = () => {
     if (!id) return;
-    try {
-      await deleteMutation.mutateAsync(id);
-      enqueueSnackbar('User deleted successfully.', { variant: 'success' });
-      navigate('/admin/users');
-    } catch (err) {
-      enqueueSnackbar(`Failed to delete user: ${(err as Error).message}`, {
-        variant: 'error',
-      });
-    } finally {
-      setConfirmOpen(false);
-    }
+
+    setConfirmOpen(false); // close dialog immediately
+    navigate('/admin/users'); // navigate immediately
+
+    deleteMutation.mutate(id, {
+      onSuccess: () => {
+        enqueueSnackbar('User deleted successfully', { variant: 'success' });
+      },
+      onError: (err) => {
+        enqueueSnackbar(err.message || 'Failed to delete user', { variant: 'error' });
+      },
+    });
   };
 
-  // Loading state
   if (isLoading)
     return (
       <PageContainer title="User Details">
@@ -62,7 +60,6 @@ export default function UserDetail() {
       </PageContainer>
     );
 
-  // Error state
   if (isError)
     return (
       <PageContainer title="User Details">
@@ -74,96 +71,74 @@ export default function UserDetail() {
 
   return (
     <PageContainer
-      title={`${user.firstName}`}
       breadcrumbs={[{ title: 'Users', path: '/admin/users' }, { title: user.fullName }]}
     >
-      <Box sx={{ flexGrow: 1 }}>
-        <Grid container spacing={2}>
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <Paper sx={{ p: 2 }}>
-              <Typography variant="overline">Full Name</Typography>
-              <Typography>{`${user.firstName} ${user.lastName}`}</Typography>
-            </Paper>
-          </Grid>
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <Paper sx={{ p: 2 }}>
-              <Typography variant="overline">Email</Typography>
-              <Typography>{user.email}</Typography>
-            </Paper>
-          </Grid>
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <Paper sx={{ p: 2 }}>
-              <Typography variant="overline">Role</Typography>
-              <Typography>{user.role}</Typography>
-            </Paper>
-          </Grid>
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <Paper sx={{ p: 2 }}>
-              <Typography variant="overline">Created At</Typography>
-              <Typography>{dayjs(user.createdAt).format('MMMM D, YYYY')}</Typography>
-            </Paper>
-          </Grid>
-          <Grid size={{ xs: 12 }}>
-            <Paper sx={{ p: 2, textAlign: 'center' }}>
-              <Typography variant="overline">Profile Image</Typography>
-              <Box
-                component="img"
-                src={user.profileImageUrl || '/default-avatar.png'}
-                alt={`${user.fullName} profile`}
-                sx={{
-                  mt: 1,
-                  width: 150,
-                  height: 150,
-                  objectFit: 'cover',
-                  borderRadius: '50%',
-                  border: '2px solid #ccc',
-                }}
-              />
-            </Paper>
-          </Grid>
-        </Grid>
+      <Paper sx={{ p: 4, mb: 4, borderRadius: 3, boxShadow: 4 }}>
+        <Stack alignItems="center" spacing={2}>
+          <UserAvatar name={user.fullName} src={user.profileImageUrl} />
+          <Typography variant="h5" fontWeight={700}>
+            {user.fullName}
+          </Typography>
+          <Typography color="text.secondary">{user.email}</Typography>
 
-        <Divider sx={{ my: 3 }} />
+          <Divider sx={{ width: '100%', my: 2 }} />
 
-        <Stack direction="row" justifyContent="space-between">
-          <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={handleBack}>
-            Back
-          </Button>
-          <Stack direction="row" spacing={2}>
-            <Button variant="contained" startIcon={<EditIcon />} onClick={handleEdit}>
-              Edit
-            </Button>
-            <Button
-              variant="contained"
-              color="error"
-              startIcon={<DeleteIcon />}
-              onClick={handleDeleteClick}
-              disabled={deleteMutation.isPending}
-            >
-              {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
-            </Button>
-          </Stack>
+          <Grid container spacing={2} sx={{ width: '100%' }}>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <InfoCard label="Role">
+                <RoleBadge role={user.role} />
+              </InfoCard>
+            </Grid>
+
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <InfoCard label="Created">
+                <Typography sx={{ fontWeight: 500 }}>
+                  {dayjs(user.createdAt).format('MMM D, YYYY • h:mm A')}
+                </Typography>
+              </InfoCard>
+            </Grid>
+          </Grid>
         </Stack>
-      </Box>
+      </Paper>
 
-      {/* Delete confirmation dialog */}
-      <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
-        <DialogTitle>Delete User?</DialogTitle>
-        <DialogContent>
-          Are you sure you want to delete <b>{user.fullName}</b>?
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setConfirmOpen(false)}>Cancel</Button>
+      {/* Action Buttons */}
+      <Stack direction="row" justifyContent="space-between">
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBackIcon />}
+          onClick={() => navigate('/admin/users')}
+        >
+          Back
+        </Button>
+
+        <Stack direction="row" spacing={2}>
           <Button
-            onClick={handleConfirmDelete}
-            color="error"
             variant="contained"
+            startIcon={<EditIcon />}
+            onClick={() => navigate(`/admin/users/${user.id}/edit`)}
+          >
+            Edit
+          </Button>
+
+          <Button
+            variant="contained"
+            color="error"
+            startIcon={<DeleteIcon />}
+            onClick={() => setConfirmOpen(true)}
             disabled={deleteMutation.isPending}
           >
             Delete
           </Button>
-        </DialogActions>
-      </Dialog>
+        </Stack>
+      </Stack>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleDelete}
+        name={user.fullName}
+        loading={deleteMutation.isPending}
+      />
     </PageContainer>
   );
 }

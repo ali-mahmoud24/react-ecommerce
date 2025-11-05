@@ -6,30 +6,65 @@ import {
   createUser,
   updateUser,
   deleteUser,
-  type PaginatedUsersResponse,
 } from '../api/user.api';
-import type { User, CreateUserDto, UpdateUserDto } from '../types/user.type';
-import type { GridSortModel } from '@mui/x-data-grid';
+import type {
+  User,
+  CreateUserDto,
+  UpdateUserDto,
+  PaginatedUsersResponse,
+} from '../types/user.type';
+import type { GridFilterModel, GridSortModel } from '@mui/x-data-grid';
 
 // Query key
 export const USERS_QK = ['users'] as const;
 
 function buildSortParam(sortModel: GridSortModel): string | undefined {
   if (!sortModel.length) return undefined;
+
   const { field, sort } = sortModel[0];
+
+  // map fullName → firstName
+  if (field === 'fullName') {
+    return sort === 'asc' ? 'firstName' : '-firstName';
+  }
+
   return sort === 'asc' ? field : `-${field}`;
 }
 
-export function usePaginatedUsersQuery(page: number, limit: number, sortModel: GridSortModel) {
+function buildFilterParams(filterModel: GridFilterModel) {
+  const params: Record<string, string | boolean> = {};
+
+  for (const filter of filterModel.items) {
+    if (!filter.value || !filter.field) continue;
+
+    if (filter.field === 'fullName') {
+      params.keyword = filter.value;
+    } else if (filter.field === 'active') {
+      params.active = filter.value === 'true'; // <-- Convert to boolean
+    } else {
+      params[filter.field] = filter.value;
+    }
+  }
+
+  return params;
+}
+
+export function usePaginatedUsersQuery(
+  page: number,
+  limit: number,
+  sortModel: GridSortModel,
+  filterModel: GridFilterModel,
+  keyword?: string,
+) {
   const sort = buildSortParam(sortModel);
+  const filters = buildFilterParams(filterModel);
 
   return useQuery<PaginatedUsersResponse>({
-    queryKey: [...USERS_QK, page, limit, sort],
-    queryFn: () => fetchPaginatedUsers(page, limit, sort),
-    placeholderData: (prev) => prev,
-    staleTime: 30_000,
-    retry: 1,
+    queryKey: [...USERS_QK, page, limit, sort, filters, keyword],
+    queryFn: () => fetchPaginatedUsers(page, limit, sort, filters, keyword),
     enabled: page > 0 && limit > 0,
+    staleTime: 30_000,
+    placeholderData: (prev) => prev,
   });
 }
 
@@ -57,30 +92,53 @@ export function useUserByIdQuery(id: string) {
 //        MUTATIONS
 // ==========================
 
+function formDataToCreateUserDto(formData: FormData): CreateUserDto {
+  return {
+    firstName: formData.get('firstName') as string,
+    lastName: formData.get('lastName') as string,
+    email: formData.get('email') as string,
+    password: formData.get('password') as string,
+    passwordConfirm: formData.get('passwordConfirm') as string,
+    role: formData.get('role') as string,
+  };
+}
+
 export function useCreateUserMutation() {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: CreateUserDto) => createUser(payload),
+    mutationFn: (formData: FormData) => createUser(formData),
 
-    // Optimistic cache update
-    onMutate: async (payload) => {
+    onMutate: async (formData) => {
       await qc.cancelQueries({ queryKey: USERS_QK });
 
       const prev = qc.getQueryData<User[]>(USERS_QK) ?? [];
 
-      const optimistic: User = {
-        ...payload,
+      const payload = formDataToCreateUserDto(formData);
+
+      const optimisticUser: User = {
+        id: `temp-${Date.now()}`,
+        firstName: payload.firstName,
+        lastName: payload.lastName,
+        fullName: `${payload.firstName} ${payload.lastName}`,
+        email: payload.email,
+        role: payload.role,
+        createdAt: new Date().toISOString(),
+        active: true,
+        _optimistic: true,
       };
 
-      qc.setQueryData<User[]>(USERS_QK, [...prev, optimistic]);
+      qc.setQueryData(USERS_QK, [...prev, optimisticUser]);
 
       return { prev };
     },
 
-    // rollback on error
     onError: (_err, _payload, ctx) => {
       if (ctx?.prev) qc.setQueryData(USERS_QK, ctx.prev);
+    },
+
+    onSuccess: (res) => {
+      qc.setQueryData<User[]>(USERS_QK, (old) => old?.map((u) => (u._optimistic ? res.data : u)));
     },
 
     onSettled: () => qc.invalidateQueries({ queryKey: USERS_QK }),
