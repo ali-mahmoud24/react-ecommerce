@@ -10,10 +10,10 @@ export const registerSchema = z.object({
   lastName: z.string().min(2, 'Last name must be at least 2 characters'),
   email: z.string().email('Please enter a valid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
+  passwordConfirm: z.string(),
+}).refine((data) => data.password === data.passwordConfirm, {
   message: "Passwords don't match",
-  path: ['confirmPassword'],
+  path: ['passwordConfirm'],
 });
 
 export const forgotPasswordSchema = z.object({
@@ -24,10 +24,10 @@ export const resetPasswordSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
   resetCode: z.string().min(6, 'Reset code must be 6 digits').max(6, 'Reset code must be 6 digits'),
   newPassword: z.string().min(6, 'Password must be at least 6 characters'),
-  confirmPassword: z.string(),
-}).refine((data) => data.newPassword === data.confirmPassword, {
+  passwordConfirm: z.string(),
+}).refine((data) => data.newPassword === data.passwordConfirm, {
   message: "Passwords don't match",
-  path: ['confirmPassword'],
+  path: ['passwordConfirm'],
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;

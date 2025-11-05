@@ -23,7 +23,7 @@ createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <AppThemeProvider>
+        <AppThemeProvider>  
           <Toaster
             position="top-center"
             toastOptions={{

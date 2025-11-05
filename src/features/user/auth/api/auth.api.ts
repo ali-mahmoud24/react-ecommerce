@@ -1,17 +1,13 @@
 // src/features/user/auth/api/auth.api.ts
 import http from '@/lib/axios';
 import type { User } from '@/context/AuthContext';
-
-export type LoginRequest = { email: string; password: string };
-export type RegisterRequest = {
-  firstName: string;
-  lastName?: string;
-  email: string;
-  password: string;
-};
-export type ForgotPasswordRequest = { email: string };
-export type VerifyResetCodeRequest = { email: string; resetCode: string };
-export type ResetPasswordRequest = { email: string; newPassword: string };
+import type {
+  LoginRequest,
+  RegisterRequest,
+  ForgotPasswordRequest,
+  VerifyResetCodeRequest,
+  ResetPasswordRequest,
+} from '../types';
 
 function formatError(e: unknown): Error {
   if (typeof e === 'object' && e && 'response' in e) {
@@ -56,13 +52,14 @@ export async function logoutApi(): Promise<void> {
 
 export async function meApi(): Promise<User> {
   try {
-    const { data } = await http.get<{ data: User }>('/auth/me');
-    return data.data ?? data; // handle both shapes
+    const response = await http.get('/users/profile');
+    return response.data.data; // because backend wraps it in { data: user }
   } catch (err) {
     throw formatError(err);
   }
 }
 
+// 1- Forgot Password
 export async function forgotPasswordApi(
   emailData: ForgotPasswordRequest,
 ): Promise<{ status: string; message: string }> {
@@ -77,24 +74,23 @@ export async function forgotPasswordApi(
   }
 }
 
+// 2- Verify Reset Code
 export async function verifyResetCodeApi(
   verifyData: VerifyResetCodeRequest,
 ): Promise<{ status: string }> {
   try {
-    const { data } = await http.post<{ status: string }>(
-      '/auth/verifyResetCode',
-      verifyData,
-    );
+    const { data } = await http.post<{ status: string }>('/auth/verifyResetCode', verifyData);
     return data;
   } catch (err) {
     throw formatError(err);
   }
 }
 
-export async function resetPasswordApi(resetData: ResetPasswordRequest): Promise<{ data: User }> {
+// 3- Reset Password
+export async function resetPasswordApi(resetData: ResetPasswordRequest): Promise<User> {
   try {
-    const { data } = await http.patch<{ data: User }>('/auth/resetPassword', resetData);
-    return data;
+    const response = await http.patch('/auth/resetPassword', resetData);
+    return response.data.data; // backend wraps user in data
   } catch (err) {
     throw formatError(err);
   }

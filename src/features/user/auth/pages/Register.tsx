@@ -8,7 +8,6 @@ import {
   Paper,
   Divider,
   Button,
-  Alert,
   Grid,
   useTheme,
 } from '@mui/material';
@@ -18,7 +17,7 @@ import { PUBLIC_ROUTES } from '@/constants/routes';
 import GoogleLoginButton from '../components/GoogleLoginButton';
 
 export default function Register() {
-  const { form, onSubmit, isLoading, error } = useRegister();
+  const { form, onSubmit, isLoading } = useRegister();
   const {
     register,
     handleSubmit,
@@ -99,11 +98,7 @@ export default function Register() {
               Join us today and get started!
             </Typography>
 
-            {error && (
-              <Alert severity="error" sx={{ mb: 3 }}>
-                {error.message}
-              </Alert>
-            )}
+
 
             {/* ===== FORM ===== */}
             <Box
@@ -159,9 +154,9 @@ export default function Register() {
                 label="Confirm Password"
                 type="password"
                 fullWidth
-                {...register('confirmPassword')}
-                error={!!errors.confirmPassword}
-                helperText={errors.confirmPassword?.message}
+                {...register('passwordConfirm')}
+                error={!!errors.passwordConfirm}
+                helperText={errors.passwordConfirm?.message}
               />
 
               {/* ===== Submit Button ===== */}

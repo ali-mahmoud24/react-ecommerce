@@ -31,13 +31,22 @@ export type User = {
 };
 
 export type AuthContextType = {
+  // User state
   user: User | null;
   isAuthenticated: boolean;
+  isLoading: boolean;
+  
+  // Auth actions
   login: (user: User) => void;
   logout: () => void;
   updateUser: (user: User) => void;
   setUser: (user: User | null) => void;
-  isLoading: boolean;
+  
+  // Password reset state
+  resetEmail: string | null;
+  setResetEmail: (email: string | null) => void;
+  isCodeVerified: boolean;
+  setIsCodeVerified: (verified: boolean) => void;
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);

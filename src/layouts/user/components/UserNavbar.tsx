@@ -30,6 +30,7 @@ import { useState } from 'react';
 import logo from '@/assets/images/logo.jpg';
 
 import { useAuth } from '@/hooks/useAuth';
+import { useLogout } from '@/features/user/auth/hooks/useLogout';
 // ========== STYLED COMPONENTS ==========
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -81,7 +82,7 @@ export default function Navbar() {
   const handleDrawerToggle = () => setMobileOpen((prev) => !prev);
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
-
+  const { mutate: handleLogout } = useLogout();
   const navLinks = [
     { label: 'Products', href: '', active: true },
     { label: 'Categories', href: '' },
@@ -277,9 +278,13 @@ export default function Navbar() {
                       Orders
                     </Button>
                   </MenuItem>
-                  <MenuItem onClick={handleMenuClose}>
+                  <MenuItem
+                    onClick={() => {
+                      handleMenuClose();
+                      handleLogout();
+                    }}
+                  >
                     <Button
-                      href="/logout"
                       startIcon={<LogoutIcon />}
                       sx={{
                         textTransform: 'none',

@@ -1,31 +1,34 @@
-// src/features/user/auth/hooks/useResetPassword.ts
+// src/features/user/auth/hooks/useVerifyResetCode.ts
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { authAPI } from '../api/auth.api';
-import { resetPasswordSchema, type ResetPasswordFormData } from '../schemas/auth.schema';
+import { resetPasswordSchema } from '../schemas/auth.schema';
 
-export function useResetPassword() {
+export type VerifyResetCodeFormData = {
+  email: string;
+  resetCode: string;
+};
+
+export function useVerifyResetCode() {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const form = useForm<ResetPasswordFormData>({
-    resolver: zodResolver(resetPasswordSchema),
-    defaultValues: {
-      email: '',
-      resetCode: '',
-      newPassword: '',
-      passwordConfirm: '',
-    },
+  const form = useForm<VerifyResetCodeFormData>({
+    resolver: zodResolver(
+      // Only validate email and resetCode
+      resetPasswordSchema.pick({ email: true, resetCode: true }),
+    ),
+    defaultValues: { email: '', resetCode: '' },
   });
 
-  const onSubmit = async (data: ResetPasswordFormData) => {
+  const onSubmit = async (data: VerifyResetCodeFormData) => {
     setIsLoading(true);
     setIsError(false);
     setError(null);
     try {
-      await authAPI.resetPassword(data);
+      await authAPI.verifyResetCode(data);
       setIsLoading(false);
       return true;
     } catch (err) {

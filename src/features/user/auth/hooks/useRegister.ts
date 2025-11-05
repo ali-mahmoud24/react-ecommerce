@@ -1,5 +1,5 @@
 // src/features/user/auth/hooks/useRegister.ts
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { authAPI } from '../api/auth.api';
@@ -9,10 +9,12 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import type { User } from '@/context/AuthContext';
 
-export const useRegister = () => {
-  const { login } = useAuth(); // Use the login function from AuthContext
+export function useRegister() {
+  const { login } = useAuth(); // from AuthContext
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
+  // React Hook Form setup
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -20,38 +22,44 @@ export const useRegister = () => {
       lastName: '',
       email: '',
       password: '',
-      confirmPassword: '',
+      passwordConfirm: '',
     },
   });
 
-  const mutation = useMutation({
-    mutationFn: (data: RegisterFormData) =>
+  // React Query mutation for registration
+  const registerMutation = useMutation({
+    mutationFn: (values: RegisterFormData) =>
       authAPI.register({
-        firstName: data.firstName,
-        lastName: data.lastName, // Ensure lastName is passed
-        email: data.email,
-        password: data.password,
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        password: values.password,
+        passwordConfirm: values.passwordConfirm,
       }),
-    onSuccess: (res) => {
-      const user = res.data as User; // Assuming res.data contains the User object
-      login(user); // Call the login function from AuthContext
-      toast.success(`Welcome, ${user.firstName}!`);
-      navigate('/'); // Navigate to home or dashboard after successful registration
+    onSuccess: async ({ data }) => {
+      // 🔹 Set user in context
+      login(data as User);
+
+      // 🔹 Show success toast
+      toast.success(`Welcome, ${(data as User).firstName}!`);
+
+      // 🔹 Refresh user cache
+      await queryClient.invalidateQueries({ queryKey: ['user'] });
+
+      // 🔹 Redirect to homepage
+      navigate('/');
     },
-    onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'Registration failed';
+    onError: (err: unknown) => {
+      const message = err instanceof Error ? err.message : 'Registration failed';
       toast.error(message);
     },
   });
 
-  const onSubmit = (data: RegisterFormData) => {
-    mutation.mutate(data);
-  };
+  const onSubmit = (values: RegisterFormData) => registerMutation.mutate(values);
 
   return {
     form,
     onSubmit,
-    isLoading: mutation.isPending,
-    error: mutation.error, // Expose error for Alert component
+    isLoading: registerMutation.isPending,
   };
-};
+}

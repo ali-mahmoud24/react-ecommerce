@@ -10,11 +10,11 @@ export type RegisterRequest = {
   lastName: string;
   email: string;
   password: string;
+  passwordConfirm: string;
 };
 
 export type AuthResponse = {
   data: User;
-  token: string;
 };
 
 export type ForgotPasswordRequest = {
