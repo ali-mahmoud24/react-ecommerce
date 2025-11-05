@@ -1,139 +1,70 @@
-import { useCallback, useState } from 'react';
-import {
-  DataGrid,
-  type GridColDef,
-  type GridPaginationModel,
-  type GridSortModel,
-  type GridFilterModel,
-  gridClasses,
-} from '@mui/x-data-grid';
-import {
-  Stack,
-  Button,
-  Chip,
-  Tooltip,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Typography,
-} from '@mui/material';
-import { CheckCircle, Cancel, AdminPanelSettings, Person, Delete } from '@mui/icons-material';
-import AddIcon from '@mui/icons-material/Add';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import { useSnackbar } from 'notistack';
-import { usePaginatedUsersQuery, useDeleteUserMutation } from '../hooks/useUsers';
-import PageContainer from './PageContainer';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
+
+import { Stack, Button, IconButton, Tooltip } from '@mui/material';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import AddIcon from '@mui/icons-material/Add';
+import { useSnackbar } from 'notistack';
+import useDebounce from '@/hooks/useDebounce';
+import PageContainer from './PageContainer';
+import UsersGrid from './UsersGrid';
+import { getUserColumns } from './UserColumns';
+import { usePaginatedUsersQuery, useDeleteUserMutation } from '../hooks/useUsers';
+import type { User } from '../types/user.type';
+import type { GridFilterModel, GridRowParams, GridSortModel } from '@mui/x-data-grid';
+
+import ConfirmDeleteDialog from './ConfirmDeleteDialog';
 
 export default function UsersTable() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    page: 0,
-    pageSize: 5,
-  });
+  const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 5 });
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
   const [filterModel, setFilterModel] = useState<GridFilterModel>({ items: [] });
-  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name?: string } | null>(null);
+
+  const [keyword, setKeyword] = useState('');
+  const debouncedKeyword = useDebounce(keyword, 300);
+
+  const [deleteTarget, setDeleteTarget] = useState<User | null>(null);
 
   const page = paginationModel.page + 1;
   const pageSize = paginationModel.pageSize;
 
-  const { data, isLoading, refetch } = usePaginatedUsersQuery(page, pageSize, sortModel);
-  const deleteMutation = useDeleteUserMutation();
-
-  const rows = data?.data ?? [];
-  const rowCount = data?.paginationResult.totalDocs;
-
-  const handleCreateClick = useCallback(() => {
-    navigate('/admin/users/new');
-  }, [navigate]);
-
-  // ✅ Confirmation-based delete handler
-  const handleRowDelete = useCallback(
-    (user: any) => async () => {
-      setDeleteTarget({ id: user.id, name: user.fullName });
-    },
-    [],
+  const { data, isLoading, refetch } = usePaginatedUsersQuery(
+    page,
+    pageSize,
+    sortModel,
+    filterModel,
+    debouncedKeyword,
   );
+
+  const deleteMutation = useDeleteUserMutation();
+  const rows = data?.data ?? [];
+  const rowCount = data?.paginationResult.totalDocs ?? 0;
+
+  const handleDelete = (user: User) => setDeleteTarget(user);
+
+    const handleRowClick = (params: GridRowParams, event: React.MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (target.closest('button, svg, path')) return;
+      navigate(`/admin/users/${params.row.id}`);
+    };
 
   const confirmDelete = () => {
     if (!deleteTarget?.id) return;
-
     deleteMutation.mutate(deleteTarget.id, {
-      onSuccess: () => {
-        enqueueSnackbar(`User "${deleteTarget.name}" deleted successfully.`, {
-          variant: 'success',
-        });
-      },
-      onError: (err) => {
-        enqueueSnackbar(`Failed to delete user. ${(err as Error).message}`, { variant: 'error' });
-      },
-      onSettled: () => {
-        setDeleteTarget(null);
-      },
+      onSuccess: () => enqueueSnackbar(`User deleted`, { variant: 'success' }),
+      onSettled: () => setDeleteTarget(null),
     });
   };
 
-  const columns: GridColDef[] = [
-    { field: 'fullName', headerName: 'Name', flex: 1, minWidth: 150 },
-    { field: 'email', headerName: 'Email', flex: 1, minWidth: 200 },
-    {
-      field: 'role',
-      headerName: 'Role',
-      width: 140,
-      renderCell: (params) =>
-        params.value === 'admin' ? (
-          <Chip
-            icon={<AdminPanelSettings fontSize="small" />}
-            label="Admin"
-            color="primary"
-            size="small"
-          />
-        ) : (
-          <Chip icon={<Person fontSize="small" />} label="User" size="small" />
-        ),
-    },
-    {
-      field: 'active',
-      headerName: 'Status',
-      width: 130,
-      renderCell: (params) =>
-        params.value ? (
-          <Chip
-            icon={<CheckCircle />}
-            label="Active"
-            color="success"
-            size="small"
-            variant="outlined"
-          />
-        ) : (
-          <Chip icon={<Cancel />} label="Inactive" color="error" size="small" variant="outlined" />
-        ),
-    },
-    {
-      field: 'createdAt',
-      headerName: 'Created At',
-      width: 150,
-      renderCell: (params) => params.value?.split('T')[0] ?? '',
-    },
-    {
-      field: 'actions',
-      headerName: 'Actions',
-      width: 120,
-      sortable: false,
-      renderCell: (params) => (
-        <Tooltip title="Delete user">
-          <IconButton color="error" onClick={handleRowDelete(params.row)}>
-            <Delete fontSize="small" />
-          </IconButton>
-        </Tooltip>
-      ),
-    },
-  ];
+  const columns = getUserColumns({ onDelete: handleDelete });
+
+  const handleFilterModelChange = (m: GridFilterModel) => {
+    setFilterModel(m);
+    setKeyword(m.quickFilterValues?.[0] ?? '');
+  };
 
   return (
     <>
@@ -141,82 +72,45 @@ export default function UsersTable() {
         title="Manage Users"
         breadcrumbs={[{ title: 'Users', path: '/admin/users' }]}
         actions={
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <Tooltip title="Reload data" placement="right" enterDelay={1000}>
-              <div>
-                <IconButton size="small" aria-label="refresh" onClick={() => refetch()}>
-                  <RefreshIcon />
-                </IconButton>
-              </div>
+          <Stack direction="row" spacing={1}>
+            <Tooltip title="Reload data">
+              <IconButton onClick={() => refetch()}>
+                <RefreshIcon />
+              </IconButton>
             </Tooltip>
-            <Button variant="contained" onClick={handleCreateClick} startIcon={<AddIcon />}>
+            <Button
+              variant="contained"
+              onClick={() => navigate('/admin/users/new')}
+              startIcon={<AddIcon />}
+            >
               Create
             </Button>
           </Stack>
         }
       >
-        <DataGrid
+        <UsersGrid
           rows={rows}
           rowCount={rowCount}
+          isLoading={isLoading}
           columns={columns}
-          pagination
-          sortingMode="server"
-          filterMode="server"
-          paginationMode="server"
           paginationModel={paginationModel}
           onPaginationModelChange={setPaginationModel}
           sortModel={sortModel}
           onSortModelChange={setSortModel}
           filterModel={filterModel}
-          onFilterModelChange={setFilterModel}
-          disableRowSelectionOnClick
-          loading={isLoading}
-          getRowId={(row) => row.id}
-          pageSizeOptions={[5, 10, 25]}
-          showToolbar
-          onRowClick={(params, event) => {
-            // ✅ Prevent clicks on buttons (like delete)
-            const target = event.target as HTMLElement;
-            if (target.closest('button, svg, path')) return;
-
-            // ✅ Navigate to details page
-            navigate(`/admin/users/${params.row.id}`);
-          }}
-          sx={{
-            borderRadius: '6px',
-            border: '1px solid #bebcbcff',
-            boxShadow: 'none',
-            [`& .${gridClasses.columnHeader}, & .${gridClasses.cell}`]: {
-              outline: 'transparent',
-            },
-            [`& .${gridClasses.columnHeader}:focus-within, & .${gridClasses.cell}:focus-within`]: {
-              outline: 'none',
-            },
-            [`& .${gridClasses.row}:hover`]: {
-              cursor: 'pointer',
-            },
-          }}
-          slotProps={{
-            baseIconButton: { size: 'small' },
-          }}
+          onFilterModelChange={handleFilterModelChange}
+          onRowClick={handleRowClick}
         />
       </PageContainer>
 
-      {/* ✅ Delete confirmation dialog */}
-      <Dialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)}>
-        <DialogTitle>Delete User?</DialogTitle>
-        <DialogContent>
-          <Typography>
-            Are you sure you want to delete <b>{deleteTarget?.name}</b>?
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteTarget(null)}>Cancel</Button>
-          <Button onClick={confirmDelete} color="error" variant="contained">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {/* Confirm Delete Dialog */}
+      <ConfirmDeleteDialog
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={confirmDelete}
+        name={deleteTarget?.fullName || ''}
+        loading={deleteMutation.isPending}
+      />
     </>
   );
 }
