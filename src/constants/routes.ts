@@ -2,9 +2,9 @@
 // Public Routes
 // =====================
 export const PUBLIC_ROUTES = {
-  HOME: "/",
-  LOGIN: "/login",
-  REGISTER: "/register",
+  HOME: '/',
+  LOGIN: '/login',
+  REGISTER: '/register',
 } as const;
 
 // =====================
