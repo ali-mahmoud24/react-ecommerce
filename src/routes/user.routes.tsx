@@ -7,6 +7,10 @@ import { USER_ROUTES, PUBLIC_ROUTES } from "@/constants/routes";
 import Home from "@/features/user/home/pages/Home";
 import Products from '@/features/user/products/pages/Products';
 import ProductDetailsPage from "@/features/user/products/pages/ProductDetailsPage";
+import CategoriesPage from "@/features/user/categories/pages/categoriesPage";
+import CategoryDetailsPage from "@/features/user/categories/pages/CategoryDetailsPage";
+import BrandsPage from "@/features/user/brands/pages/BrandsPage";
+import BrandDetailsPage from "@/features/user/brands/pages/BrandDetailsPage";
 
 
 // === Placeholder components (replace later) ===
@@ -22,6 +26,10 @@ export const userRoutes = (
       <Route index element={<Home />} />
       <Route path={USER_ROUTES.PRODUCTS.replace('/', '')} element={<Products />} />
       <Route path={USER_ROUTES.PRODUCT()} element={<ProductDetailsPage />} />
+      <Route path={USER_ROUTES.CATEGORIES.replace('/', '')} element={<CategoriesPage />} />
+      <Route path={USER_ROUTES.CATEGORY()} element={<CategoryDetailsPage />} />
+      <Route path={USER_ROUTES.BRANDS.replace("/", "")} element={<BrandsPage />} />
+      <Route path={USER_ROUTES.BRAND()} element={<BrandDetailsPage />} />
 
       <Route
         path={USER_ROUTES.CART.replace('/', '')}

@@ -14,6 +14,10 @@ export const USER_ROUTES = {
   ROOT: "/",
   PRODUCTS: "/products",
   PRODUCT: (id = ":id") => `/product/${id}`,
+  CATEGORIES: "/categories",
+  CATEGORY: (id: string = ":id") => `/categories/${id}`,
+  BRANDS: "/brands",
+  BRAND: (id: string = ":id") => `/brands/${id}`,
   CART: "/cart",
   PROFILE: "/profile",
 } as const;
