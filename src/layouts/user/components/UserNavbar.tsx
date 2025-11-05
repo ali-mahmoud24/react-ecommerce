@@ -11,6 +11,7 @@ import {
   ListItemText,
   alpha,
   useTheme,
+  Badge,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -22,6 +23,10 @@ import { useThemeContext } from '@/theme/useThemeContext';
 import { useState } from 'react';
 import { Link } from 'react-router';
 import logo from '@/assets/images/logo.jpg';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { useCart } from '@/features/user/cart/hooks/useCart';
+import { useNavigate } from 'react-router';
+// import { Link } from 'react-router';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -70,6 +75,8 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const theme = useTheme();
   const { mode, toggleTheme } = useThemeContext();
+  const { totalItems } = useCart();
+  const navigate = useNavigate();
 
   const handleDrawerToggle = () => setMobileOpen((prev) => !prev);
 
@@ -77,7 +84,7 @@ export default function Navbar() {
     { label: 'Products', to: '/products', active: true },
     { label: 'Categories', to: '/categories' },
     { label: 'Brands', to: '/brands' },
-    { label: 'Cart', to: '/cart' },
+    // { label: 'Cart', to: '/cart' },
     { label: 'Wishlist', to: '/wishlist' },
   ];
 
@@ -218,7 +225,16 @@ export default function Navbar() {
                 />
               </Search>
             </Box>
-
+            <IconButton color="inherit" onClick={() => navigate('/cart')} sx={{ ml: 1 }}>
+              <Badge
+                badgeContent={totalItems}
+                color="error"
+                overlap="circular"
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+              >
+                <ShoppingCartIcon />
+              </Badge>
+            </IconButton>
             {/* Theme Toggle Button */}
             <IconButton
               onClick={toggleTheme}
