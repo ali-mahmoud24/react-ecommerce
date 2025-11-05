@@ -9,7 +9,9 @@ export default function UserLayout() {
       <Navbar />
 
       <main style={{ padding: "1rem" }}>
+
         <Outlet />
+        
       </main>
 
       {/* User Footer */}
