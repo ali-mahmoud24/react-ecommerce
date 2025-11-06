@@ -11,6 +11,7 @@ import {
   ListItemText,
   alpha,
   useTheme,
+  Badge,
   Button,
   Avatar,
   Menu,
@@ -25,16 +26,19 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import InventoryIcon from '@mui/icons-material/Inventory';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useThemeContext } from '@/theme/useThemeContext';
-import { useState } from 'react';
+import { useState, useCallback, memo } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from '@/assets/images/logo.jpg';
-
+import { useCart } from '@/features/user/cart/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
 import { useLogout } from '@/features/user/auth/hooks/useLogout';
-// ========== STYLED COMPONENTS ==========
+
+// ---------------- Styled Search Components ----------------
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
-  borderRadius: theme.shape.borderRadius,
+  borderRadius: '20px',
   backgroundColor:
     theme.palette.mode === 'light'
       ? alpha(theme.palette.common.black, 0.05)
@@ -46,9 +50,8 @@ const Search = styled('div')(({ theme }) => ({
         : alpha(theme.palette.common.white, 0.15),
   },
   width: '100%',
-  [theme.breakpoints.up('md')]: {
-    width: '500px',
-  },
+  [theme.breakpoints.up('md')]: { width: '180px' },
+  [theme.breakpoints.up('lg')]: { width: '500px' },
 }));
 
 const SearchIconWrapper = styled('div')(({ theme }) => ({
@@ -72,40 +75,115 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-// ========== MAIN COMPONENT ==========
-export default function Navbar() {
+// ---------------- User Menu ----------------
+const UserMenu = memo(({ user, anchorEl, onOpen, onClose, onLogout }: any) => {
+  const theme = useTheme();
+
+  const getInitials = () => {
+    if (!user) return '?';
+    const first = user.firstName?.[0] || '';
+    const last = user.lastName?.[0] || '';
+    return (first + last).toUpperCase() || 'U';
+  };
+
+  return (
+    <>
+      <IconButton onClick={onOpen}>
+        <Avatar
+          alt={`${user?.firstName || ''} ${user?.lastName || ''}`}
+          src={user?.avatar || ''}
+          variant="square"
+          sx={{
+            width: 40,
+            height: 40,
+            borderRadius: 1,
+            bgcolor: user?.avatar
+              ? 'transparent'
+              : theme.palette.mode === 'light'
+              ? theme.palette.primary.main
+              : theme.palette.primary.light,
+            color: user?.avatar
+              ? 'inherit'
+              : theme.palette.getContrastText(
+                  theme.palette.mode === 'light'
+                    ? theme.palette.primary.main
+                    : theme.palette.primary.light
+                ),
+            fontWeight: 600,
+            fontSize: '1rem',
+            border: `1px solid ${
+              theme.palette.mode === 'light'
+                ? alpha(theme.palette.text.primary, 0.1)
+                : alpha(theme.palette.common.white, 0.2)
+            }`,
+            boxShadow:
+              theme.palette.mode === 'light'
+                ? '0 1px 3px rgba(0,0,0,0.1)'
+                : '0 1px 3px rgba(255,255,255,0.05)',
+            transition: 'all 0.2s ease-in-out',
+            '&:hover': {
+              transform: 'scale(1.05)',
+              boxShadow:
+                theme.palette.mode === 'light'
+                  ? '0 2px 8px rgba(0,0,0,0.15)'
+                  : '0 2px 8px rgba(255,255,255,0.1)',
+            },
+          }}
+        >
+          {!user?.avatar && getInitials()}
+        </Avatar>
+      </IconButton>
+
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={onClose}
+        PaperProps={{ sx: { borderRadius: 0.25, mt: 1, minWidth: 160 } }}
+      >
+        <MenuItem component={Link} to="/profile">
+          <AccountCircleIcon fontSize="small" sx={{ mr: 1 }} /> Profile
+        </MenuItem>
+        <MenuItem component={Link} to="/orders">
+          <InventoryIcon fontSize="small" sx={{ mr: 1 }} /> Orders
+        </MenuItem>
+        <MenuItem onClick={onLogout}>
+          <LogoutIcon fontSize="small" sx={{ mr: 1 }} /> Logout
+        </MenuItem>
+      </Menu>
+    </>
+  );
+});
+
+// ---------------- Main Navbar ----------------
+function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const theme = useTheme();
   const { mode, toggleTheme } = useThemeContext();
-  const { isAuthenticated } = useAuth();
+  const { totalItems } = useCart();
+  const { isAuthenticated, user } = useAuth();
+  const { mutate: logout } = useLogout();
+  const navigate = useNavigate();
+
   const handleDrawerToggle = () => setMobileOpen((prev) => !prev);
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
-  const handleMenuClose = () => setAnchorEl(null);
-  const { mutate: handleLogout } = useLogout();
+  const handleMenuOpen = useCallback((e: React.MouseEvent<HTMLElement>) => setAnchorEl(e.currentTarget), []);
+  const handleMenuClose = useCallback(() => setAnchorEl(null), []);
+  const handleLogout = useCallback(() => {
+    handleMenuClose();
+    logout();
+  }, [logout, handleMenuClose]);
+
   const navLinks = [
-    { label: 'Products', href: '', active: true },
-    { label: 'Categories', href: '' },
-    { label: 'Brands', href: '' },
-    { label: 'Cart', href: '' },
-    { label: 'Wishlist', href: '' },
+    { label: 'Products', to: '/products', active: true },
+    { label: 'Categories', to: '/categories' },
+    { label: 'Brands', to: '/brands' },
+    { label: 'Wishlist', to: '/wishlist' },
   ];
 
   const drawer = (
     <Box sx={{ width: 250, p: 2 }}>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'flex-start',
-          alignItems: 'center',
-          mb: 2,
-        }}
-      >
-        <IconButton
-          onClick={handleDrawerToggle}
-          size="small"
-          sx={{ color: theme.palette.text.secondary }}
-        >
+      <Box display="flex" alignItems="center" justifyContent="flex-start" mb={2}>
+        <IconButton onClick={handleDrawerToggle} size="small" sx={{ color: theme.palette.text.secondary }}>
           <CloseIcon />
         </IconButton>
       </Box>
@@ -114,8 +192,8 @@ export default function Navbar() {
         {navLinks.map((link) => (
           <ListItemButton
             key={link.label}
-            component="a"
-            href={link.href}
+            component={Link}
+            to={link.to}
             selected={link.active}
             onClick={handleDrawerToggle}
             sx={{ borderRadius: '10px' }}
@@ -130,15 +208,12 @@ export default function Navbar() {
         ))}
       </List>
 
-      <Box sx={{ mt: 3 }}>
+      <Box mt={3}>
         <Search>
           <SearchIconWrapper>
             <SearchIcon />
           </SearchIconWrapper>
-          <StyledInputBase
-            placeholder="Search for products..."
-            inputProps={{ 'aria-label': 'search' }}
-          />
+          <StyledInputBase placeholder="Search for products" inputProps={{ 'aria-label': 'search' }} />
         </Search>
       </Box>
     </Box>
@@ -147,41 +222,25 @@ export default function Navbar() {
   return (
     <>
       <AppBar
-        position="static"
-        elevation={3}
+        position="sticky"
+        elevation={0}
         sx={{
           bgcolor: theme.palette.background.default,
           color: theme.palette.text.primary,
           borderBottom: `1px solid ${theme.palette.divider}`,
-          padding: '0.25rem',
+          py: 0.5,
         }}
       >
-        <Toolbar
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            px: { xs: 2, md: 4 },
-          }}
-        >
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', px: { xs: 2, md: 4 } }}>
           {/* Logo */}
-          <Box display="flex" alignItems="center" gap={1}>
-            <img
-              src={logo}
-              alt="Ecommerce Logo"
-              style={{ width: '40px', height: '40px', borderRadius: '8px' }}
-            />
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: 600,
-                fontSize: '1.5rem',
-                color: theme.palette.text.primary,
-              }}
-            >
-              Ecommerce
-            </Typography>
-          </Box>
+          <Link to="/" style={{ textDecoration: 'none' }}>
+            <Box display="flex" alignItems="center" gap={1}>
+              <img src={logo} alt="Ecommerce Logo" style={{ width: 40, height: 40, borderRadius: 8 }} />
+              <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '1.5rem' }}>
+                Ecommerce
+              </Typography>
+            </Box>
+          </Link>
 
           {/* Nav Links (Desktop) */}
           <Box
@@ -196,8 +255,8 @@ export default function Navbar() {
             {navLinks.map((link) => (
               <Typography
                 key={link.label}
-                component="a"
-                href={link.href}
+                component={Link}
+                to={link.to}
                 sx={{
                   textDecoration: 'none',
                   color: link.active ? theme.palette.primary.main : theme.palette.text.primary,
@@ -209,134 +268,64 @@ export default function Navbar() {
             ))}
           </Box>
 
-          {/* Right section */}
+          {/* Right Section */}
           <Box display="flex" alignItems="center" gap={1}>
-            {/* Search (Desktop) */}
+            {/* Search */}
             <Box sx={{ display: { xs: 'none', md: 'block' } }}>
               <Search>
                 <SearchIconWrapper>
                   <SearchIcon />
                 </SearchIconWrapper>
-                <StyledInputBase
-                  placeholder="Search for products..."
-                  inputProps={{ 'aria-label': 'search' }}
-                />
+                <StyledInputBase placeholder="Search..." inputProps={{ 'aria-label': 'search' }} />
               </Search>
             </Box>
 
+            {/* Cart */}
+            <IconButton color="inherit" onClick={() => navigate('/cart')} sx={{ ml: 1 }}>
+              <Badge badgeContent={totalItems} color="error">
+                <ShoppingCartIcon />
+              </Badge>
+            </IconButton>
+
             {/* Theme Toggle */}
-            <IconButton
-              onClick={toggleTheme}
-              sx={{
-                color:
-                  theme.palette.mode === 'dark'
-                    ? theme.palette.primary.main
-                    : theme.palette.text.primary,
-              }}
-            >
+            <IconButton onClick={toggleTheme}>
               {mode === 'light' ? <DarkModeIcon /> : <LightModeIcon />}
             </IconButton>
 
-            {/* Auth Buttons / User Menu */}
+            {/* Auth Section */}
             {isAuthenticated ? (
-              // how to use isAuthenticated here ????
-              <>
-                <IconButton onClick={handleMenuOpen}>
-                  <Avatar alt="User" src="/profile.jpg" />
-                </IconButton>
-                <Menu
-                  anchorEl={anchorEl}
-                  open={Boolean(anchorEl)}
-                  onClose={handleMenuClose}
-                  PaperProps={{
-                    sx: { borderRadius: 0.25, mt: 1, minWidth: 160 },
-                  }}
-                >
-                  <MenuItem onClick={handleMenuClose}>
-                    <Button
-                      href="/profile"
-                      startIcon={<AccountCircleIcon />}
-                      sx={{
-                        textTransform: 'none',
-                        fontWeight: 500,
-                        borderRadius: 2,
-                      }}
-                    >
-                      Profile
-                    </Button>
-                  </MenuItem>
-                  <MenuItem onClick={handleMenuClose}>
-                    <Button
-                      href="/orders"
-                      startIcon={<InventoryIcon />}
-                      sx={{
-                        textTransform: 'none',
-                        fontWeight: 500,
-                        borderRadius: 2,
-                      }}
-                    >
-                      Orders
-                    </Button>
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      handleMenuClose();
-                      handleLogout();
-                    }}
-                  >
-                    <Button
-                      startIcon={<LogoutIcon />}
-                      sx={{
-                        textTransform: 'none',
-                        fontWeight: 500,
-                        borderRadius: 2,
-                      }}
-                    >
-                      Logout
-                    </Button>
-                  </MenuItem>
-                </Menu>
-              </>
+              <UserMenu
+                user={user}
+                anchorEl={anchorEl}
+                onOpen={handleMenuOpen}
+                onClose={handleMenuClose}
+                onLogout={handleLogout}
+              />
             ) : (
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                <Button
-                  href="/login"
-                  variant="outlined"
-                  startIcon={<AccountCircleIcon />}
-                  sx={{
-                    textTransform: 'none',
-                    fontWeight: 500,
-                    borderRadius: 2,
-                  }}
-                >
-                  Login
-                </Button>
-              </Box>
+              <Button
+                href="/login"
+                variant="outlined"
+                startIcon={<AccountCircleIcon />}
+                sx={{ textTransform: 'none', fontWeight: 500, borderRadius: 0.25 }}
+              >
+                Login
+              </Button>
             )}
 
             {/* Mobile Menu */}
-            <IconButton
-              onClick={handleDrawerToggle}
-              sx={{
-                display: { md: 'none' },
-                color: theme.palette.text.secondary,
-              }}
-            >
+            <IconButton onClick={handleDrawerToggle} sx={{ display: { md: 'none' } }}>
               <MenuIcon />
             </IconButton>
           </Box>
         </Toolbar>
       </AppBar>
 
-      {/* Mobile Drawer */}
-      <Drawer
-        anchor="right"
-        open={mobileOpen}
-        onClose={handleDrawerToggle}
-        sx={{ '& .MuiDrawer-paper': { borderRadius: 0 } }}
-      >
+      {/* Drawer (Mobile) */}
+      <Drawer anchor="right" open={mobileOpen} onClose={handleDrawerToggle}>
         {drawer}
       </Drawer>
     </>
   );
 }
+
+export default memo(Navbar);

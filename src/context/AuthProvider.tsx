@@ -1,66 +1,70 @@
-// src/context/AuthProvider.tsx
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { AuthContext, type User } from './AuthContext';
-import { authAPI } from '@/features/user/auth/api/auth.api';
+import React, { useState, useEffect, useCallback } from "react";
+import { AuthContext, type User } from "./AuthContext";
+import { authAPI } from "@/features/user/auth/api/auth.api";
 
 type Props = { children: React.ReactNode };
 
 export default function AuthProvider({ children }: Props) {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [resetEmail, setResetEmail] = useState<string | null>(null);
   const [isCodeVerified, setIsCodeVerified] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
   const isAuthenticated = !!user;
 
-  // 🔹 Verify user session on mount
+  const fetchCurrentUser = useCallback(async () => {
+    try {
+      const me = await authAPI.me();
+      setUser(me);
+    } catch {
+      setUser(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
-    const verifyUser = async () => {
-      try {
-        const data = await authAPI.me(); // calls /auth/me (backend reads cookie)
-        setUser(data);
-      } catch {
-        setUser(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    fetchCurrentUser();
+  }, [fetchCurrentUser]);
 
-    verifyUser();
+  const login = useCallback((loggedUser: User) => {
+    setUser(loggedUser);
   }, []);
 
-  // 🔹 Login — sets user (after successful login mutation)
-  const login = useCallback((userData: User) => {
-    setUser(userData);
-  }, []);
-
-  // 🔹 Logout — clears user (after logout API)
   const logout = useCallback(() => {
-    setUser(null);
+    authAPI.logout().finally(() => {
+      setUser(null);
+      // No need to remove localStorage token since backend uses cookies
+    });
   }, []);
 
-  // 🔹 Update user info (for profile updates)
-  const updateUser = useCallback((updatedUser: User) => {
-    setUser(updatedUser);
+  const updateUser = useCallback((updated: User) => {
+    setUser(updated);
   }, []);
 
-  const value = useMemo(
-    () => ({
-      user,
-      isAuthenticated,
-      login,
-      logout,
-      updateUser,
-      setUser,
-      isLoading,
-      // Password reset state
-      resetEmail,
-      setResetEmail,
-      isCodeVerified,
-      setIsCodeVerified,
-    }),
-    [user, isAuthenticated, login, logout, updateUser, isLoading, resetEmail, isCodeVerified],
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        setUser,
+        isAuthenticated,
+        isLoading,
+        login,
+        logout,
+        updateUser,
+        resetEmail,
+        setResetEmail,
+        isCodeVerified,
+        setIsCodeVerified,
+      }}
+    >
+      {isLoading ? (
+        <div className="flex h-screen items-center justify-center text-gray-500">
+          Loading...
+        </div>
+      ) : (
+        children
+      )}
+    </AuthContext.Provider>
   );
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

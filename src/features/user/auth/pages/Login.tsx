@@ -1,4 +1,3 @@
-// features/user/auth/pages/Login.tsx
 import { Link as RouterLink } from 'react-router-dom';
 import { Box, Typography, TextField, Link, useTheme, Paper, Divider, Button } from '@mui/material';
 import Spinner from '@/components/ui/Spinner';
@@ -35,7 +34,7 @@ export default function Login() {
           display: 'flex',
           flexDirection: { xs: 'column', md: 'row' },
           overflow: 'hidden',
-          borderRadius: 0.5,
+          borderRadius: 0.25,
         }}
       >
         {/* ===== LEFT IMAGE SECTION ===== */}
@@ -52,7 +51,7 @@ export default function Login() {
             color: 'white',
           }}
         >
-          <Box sx={{ backgroundColor: 'rgba(0, 0, 0, 0.45)', padding: '25px', borderRadius: 0.5 }}>
+          <Box sx={{ backgroundColor: 'rgba(0, 0, 0, 0.45)', padding: '25px', borderRadius: 0.25 }}>
             <Typography variant="h4" fontWeight={700} gutterBottom>
               Welcome Back.
             </Typography>
@@ -107,6 +106,19 @@ export default function Login() {
                 error={!!errors.email}
                 helperText={errors.email?.message}
                 {...register('email')}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 0.25, // 🔹 rounded corners
+                    transition: 'all 0.2s ease',
+                    '&:hover eldset': {
+                      borderColor: theme.palette.primary.light,
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: theme.palette.primary.main,
+                      borderWidth: 2,
+                    },
+                  },
+                }}
               />
 
               <TextField
@@ -117,6 +129,19 @@ export default function Login() {
                 error={!!errors.password}
                 helperText={errors.password?.message}
                 {...register('password')}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 0.25,
+                    transition: 'all 0.2s ease',
+                    '&:hover fieldset': {
+                      borderColor: theme.palette.primary.light,
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: theme.palette.primary.main,
+                      borderWidth: 2,
+                    },
+                  },
+                }}
               />
 
               {/* ===== Forgot Password ===== */}
@@ -144,7 +169,7 @@ export default function Login() {
                 sx={{
                   mt: 1,
                   py: 1.3,
-                  borderRadius: 2,
+                  borderRadius: 0.25,
                   fontWeight: 600,
                   textTransform: 'none',
                 }}
@@ -158,6 +183,7 @@ export default function Login() {
 
             {/* ===== Google Login Button ===== */}
             <GoogleLoginButton />
+
             {/* ===== FOOTER ===== */}
             <Typography
               variant="body2"
@@ -167,7 +193,7 @@ export default function Login() {
                 color: theme.palette.text.secondary,
               }}
             >
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link
                 component={RouterLink}
                 to={PUBLIC_ROUTES.REGISTER}

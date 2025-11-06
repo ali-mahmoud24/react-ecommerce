@@ -1,4 +1,3 @@
-// features/user/auth/pages/Register.tsx
 import { Link as RouterLink } from 'react-router-dom';
 import {
   Box,
@@ -26,6 +25,21 @@ export default function Register() {
 
   const theme = useTheme();
 
+  // shared TextField style
+  const textFieldSx = {
+    '& .MuiOutlinedInput-root': {
+      borderRadius: 0.25,
+      transition: 'all 0.2s ease',
+      '&:hover fieldset': {
+        borderColor: theme.palette.primary.light,
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: theme.palette.primary.main,
+        borderWidth: 2,
+      },
+    },
+  };
+
   return (
     <Box
       sx={{
@@ -45,14 +59,14 @@ export default function Register() {
           display: 'flex',
           flexDirection: { xs: 'column', md: 'row' },
           overflow: 'hidden',
-          borderRadius: 0.5,
+          borderRadius: 0.25,
         }}
       >
         {/* ===== LEFT IMAGE SECTION ===== */}
         <Box
           sx={{
             flex: 1,
-            backgroundImage: 'url("/src/assets/images/auth-login.jpg")',
+            backgroundImage: 'url("/src/assets/images/register.jpg")',
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
@@ -62,7 +76,7 @@ export default function Register() {
             color: 'white',
           }}
         >
-          <Box sx={{ backgroundColor: 'rgba(0, 0, 0, 0.45)', padding: '25px', borderRadius: 0.5 }}>
+          <Box sx={{ backgroundColor: 'rgba(0, 0, 0, 0.45)', padding: '25px', borderRadius: 0.25 }}>
             <Typography variant="h4" fontWeight={700} gutterBottom>
               Join Our Community.
             </Typography>
@@ -98,8 +112,6 @@ export default function Register() {
               Join us today and get started!
             </Typography>
 
-
-
             {/* ===== FORM ===== */}
             <Box
               component="form"
@@ -112,22 +124,25 @@ export default function Register() {
               }}
             >
               <Grid container spacing={2}>
-                <Grid size={{ xs: 12, sm: 6 }}>
+                <Grid size={{xs:12, sm:6}}>
                   <TextField
                     label="First Name"
                     fullWidth
                     {...register('firstName')}
                     error={!!errors.firstName}
                     helperText={errors.firstName?.message}
+                    sx={textFieldSx}
                   />
                 </Grid>
-                <Grid size={{ xs: 12, sm: 6 }}>
+
+                <Grid size={{xs:12, sm:6}}>
                   <TextField
                     label="Last Name"
                     fullWidth
                     {...register('lastName')}
                     error={!!errors.lastName}
                     helperText={errors.lastName?.message}
+                    sx={textFieldSx}
                   />
                 </Grid>
               </Grid>
@@ -139,6 +154,7 @@ export default function Register() {
                 {...register('email')}
                 error={!!errors.email}
                 helperText={errors.email?.message}
+                sx={textFieldSx}
               />
 
               <TextField
@@ -148,6 +164,7 @@ export default function Register() {
                 {...register('password')}
                 error={!!errors.password}
                 helperText={errors.password?.message}
+                sx={textFieldSx}
               />
 
               <TextField
@@ -157,6 +174,7 @@ export default function Register() {
                 {...register('passwordConfirm')}
                 error={!!errors.passwordConfirm}
                 helperText={errors.passwordConfirm?.message}
+                sx={textFieldSx}
               />
 
               {/* ===== Submit Button ===== */}
@@ -168,7 +186,7 @@ export default function Register() {
                 sx={{
                   mt: 1,
                   py: 1.3,
-                  borderRadius: 2,
+                  borderRadius: 0.25,
                   fontWeight: 600,
                   textTransform: 'none',
                 }}

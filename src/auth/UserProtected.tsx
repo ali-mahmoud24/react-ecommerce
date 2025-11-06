@@ -1,25 +1,18 @@
-import type { ReactNode } from 'react';
-import { Navigate } from 'react-router';
-import { useAuth } from '@/hooks/useAuth';
-import Spinner from '@/components/ui/Spinner';
+import { Navigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { PUBLIC_ROUTES } from "@/constants/routes";
 
-type UserProtectedProps = {
-  children: ReactNode;
-};
+type Props = { children: React.ReactNode };
 
-export default function UserProtected({ children }: UserProtectedProps) {
-  const { isAuthenticated, isLoadingProfile } = useAuth();
+export default function UserProtected({ children }: Props) {
+  const { isAuthenticated, isLoading } = useAuth();
 
-  if (isLoadingProfile) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <Spinner size="lg" />
-      </div>
-    );
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to={PUBLIC_ROUTES.LOGIN} replace />;
   }
 
   return <>{children}</>;

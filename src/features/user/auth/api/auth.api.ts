@@ -1,4 +1,3 @@
-// src/features/user/auth/api/auth.api.ts
 import http from '@/lib/axios';
 import type { User } from '@/context/AuthContext';
 import type {
@@ -7,11 +6,18 @@ import type {
   ForgotPasswordRequest,
   VerifyResetCodeRequest,
   ResetPasswordRequest,
+  AuthResponse,
+  ApiSuccess,
 } from '../types';
 
+// ✅ Make sure axios is configured for cookies
+http.defaults.withCredentials = true;
+
+/**
+ * Standardized error formatter
+ */
 function formatError(e: unknown): Error {
   if (typeof e === 'object' && e && 'response' in e) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const err = e as any;
     const message =
       err.response?.data?.message ??
@@ -24,81 +30,89 @@ function formatError(e: unknown): Error {
   return new Error('Network error');
 }
 
-export async function loginApi(credentials: LoginRequest): Promise<{ data: User }> {
+/**
+ * ---------------------------
+ * 🔹 AUTH API CALLS
+ * ---------------------------
+ */
+
+// ✅ Register
+export async function registerApi(payload: RegisterRequest): Promise<User> {
   try {
-    const { data } = await http.post<{ data: User }>('/auth/login', credentials);
-    return data;
+    const { data } = await http.post<AuthResponse>('/auth/signup', payload);
+    return data.data!;
   } catch (err) {
     throw formatError(err);
   }
 }
 
-export async function registerApi(userData: RegisterRequest): Promise<{ data: User }> {
+// ✅ Login
+export async function loginApi(credentials: LoginRequest): Promise<User> {
   try {
-    const { data } = await http.post<{ data: User }>('/auth/signup', userData);
-    return data;
+    const { data } = await http.post<AuthResponse>('/auth/login', credentials);
+    return data.data!;
   } catch (err) {
     throw formatError(err);
   }
 }
 
+// ✅ Logout
 export async function logoutApi(): Promise<void> {
   try {
-    await http.post('/auth/logout', {});
+    await http.post('/auth/logout');
   } catch (err) {
     throw formatError(err);
   }
 }
 
+// ✅ Current user (optional, if backend exposes /profile)
 export async function meApi(): Promise<User> {
   try {
-    const response = await http.get('/users/profile');
-    return response.data.data; // because backend wraps it in { data: user }
+    const { data } = await http.get('/users/profile', {
+      validateStatus: (status) => status === 200 || status === 304,
+    });
+    return data.data!;
   } catch (err) {
     throw formatError(err);
   }
 }
 
-// 1- Forgot Password
-export async function forgotPasswordApi(
-  emailData: ForgotPasswordRequest,
-): Promise<{ status: string; message: string }> {
+// ✅ Forgot password
+export async function forgotPasswordApi(payload: ForgotPasswordRequest): Promise<ApiSuccess> {
   try {
-    const { data } = await http.post<{ status: string; message: string }>(
-      '/auth/forgotPassword',
-      emailData,
-    );
+    const { data } = await http.post<ApiSuccess>('/auth/forgotPassword', payload);
     return data;
   } catch (err) {
     throw formatError(err);
   }
 }
 
-// 2- Verify Reset Code
-export async function verifyResetCodeApi(
-  verifyData: VerifyResetCodeRequest,
-): Promise<{ status: string }> {
+// ✅ Verify reset code
+export async function verifyResetCodeApi(payload: VerifyResetCodeRequest): Promise<ApiSuccess> {
   try {
-    const { data } = await http.post<{ status: string }>('/auth/verifyResetCode', verifyData);
+    const { data } = await http.post<ApiSuccess>('/auth/verifyResetCode', payload);
     return data;
   } catch (err) {
     throw formatError(err);
   }
 }
 
-// 3- Reset Password
-export async function resetPasswordApi(resetData: ResetPasswordRequest): Promise<User> {
+// ✅ Reset password
+export async function resetPasswordApi(payload: ResetPasswordRequest): Promise<User> {
   try {
-    const response = await http.patch('/auth/resetPassword', resetData);
-    return response.data.data; // backend wraps user in data
+    const { data } = await http.patch<AuthResponse>('/auth/resetPassword', payload);
+    return data.data!;
   } catch (err) {
     throw formatError(err);
   }
 }
 
+/**
+ * Export grouped API methods
+ */
 export const authAPI = {
-  login: loginApi,
   register: registerApi,
+  login: loginApi,
   logout: logoutApi,
   me: meApi,
   forgotPassword: forgotPasswordApi,
