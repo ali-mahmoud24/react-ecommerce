@@ -91,8 +91,8 @@ const UserMenu = memo(({ user, anchorEl, onOpen, onClose, onLogout }: any) => {
       <IconButton onClick={onOpen}>
         <Avatar
           alt={`${user?.firstName || ''} ${user?.lastName || ''}`}
-          src={user?.avatar || ''}
-          variant="square"
+          src={user?.profileImageUrl || ''}
+
           sx={{
             width: 40,
             height: 40,

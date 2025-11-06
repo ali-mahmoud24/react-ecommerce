@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { AuthContext, type User } from "./AuthContext";
+import { AuthContext, type User, type UpdatedUser } from "./AuthContext";
 import { authAPI } from "@/features/user/auth/api/auth.api";
 
 type Props = { children: React.ReactNode };
 
 export default function AuthProvider({ children }: Props) {
   const [user, setUser] = useState<User | null>(null);
+  const [updatedUser, setUpdatedUser] = useState<UpdatedUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [resetEmail, setResetEmail] = useState<string | null>(null);
   const [isCodeVerified, setIsCodeVerified] = useState(false);
@@ -34,18 +35,20 @@ export default function AuthProvider({ children }: Props) {
   const logout = useCallback(() => {
     authAPI.logout().finally(() => {
       setUser(null);
-      // No need to remove localStorage token since backend uses cookies
     });
   }, []);
 
-  const updateUser = useCallback((updated: User) => {
-    setUser(updated);
+  const updateUser = useCallback((updated: UpdatedUser) => {
+    setUser((prev) => ({ ...prev, ...updated } as User));
+    setUpdatedUser(updated);
   }, []);
 
   return (
     <AuthContext.Provider
       value={{
         user,
+        updatedUser,
+        setUpdatedUser,
         setUser,
         isAuthenticated,
         isLoading,

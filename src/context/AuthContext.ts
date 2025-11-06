@@ -30,18 +30,22 @@ export type User = {
   updatedAt?: string;
 };
 
+export type UpdatedUser = Partial<User>;
+
 export type AuthContextType = {
   // User state
   user: User | null;
+  updatedUser: UpdatedUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  
+
   // Auth actions
   login: (user: User) => void;
   logout: () => void;
-  updateUser: (user: User) => void;
+  updateUser: (user: UpdatedUser) => void;
   setUser: (user: User | null) => void;
-  
+  setUpdatedUser: (user: UpdatedUser | null) => void;
+
   // Password reset state
   resetEmail: string | null;
   setResetEmail: (email: string | null) => void;

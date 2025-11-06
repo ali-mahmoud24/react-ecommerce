@@ -20,6 +20,7 @@ export default function Profile() {
     useProfile();
   const { user } = useAuth();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [formData, setFormData] = useState<any>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -32,6 +33,7 @@ export default function Profile() {
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setFormData((prev: any) => ({ ...prev, [name]: value }));
   };
 
@@ -43,8 +45,10 @@ export default function Profile() {
   };
 
   const handleSave = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updatedData: any = { ...formData };
     if (imageFile) updatedData.profileImage = imageFile;
+    delete updatedData.email; // ✅ ensure email is not sent
     onSubmit(updatedData);
     setIsEditing(false);
   };
@@ -64,7 +68,6 @@ export default function Profile() {
 
   return (
     <Box sx={{ maxWidth: 700, mx: 'auto', p: 3 }}>
-
       <Paper
         elevation={3}
         sx={{
@@ -112,6 +115,13 @@ export default function Profile() {
             <Typography variant="body2" color="text.secondary">
               {user?.role === 'admin' ? 'Administrator' : 'User'}
             </Typography>
+
+            {/* ✅ Display Email under Role */}
+            {user?.email && (
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                {user.email}
+              </Typography>
+            )}
           </Box>
 
           <Button
@@ -148,19 +158,25 @@ export default function Profile() {
               sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0.25 } }}
             />
           </Grid>
-          <Grid size={{xs:12}}>
+
+          {/* ✅ Read-only Email Field */}
+          <Grid size={{ xs: 12 }}>
             <TextField
               label="Email"
               name="email"
-              type="email"
-              value={formData.email || ''}
-              onChange={handleChange}
+              value={user?.email || ''}
               fullWidth
-              disabled={!isEditing}
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0.25 } }}
+              disabled
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 0.25,
+                  bgcolor: 'action.disabledBackground',
+                },
+              }}
             />
           </Grid>
-          <Grid size={{xs:12}}>
+
+          <Grid size={{ xs: 12 }}>
             <TextField
               label="Phone"
               name="phone"
@@ -215,7 +231,6 @@ export default function Profile() {
       </Paper>
 
       {/* Change Password Modal */}
-
       <ChangePasswordModal
         open={isPasswordModalOpen}
         onClose={() => setIsPasswordModalOpen(false)}

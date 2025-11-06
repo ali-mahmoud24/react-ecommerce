@@ -6,7 +6,11 @@ import toast from 'react-hot-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { profileAPI } from '../api/profile.api';
-import { profileSchema, type ProfileFormData, type ChangePasswordFormData } from '../schemas/profile.schema';
+import {
+  profileSchema,
+  type ProfileFormData,
+  type ChangePasswordFormData,
+} from '../schemas/profile.schema';
 import type { UserProfile, UpdateProfileRequest } from '../types';
 
 export const useProfile = () => {
@@ -14,7 +18,7 @@ export const useProfile = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  // Fetch profile
+  // ---------------- Fetch Profile ----------------
   const { data: profileData, isLoading: isLoadingProfile } = useQuery<UserProfile>({
     queryKey: ['profile'],
     queryFn: profileAPI.getProfile,
@@ -26,14 +30,13 @@ export const useProfile = () => {
   // ---------------- Profile Form ----------------
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
-    defaultValues: { firstName: '', lastName: '', email: '', phone: '' },
+    defaultValues: { firstName: '', lastName: '', phone: '' },
   });
 
   useEffect(() => {
     form.reset({
       firstName: profile.firstName ?? '',
       lastName: profile.lastName ?? '',
-      email: profile.email ?? '',
       phone: profile.phone ?? '',
     });
   }, [profile, form]);
@@ -74,13 +77,28 @@ export const useProfile = () => {
   });
 
   // ---------------- Actions ----------------
-  const onSubmit = (values: ProfileFormData) => updateMutation.mutate(values);
-  const changePassword = (data: ChangePasswordFormData) => {
-    const { oldPassword, newPassword } = data;
-    changePasswordMutation.mutate({ oldPassword, newPassword, confirmPassword: newPassword });
+  const onSubmit = (values: ProfileFormData) => {
+    // ✅ Remove email before sending update
+    const filteredData = { ...values } as Record<string, unknown>;
+    delete filteredData.email;
+    updateMutation.mutate(filteredData as UpdateProfileRequest);
   };
+
+  const changePassword = (data: ChangePasswordFormData) => {
+    const { currentPassword, password, passwordConfirm } = data;
+    changePasswordMutation.mutate({
+      currentPassword,
+      password,
+      passwordConfirm,
+    });
+  };
+
   const deactivateAccount = () => {
-    if (window.confirm('Are you sure you want to deactivate your account? This action is irreversible.')) {
+    if (
+      window.confirm(
+        'Are you sure you want to deactivate your account? This action is irreversible.',
+      )
+    ) {
       deactivateMutation.mutate();
     }
   };

@@ -18,6 +18,7 @@ http.defaults.withCredentials = true;
  */
 function formatError(e: unknown): Error {
   if (typeof e === 'object' && e && 'response' in e) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const err = e as any;
     const message =
       err.response?.data?.message ??
