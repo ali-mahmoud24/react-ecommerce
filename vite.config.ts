@@ -6,7 +6,7 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: '/ react-ecommerce/',
+  base: '/react-ecommerce/',
   build: {
     outDir: 'dist',
   },
