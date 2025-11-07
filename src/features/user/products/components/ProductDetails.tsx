@@ -13,6 +13,7 @@ import {
 import { ArrowBackIosNew, ArrowForwardIos } from '@mui/icons-material';
 import { formatCurrency } from '@/utils/formatCurrency';
 import { useCart } from '@/features/user/cart/hooks/useCart';
+import { useWishlist } from '../../wishlist/hooks/useWishlist';
 
 interface ProductDetailsProps {
   product: Product | undefined;
@@ -24,6 +25,7 @@ export default function ProductDetails({ product, isLoading }: ProductDetailsPro
   const [currentIndex, setCurrentIndex] = useState(0);
   const [fade, setFade] = useState(true);
   const { addItemToCart } = useCart();
+  const { addItemToWishlist } = useWishlist();
 
   const images = [product?.imageCoverUrl, ...(product?.imageUrls || [])].filter(Boolean);
 
@@ -255,7 +257,7 @@ export default function ProductDetails({ product, isLoading }: ProductDetailsPro
         <Button
           variant="contained"
           fullWidth
-          onClick={() => addItemToCart(product.id)} // ✅ call mutation
+          onClick={() => addItemToCart(product.id)}
           sx={{
             py: 1.5,
             fontSize: '1rem',
@@ -278,6 +280,34 @@ export default function ProductDetails({ product, isLoading }: ProductDetailsPro
           }}
         >
           Add to Cart
+        </Button>
+        <Button
+          variant="contained"
+          fullWidth
+          onClick={() => addItemToWishlist(product.id)}
+          sx={{
+            py: 1.5,
+            my: 1.5,
+            fontSize: '1rem',
+            fontWeight: 600,
+            backgroundColor:
+              theme.palette.mode === 'light'
+                ? theme.palette.text.primary
+                : theme.palette.primary.main,
+            color: theme.palette.getContrastText(
+              theme.palette.mode === 'light'
+                ? theme.palette.text.primary
+                : theme.palette.primary.main,
+            ),
+            '&:hover': {
+              bgcolor:
+                theme.palette.mode === 'light'
+                  ? theme.palette.text.primary
+                  : theme.palette.primary.main,
+            },
+          }}
+        >
+          Add to Wishlist
         </Button>
       </Box>
     </Box>

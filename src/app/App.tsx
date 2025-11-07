@@ -16,10 +16,10 @@ export default function App() {
     const login = async () => {
       try {
         await http.post('/auth/login', {
-          email: 'user@gmail.com',
+          email: 'jhon@gmail.com',
           password: '123456',
         });
-        // ✅ token stored in HttpOnly cookie by backend
+        // token stored in HttpOnly cookie by backend
       } catch (error) {
         console.error('Login failed:', error);
       } finally { 

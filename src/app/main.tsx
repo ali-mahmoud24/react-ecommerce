@@ -10,6 +10,7 @@ import './index.css';
 import { AuthProvider } from '@/context/AuthProvider.tsx';
 import AppThemeProvider from '@/theme/ThemeProvider.tsx';
 import { SnackbarProvider } from 'notistack';
+import { Toaster } from 'react-hot-toast';
 
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
@@ -22,6 +23,7 @@ createRoot(document.getElementById('root')!).render(
             autoHideDuration={3000}
           >
             <App />
+            <Toaster />
           </SnackbarProvider>
         </AppThemeProvider>
       </AuthProvider>

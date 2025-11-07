@@ -11,12 +11,10 @@ import CategoriesPage from "@/features/user/categories/pages/categoriesPage";
 import CategoryDetailsPage from "@/features/user/categories/pages/CategoryDetailsPage";
 import BrandsPage from "@/features/user/brands/pages/BrandsPage";
 import BrandDetailsPage from "@/features/user/brands/pages/BrandDetailsPage";
-
-import ProductDetailsPage from '@/features/user/products/pages/ProductDetailsPage';
 import Cart from '@/features/user/cart/pages/Cart';
+import Wishlist from '@/features/user/wishlist/pages/Wishlist';
 
 // === Placeholder components (replace later) ===
-// const Cart = () => <div>Cart</div>;
 const Profile = () => <div>User Profile</div>;
 const Login = () => <div>User Login</div>;
 const Register = () => <div>User Register</div>;
@@ -32,9 +30,9 @@ export const userRoutes = (
       <Route path={USER_ROUTES.CATEGORY()} element={<CategoryDetailsPage />} />
       <Route path={USER_ROUTES.BRANDS.replace("/", "")} element={<BrandsPage />} />
       <Route path={USER_ROUTES.BRAND()} element={<BrandDetailsPage />} />
-      {/* <Route path={USER_ROUTES.CART()} element = {<Cart/>} /> */}
-
       <Route path={USER_ROUTES.CART.replace('/', '')} element={<Cart/>} />
+      <Route path={USER_ROUTES.WISHLIST.replace('/', '')} element={<Wishlist/>} />
+
       {/* <Route
         path={USER_ROUTES.CART.replace('/', '')}
         element={

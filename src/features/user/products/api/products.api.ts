@@ -12,7 +12,5 @@ export type Product = {
 
 export const getAllProduct = async (): Promise<Product[]> => {
     const response = await http.get('/products');
-    console.log('API response:', response.data);
-
     return response.data?.data || [];
 };

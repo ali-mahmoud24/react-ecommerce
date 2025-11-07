@@ -19,6 +19,7 @@ export const USER_ROUTES = {
   BRANDS: "/brands",
   BRAND: (id: string = ":id") => `/brands/${id}`,
   CART: "/cart",
+  WISHLIST: "/wishlist",
   PROFILE: "/profile",
 } as const;
 
