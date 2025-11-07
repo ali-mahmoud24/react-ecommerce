@@ -6,8 +6,8 @@ export const PUBLIC_ROUTES = {
   LOGIN: '/login',
   REGISTER: '/register',
   FORGOT_PASSWORD: '/forgot-password',
-  VERIFY_RESET_CODE:'/verifyResetCode',
-  RESET_PASSWORD:'/resetPassword'
+  VERIFY_RESET_CODE: '/verifyResetCode',
+  RESET_PASSWORD: '/resetPassword',
 } as const;
 
 // =====================
@@ -37,9 +37,10 @@ export const ADMIN_ROUTES = {
   LOGIN: '/admin/login',
   DASHBOARD: '/admin',
   PRODUCTS: '/admin/products',
+  PRODUCTS_NEW: '/admin/products/new',
   ORDERS: '/admin/orders',
   USERS: '/admin/users',
-  USERS_NEW: "/admin/users/new",
+  USERS_NEW: '/admin/users/new',
   UNAUTHORIZED: "/unauthorized",
   
 } as const;
