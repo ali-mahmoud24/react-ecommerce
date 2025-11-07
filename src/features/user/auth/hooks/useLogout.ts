@@ -1,9 +1,8 @@
-// src/features/user/auth/hooks/useLogout.ts
 import { useMutation } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { authAPI } from '../api/auth.api';
 import { useAuth } from '@/hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 export function useLogout() {
   const { logout } = useAuth();
@@ -14,11 +13,14 @@ export function useLogout() {
     onSuccess: () => {
       logout();
       toast.success('Logged out successfully');
-      navigate('/login');
+      navigate('/login', { replace: true });
     },
     onError: (err: unknown) => {
       const message = err instanceof Error ? err.message : 'Logout failed';
       toast.error(message);
+
+      logout();
+      navigate('/login', { replace: true });
     },
   });
 

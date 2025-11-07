@@ -69,7 +69,6 @@ export default function Profile() {
         sx={{
           p: 4,
           borderRadius: 0.25,
-          // boxShadow: (theme) => `0 4px 20px ${theme.palette.divider}`,
         }}
       >
         {/* Header */}

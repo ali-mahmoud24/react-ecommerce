@@ -37,4 +37,6 @@ export const ADMIN_ROUTES = {
   ORDERS: '/admin/orders',
   USERS: '/admin/users',
   USERS_NEW: "/admin/users/new",
+  UNAUTHORIZED: "/unauthorized",
+  
 } as const;

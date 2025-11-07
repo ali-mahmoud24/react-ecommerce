@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { profileAPI } from '../api/profile.api';
 import { profileSchema, type ProfileFormData, type ChangePasswordFormData } from '../schemas/profile.schema';
 import type { UserProfile, UpdateProfileRequest } from '../types';

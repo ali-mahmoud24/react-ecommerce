@@ -152,7 +152,7 @@ const UserMenu = memo(
           <MenuItem component={Link} to="/orders">
             <InventoryIcon fontSize="small" sx={{ mr: 1 }} /> Orders
           </MenuItem>
-          <MenuItem onClick={onLogout}>
+          <MenuItem component={Link} to="/login" onClick={onLogout}>
             <LogoutIcon fontSize="small" sx={{ mr: 1 }} /> Logout
           </MenuItem>
         </Menu>

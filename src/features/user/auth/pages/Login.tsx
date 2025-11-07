@@ -1,4 +1,4 @@
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router';
 import { Box, Typography, TextField, Link, useTheme, Paper, Divider, Button } from '@mui/material';
 import Spinner from '@/components/ui/Spinner';
 import { useLogin } from '../hooks/useLogin';

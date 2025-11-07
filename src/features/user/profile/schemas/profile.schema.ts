@@ -9,9 +9,6 @@ export const profileSchema = z.object({
 
 export type ProfileFormData = z.infer<typeof profileSchema>;
 
-// -------------------------
-// Change Password Schema
-// -------------------------
 export const changePasswordSchema = z
   .object({
     oldPassword: z.string().min(6, 'Old password must be at least 6 characters'),

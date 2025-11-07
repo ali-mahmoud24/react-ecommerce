@@ -34,7 +34,6 @@ export default function AuthProvider({ children }: Props) {
   const logout = useCallback(() => {
     authAPI.logout().finally(() => {
       setUser(null);
-      // No need to remove localStorage token since backend uses cookies
     });
   }, []);
 
