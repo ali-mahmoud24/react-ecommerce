@@ -46,4 +46,3 @@ export const deleteCartItem = async (cartItemId: string): Promise<CartResponse> 
   const response = await http.delete(`/cart/${cartItemId}`);
   return response.data?.data || { cartItems: [], totalCartPrice: 0 };
 };
-};

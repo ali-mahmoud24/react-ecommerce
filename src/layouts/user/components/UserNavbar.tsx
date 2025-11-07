@@ -1,3 +1,4 @@
+// src/components/layout/Navbar.tsx
 import {
   AppBar,
   Box,
@@ -16,164 +17,154 @@ import {
   Avatar,
   Menu,
   MenuItem,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
-import CloseIcon from '@mui/icons-material/Close';
-import LightModeIcon from '@mui/icons-material/LightMode';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import LogoutIcon from '@mui/icons-material/Logout';
-import InventoryIcon from '@mui/icons-material/Inventory';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { useThemeContext } from '@/theme/useThemeContext';
-import { useState, useCallback, memo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import logo from '@/assets/images/logo.jpg';
-import { useCart } from '@/features/user/cart/hooks/useCart';
-import { useAuth } from '@/hooks/useAuth';
-import { useLogout } from '@/features/user/auth/hooks/useLogout';
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import MenuIcon from "@mui/icons-material/Menu";
+import SearchIcon from "@mui/icons-material/Search";
+import CloseIcon from "@mui/icons-material/Close";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import LogoutIcon from "@mui/icons-material/Logout";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { useThemeContext } from "@/theme/useThemeContext";
+import { useState, useCallback, memo } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import logo from "@/assets/images/logo.jpg";
+import { useCart } from "@/features/user/cart/hooks/useCart";
+import { useAuth } from "@/hooks/useAuth";
+import { useLogout } from "@/features/user/auth/hooks/useLogout";
 
-// ---------------- Styled Search Components ----------------
-import { useThemeContext } from '@/theme/useThemeContext';
-import { useState } from 'react';
-import { Link } from 'react-router';
-import logo from '@/assets/images/logo.jpg';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { useCart } from '@/features/user/cart/hooks/useCart';
-import { useNavigate } from 'react-router';
-// import { Link } from 'react-router';
-
-const Search = styled('div')(({ theme }) => ({
-  position: 'relative',
-  borderRadius: '20px',
+// ---------------- Styled Search ----------------
+const Search = styled("div")(({ theme }) => ({
+  position: "relative",
+  borderRadius: "20px",
   backgroundColor:
-    theme.palette.mode === 'light'
+    theme.palette.mode === "light"
       ? alpha(theme.palette.common.black, 0.05)
       : alpha(theme.palette.common.white, 0.1),
-  '&:hover': {
+  "&:hover": {
     backgroundColor:
-      theme.palette.mode === 'light'
+      theme.palette.mode === "light"
         ? alpha(theme.palette.common.black, 0.1)
         : alpha(theme.palette.common.white, 0.15),
   },
-  width: '100%',
-  [theme.breakpoints.up('md')]: { width: '180px' },
-  [theme.breakpoints.up('lg')]: { width: '500px' },
-  [theme.breakpoints.up('md')]: {
-    width: '180px',
-  },
-  [theme.breakpoints.up('lg')]: {
-    width: '500px',
-  },
+  width: "100%",
+  [theme.breakpoints.up("md")]: { width: "180px" },
+  [theme.breakpoints.up("lg")]: { width: "500px" },
 }));
 
-const SearchIconWrapper = styled('div')(({ theme }) => ({
+const SearchIconWrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  color: theme.palette.mode === 'light' ? theme.palette.text.secondary : theme.palette.grey[400],
+  height: "100%",
+  position: "absolute",
+  pointerEvents: "none",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  color:
+    theme.palette.mode === "light"
+      ? theme.palette.text.secondary
+      : theme.palette.grey[400],
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  width: '100%',
-  '& .MuiInputBase-input': {
+  color: "inherit",
+  width: "100%",
+  "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
+    transition: theme.transitions.create("width"),
   },
 }));
 
 // ---------------- User Menu ----------------
-const UserMenu = memo(({ user, anchorEl, onOpen, onClose, onLogout }: any) => {
-  const theme = useTheme();
+const UserMenu = memo(
+  ({
+    user,
+    anchorEl,
+    onOpen,
+    onClose,
+    onLogout,
+  }: {
+    user: any;
+    anchorEl: HTMLElement | null;
+    onOpen: (e: React.MouseEvent<HTMLElement>) => void;
+    onClose: () => void;
+    onLogout: () => void;
+  }) => {
+    const theme = useTheme();
 
-  const getInitials = () => {
-    if (!user) return '?';
-    const first = user.firstName?.[0] || '';
-    const last = user.lastName?.[0] || '';
-    return (first + last).toUpperCase() || 'U';
-  };
+    const getInitials = () => {
+      if (!user) return "?";
+      const first = user.firstName?.[0] || "";
+      const last = user.lastName?.[0] || "";
+      return (first + last).toUpperCase() || "U";
+    };
 
-  return (
-    <>
-      <IconButton onClick={onOpen}>
-        <Avatar
-          alt={`${user?.firstName || ''} ${user?.lastName || ''}`}
-          src={user?.avatar || ''}
-          variant="square"
-          sx={{
-            width: 40,
-            height: 40,
-            borderRadius: 1,
-            bgcolor: user?.avatar
-              ? 'transparent'
-              : theme.palette.mode === 'light'
-              ? theme.palette.primary.main
-              : theme.palette.primary.light,
-            color: user?.avatar
-              ? 'inherit'
-              : theme.palette.getContrastText(
-                  theme.palette.mode === 'light'
-                    ? theme.palette.primary.main
-                    : theme.palette.primary.light
-                ),
-            fontWeight: 600,
-            fontSize: '1rem',
-            border: `1px solid ${
-              theme.palette.mode === 'light'
-                ? alpha(theme.palette.text.primary, 0.1)
-                : alpha(theme.palette.common.white, 0.2)
-            }`,
-            boxShadow:
-              theme.palette.mode === 'light'
-                ? '0 1px 3px rgba(0,0,0,0.1)'
-                : '0 1px 3px rgba(255,255,255,0.05)',
-            transition: 'all 0.2s ease-in-out',
-            '&:hover': {
-              transform: 'scale(1.05)',
-              boxShadow:
-                theme.palette.mode === 'light'
-                  ? '0 2px 8px rgba(0,0,0,0.15)'
-                  : '0 2px 8px rgba(255,255,255,0.1)',
-            },
-          }}
+    return (
+      <>
+        <IconButton onClick={onOpen}>
+          <Avatar
+            alt={`${user?.firstName || ""} ${user?.lastName || ""}`}
+            src={user?.avatar || ""}
+            variant="square"
+            sx={{
+              width: 40,
+              height: 40,
+              borderRadius: 1,
+              bgcolor: user?.avatar
+                ? "transparent"
+                : theme.palette.mode === "light"
+                ? theme.palette.primary.main
+                : theme.palette.primary.light,
+              color: user?.avatar
+                ? "inherit"
+                : theme.palette.getContrastText(
+                    theme.palette.mode === "light"
+                      ? theme.palette.primary.main
+                      : theme.palette.primary.light
+                  ),
+              fontWeight: 600,
+              fontSize: "1rem",
+              border: `1px solid ${alpha(theme.palette.text.primary, 0.1)}`,
+              transition: "all 0.2s ease-in-out",
+              "&:hover": {
+                transform: "scale(1.05)",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+              },
+            }}
+          >
+            {!user?.avatar && getInitials()}
+          </Avatar>
+        </IconButton>
+
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={onClose}
+          PaperProps={{ sx: { borderRadius: 1, mt: 1, minWidth: 160 } }}
         >
-          {!user?.avatar && getInitials()}
-        </Avatar>
-      </IconButton>
-
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={onClose}
-        PaperProps={{ sx: { borderRadius: 0.25, mt: 1, minWidth: 160 } }}
-      >
-        <MenuItem component={Link} to="/profile">
-          <AccountCircleIcon fontSize="small" sx={{ mr: 1 }} /> Profile
-        </MenuItem>
-        <MenuItem component={Link} to="/orders">
-          <InventoryIcon fontSize="small" sx={{ mr: 1 }} /> Orders
-        </MenuItem>
-        <MenuItem onClick={onLogout}>
-          <LogoutIcon fontSize="small" sx={{ mr: 1 }} /> Logout
-        </MenuItem>
-      </Menu>
-    </>
-  );
-});
+          <MenuItem component={Link} to="/profile">
+            <AccountCircleIcon fontSize="small" sx={{ mr: 1 }} /> Profile
+          </MenuItem>
+          <MenuItem component={Link} to="/orders">
+            <InventoryIcon fontSize="small" sx={{ mr: 1 }} /> Orders
+          </MenuItem>
+          <MenuItem onClick={onLogout}>
+            <LogoutIcon fontSize="small" sx={{ mr: 1 }} /> Logout
+          </MenuItem>
+        </Menu>
+      </>
+    );
+  }
+);
 
 // ---------------- Main Navbar ----------------
 function Navbar() {
-export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const theme = useTheme();
   const { mode, toggleTheme } = useThemeContext();
   const { totalItems } = useCart();
@@ -182,33 +173,28 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   const handleDrawerToggle = () => setMobileOpen((prev) => !prev);
-  const handleMenuOpen = useCallback((e: React.MouseEvent<HTMLElement>) => setAnchorEl(e.currentTarget), []);
-  const handleMenuClose = useCallback(() => setAnchorEl(null), []);
+  const handleMenuOpen = (e: React.MouseEvent<HTMLElement>) =>
+    setAnchorEl(e.currentTarget);
+  const handleMenuClose = () => setAnchorEl(null);
   const handleLogout = useCallback(() => {
     handleMenuClose();
     logout();
-  }, [logout, handleMenuClose]);
+  }, [logout]);
 
   const navLinks = [
-    { label: 'Products', to: '/products', active: true },
-    { label: 'Categories', to: '/categories' },
-    { label: 'Brands', to: '/brands' },
-    // { label: 'Cart', to: '/cart' },
-    { label: 'Wishlist', to: '/wishlist' },
+    { label: "Products", to: "/products" },
+    { label: "Categories", to: "/categories" },
+    { label: "Brands", to: "/brands" },
+    { label: "Wishlist", to: "/wishlist" },
   ];
 
   const drawer = (
     <Box sx={{ width: 250, p: 2 }}>
-      <Box display="flex" alignItems="center" justifyContent="flex-start" mb={2}>
-        <IconButton onClick={handleDrawerToggle} size="small" sx={{ color: theme.palette.text.secondary }}>
-      {/* Close Button */}
       <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'flex-start',
-          alignItems: 'center',
-          mb: 2,
-        }}
+        display="flex"
+        alignItems="center"
+        justifyContent="flex-start"
+        mb={2}
       >
         <IconButton
           onClick={handleDrawerToggle}
@@ -225,17 +211,13 @@ export default function Navbar() {
             key={link.label}
             component={Link}
             to={link.to}
-            selected={link.active}
             onClick={handleDrawerToggle}
-            sx={{ borderRadius: '10px' }}
-            sx={{
-              borderRadius: '10px',
-            }}
+            sx={{ borderRadius: "10px" }}
           >
             <ListItemText
               primary={link.label}
               primaryTypographyProps={{
-                color: link.active ? theme.palette.primary.main : theme.palette.text.primary,
+                color: theme.palette.text.primary,
               }}
             />
           </ListItemButton>
@@ -247,10 +229,9 @@ export default function Navbar() {
           <SearchIconWrapper>
             <SearchIcon />
           </SearchIconWrapper>
-          <StyledInputBase placeholder="Search for products" inputProps={{ 'aria-label': 'search' }} />
           <StyledInputBase
             placeholder="Search for products"
-            inputProps={{ 'aria-label': 'search' }}
+            inputProps={{ "aria-label": "search" }}
           />
         </Search>
       </Box>
@@ -269,33 +250,27 @@ export default function Navbar() {
           py: 0.5,
         }}
       >
-        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', px: { xs: 2, md: 4 } }}>
-          {/* Logo */}
-          <Link to="/" style={{ textDecoration: 'none' }}>
-            <Box display="flex" alignItems="center" gap={1}>
-              <img src={logo} alt="Ecommerce Logo" style={{ width: 40, height: 40, borderRadius: 8 }} />
-              <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '1.5rem' }}>
-          padding: '0.25rem',
-          borderRadius: 0,
-        }}
-      >
         <Toolbar
           sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            px: 2,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            px: { xs: 2, md: 4 },
           }}
         >
           {/* Logo */}
-          <Link to="/" style={{ textDecoration: 'none' }}>
+          <Link to="/" style={{ textDecoration: "none" }}>
             <Box display="flex" alignItems="center" gap={1}>
-              <img src={logo} alt="Ecommerce Logo" style={{ width: '40px', height: '40px' }} />
+              <img
+                src={logo}
+                alt="Ecommerce Logo"
+                style={{ width: 40, height: 40, borderRadius: 8 }}
+              />
               <Typography
                 variant="h6"
                 sx={{
                   fontWeight: 600,
-                  fontSize: '1.5rem',
+                  fontSize: "1.5rem",
                   color: theme.palette.text.primary,
                 }}
               >
@@ -304,14 +279,14 @@ export default function Navbar() {
             </Box>
           </Link>
 
-          {/* Nav Links (Desktop) */}
+          {/* Nav Links */}
           <Box
             sx={{
-              display: { xs: 'none', md: 'flex' },
+              display: { xs: "none", md: "flex" },
               gap: 3,
-              alignItems: 'center',
+              alignItems: "center",
               flexGrow: 1,
-              justifyContent: 'center',
+              justifyContent: "center",
             }}
           >
             {navLinks.map((link) => (
@@ -320,9 +295,9 @@ export default function Navbar() {
                 component={Link}
                 to={link.to}
                 sx={{
-                  textDecoration: 'none',
-                  color: link.active ? theme.palette.primary.main : theme.palette.text.primary,
-                  fontWeight: link.active ? 600 : 500,
+                  textDecoration: "none",
+                  color: theme.palette.text.primary,
+                  fontWeight: 500,
                 }}
               >
                 {link.label}
@@ -332,19 +307,21 @@ export default function Navbar() {
 
           {/* Right Section */}
           <Box display="flex" alignItems="center" gap={1}>
-            {/* Search */}
-            {/* Search (Desktop view) */}
-            <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+            {/* Search (Desktop) */}
+            <Box sx={{ display: { xs: "none", md: "block" } }}>
               <Search>
                 <SearchIconWrapper>
                   <SearchIcon />
                 </SearchIconWrapper>
-                <StyledInputBase placeholder="Search..." inputProps={{ 'aria-label': 'search' }} />
+                <StyledInputBase
+                  placeholder="Search..."
+                  inputProps={{ "aria-label": "search" }}
+                />
               </Search>
             </Box>
 
             {/* Cart */}
-            <IconButton color="inherit" onClick={() => navigate('/cart')} sx={{ ml: 1 }}>
+            <IconButton color="inherit" onClick={() => navigate("/cart")} sx={{ ml: 1 }}>
               <Badge badgeContent={totalItems} color="error">
                 <ShoppingCartIcon />
               </Badge>
@@ -352,10 +329,10 @@ export default function Navbar() {
 
             {/* Theme Toggle */}
             <IconButton onClick={toggleTheme}>
-              {mode === 'light' ? <DarkModeIcon /> : <LightModeIcon />}
+              {mode === "light" ? <DarkModeIcon /> : <LightModeIcon />}
             </IconButton>
 
-            {/* Auth Section */}
+            {/* Auth */}
             {isAuthenticated ? (
               <UserMenu
                 user={user}
@@ -366,55 +343,20 @@ export default function Navbar() {
               />
             ) : (
               <Button
-                href="/login"
+                component={Link}
+                to="/login"
                 variant="outlined"
                 startIcon={<AccountCircleIcon />}
-                sx={{ textTransform: 'none', fontWeight: 500, borderRadius: 0.25 }}
+                sx={{ textTransform: "none", fontWeight: 500, borderRadius: 0.25 }}
               >
                 Login
               </Button>
             )}
 
             {/* Mobile Menu */}
-            <IconButton onClick={handleDrawerToggle} sx={{ display: { md: 'none' } }}>
-                <StyledInputBase
-                  placeholder="Search for products"
-                  inputProps={{ 'aria-label': 'search' }}
-                  sx={{ fontSize: '14px' }}
-                />
-              </Search>
-            </Box>
-            <IconButton color="inherit" onClick={() => navigate('/cart')} sx={{ ml: 1 }}>
-              <Badge
-                badgeContent={totalItems}
-                color="error"
-                overlap="circular"
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-              >
-                <ShoppingCartIcon />
-              </Badge>
-            </IconButton>
-            {/* Theme Toggle Button */}
-            <IconButton
-              onClick={toggleTheme}
-              sx={{
-                color:
-                  theme.palette.mode === 'dark'
-                    ? theme.palette.primary.main
-                    : theme.palette.text.primary,
-                ml: { xs: 0, md: 1 },
-              }}
-            >
-              {mode === 'light' ? <DarkModeIcon /> : <LightModeIcon />}
-            </IconButton>
-
-            {/* Menu Button (Mobile view) */}
             <IconButton
               onClick={handleDrawerToggle}
-              sx={{
-                display: { md: 'none' },
-                color: theme.palette.text.secondary,
-              }}
+              sx={{ display: { md: "none" } }}
             >
               <MenuIcon />
             </IconButton>
@@ -423,13 +365,11 @@ export default function Navbar() {
       </AppBar>
 
       {/* Drawer (Mobile) */}
-      <Drawer anchor="right" open={mobileOpen} onClose={handleDrawerToggle}>
-      {/* Drawer for Mobile */}
       <Drawer
         anchor="right"
         open={mobileOpen}
         onClose={handleDrawerToggle}
-        sx={{ '& .MuiDrawer-paper': { borderRadius: 0 } }}
+        sx={{ "& .MuiDrawer-paper": { borderRadius: 0 } }}
       >
         {drawer}
       </Drawer>

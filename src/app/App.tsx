@@ -1,36 +1,17 @@
 import { Routes, Route, Navigate } from 'react-router';
-import { useEffect, useState } from 'react';
-import http from '@/lib/axios';
 import { userRoutes } from '@/routes/user.routes';
 import { adminRoutes } from '@/routes/admin.routes';
 import { PUBLIC_ROUTES } from '@/constants/routes';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { CircularProgress, Box } from '@mui/material';
+import { useAuth } from '@/hooks/useAuth';
 
 const queryClient = new QueryClient();
 
 export default function App() {
-  const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const { isLoading } = useAuth();
 
-  useEffect(() => {
-    const login = async () => {
-      try {
-        await http.post('/auth/login', {
-          email: 'user@gmail.com',
-          password: '123456',
-        });
-        // ✅ token stored in HttpOnly cookie by backend
-      } catch (error) {
-        console.error('Login failed:', error);
-      } finally { 
-        setIsAuthLoading(false);
-      }
-    };
-
-    login();
-  }, []);
-
-  if (isAuthLoading)
+  if (isLoading)
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
         <CircularProgress />

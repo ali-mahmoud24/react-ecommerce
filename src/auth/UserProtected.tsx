@@ -1,6 +1,6 @@
-import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { PUBLIC_ROUTES } from "@/constants/routes";
+import { Navigate } from "react-router";
 
 type Props = { children: React.ReactNode };
 
