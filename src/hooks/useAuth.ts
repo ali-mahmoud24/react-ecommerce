@@ -10,6 +10,7 @@ export function useAuth() {
 
   const { 
     user, 
+    updatedUser,
     isAuthenticated, 
     login, 
     logout, 
@@ -31,6 +32,7 @@ export function useAuth() {
   return {
     // User state
     user,
+    updatedUser,
     isAuthenticated,
     isLoading: isLoadingProfile,
     

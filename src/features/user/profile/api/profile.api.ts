@@ -17,7 +17,7 @@ export const profileAPI = {
       }
     });
 
-    const { data } = await http.patch<{ data: UserProfile }>(
+    const { data } = await http.put<{ data: UserProfile }>(
       '/users/updateMe',
       formData,
       {

@@ -20,6 +20,7 @@ import ForgotPassword from '@/features/user/auth/pages/ForgotPassword';
 import GuestOnly from '@/auth/GuestOnly';
 import VerifyResetCode from '@/features/user/auth/pages/VerifyResetCode';
 import ResetPassword from '@/features/user/auth/pages/ResetPassword';
+import NotAdmin from '@/auth/NotAdmin';
 
 // === Placeholder components (replace later) ===
 // const Cart = () => <div>Cart</div>;
@@ -27,7 +28,14 @@ import ResetPassword from '@/features/user/auth/pages/ResetPassword';
 export const userRoutes = (
   <>
     {/* User layout routes */}
-    <Route path={USER_ROUTES.ROOT} element={<UserLayout />}>
+    <Route
+      path={USER_ROUTES.ROOT}
+      element={
+        <NotAdmin>
+          <UserLayout />
+        </NotAdmin>
+      }
+    >
       <Route index element={<Home />} />
       <Route path={USER_ROUTES.PRODUCTS.replace('/', '')} element={<Products />} />
       <Route path={USER_ROUTES.PRODUCT()} element={<ProductDetailsPage />} />

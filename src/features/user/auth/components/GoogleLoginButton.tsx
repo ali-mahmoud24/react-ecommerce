@@ -16,7 +16,7 @@ export default function GoogleLoginButton() {
         textTransform: "none",
         fontWeight: 600,
         py: 1.3,
-        borderRadius: 0.25,
+        borderRadius: 2,
       }}
     >
       {loading ? "Signing in..." : "Continue with Google"}

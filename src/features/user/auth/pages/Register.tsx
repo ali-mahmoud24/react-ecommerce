@@ -28,7 +28,7 @@ export default function Register() {
   // shared TextField style
   const textFieldSx = {
     '& .MuiOutlinedInput-root': {
-      borderRadius: 0.25,
+      borderRadius: 2,
       transition: 'all 0.2s ease',
       '&:hover fieldset': {
         borderColor: theme.palette.primary.light,
@@ -59,7 +59,7 @@ export default function Register() {
           display: 'flex',
           flexDirection: { xs: 'column', md: 'row' },
           overflow: 'hidden',
-          borderRadius: 0.25,
+          borderRadius: 2,
         }}
       >
         {/* ===== LEFT IMAGE SECTION ===== */}
@@ -76,7 +76,7 @@ export default function Register() {
             color: 'white',
           }}
         >
-          <Box sx={{ backgroundColor: 'rgba(0, 0, 0, 0.45)', padding: '25px', borderRadius: 0.25 }}>
+          <Box sx={{ backgroundColor: 'rgba(0, 0, 0, 0.45)', padding: '25px', borderRadius: 2 }}>
             <Typography variant="h4" fontWeight={700} gutterBottom>
               Join Our Community.
             </Typography>
@@ -186,7 +186,7 @@ export default function Register() {
                 sx={{
                   mt: 1,
                   py: 1.3,
-                  borderRadius: 0.25,
+                  borderRadius: 2,
                   fontWeight: 600,
                   textTransform: 'none',
                 }}

@@ -34,7 +34,7 @@ export default function Login() {
           display: 'flex',
           flexDirection: { xs: 'column', md: 'row' },
           overflow: 'hidden',
-          borderRadius: 0.25,
+          borderRadius: 2,
         }}
       >
         {/* ===== LEFT IMAGE SECTION ===== */}
@@ -51,7 +51,7 @@ export default function Login() {
             color: 'white',
           }}
         >
-          <Box sx={{ backgroundColor: 'rgba(0, 0, 0, 0.45)', padding: '25px', borderRadius: 0.25 }}>
+          <Box sx={{ backgroundColor: 'rgba(0, 0, 0, 0.45)', padding: '25px', borderRadius: 2 }}>
             <Typography variant="h4" fontWeight={700} gutterBottom>
               Welcome Back.
             </Typography>
@@ -108,7 +108,7 @@ export default function Login() {
                 {...register('email')}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    borderRadius: 0.25, // 🔹 rounded corners
+                    borderRadius: 2, // 🔹 rounded corners
                     transition: 'all 0.2s ease',
                     '&:hover eldset': {
                       borderColor: theme.palette.primary.light,
@@ -131,7 +131,7 @@ export default function Login() {
                 {...register('password')}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    borderRadius: 0.25,
+                    borderRadius: 2,
                     transition: 'all 0.2s ease',
                     '&:hover fieldset': {
                       borderColor: theme.palette.primary.light,
@@ -169,7 +169,7 @@ export default function Login() {
                 sx={{
                   mt: 1,
                   py: 1.3,
-                  borderRadius: 0.25,
+                  borderRadius: 2,
                   fontWeight: 600,
                   textTransform: 'none',
                 }}

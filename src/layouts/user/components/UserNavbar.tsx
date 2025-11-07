@@ -108,12 +108,12 @@ const UserMenu = memo(
         <IconButton onClick={onOpen}>
           <Avatar
             alt={`${user?.firstName || ""} ${user?.lastName || ""}`}
-            src={user?.avatar || ""}
+            src={user?.profileImageUrl || ""}
             variant="square"
             sx={{
               width: 40,
               height: 40,
-              borderRadius: 1,
+              borderRadius: 5,
               bgcolor: user?.avatar
                 ? "transparent"
                 : theme.palette.mode === "light"

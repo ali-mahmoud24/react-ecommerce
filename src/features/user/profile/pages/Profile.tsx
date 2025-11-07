@@ -68,7 +68,7 @@ export default function Profile() {
         elevation={3}
         sx={{
           p: 4,
-          borderRadius: 0.25,
+          borderRadius: 2,
         }}
       >
         {/* Header */}
@@ -81,7 +81,7 @@ export default function Profile() {
               sx={{
                 width: 100,
                 height: 100,
-                borderRadius: 2,
+                borderRadius: 20,
                 bgcolor: 'primary.main',
                 fontSize: 28,
                 fontWeight: 700,
@@ -132,7 +132,7 @@ export default function Profile() {
               onChange={handleChange}
               fullWidth
               disabled={!isEditing}
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0.25 } }}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2} }}
             />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
@@ -143,7 +143,7 @@ export default function Profile() {
               onChange={handleChange}
               fullWidth
               disabled={!isEditing}
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0.25 } }}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2} }}
             />
           </Grid>
           <Grid size={{ xs: 12 }}>
@@ -154,7 +154,7 @@ export default function Profile() {
               onChange={handleChange}
               fullWidth
               disabled={!isEditing}
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0.25 } }}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2} }}
             />
           </Grid>
         </Grid>
@@ -181,7 +181,7 @@ export default function Profile() {
         <Divider sx={{ my: 3 }} />
 
         {/* Danger Zone */}
-        <Box mt={6} p={3} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 0.25 }}>
+        <Box mt={6} p={3} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2}}>
           <Typography variant="h6" fontWeight={700} color="error" gutterBottom>
             Danger Zone
           </Typography>
