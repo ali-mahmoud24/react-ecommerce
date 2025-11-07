@@ -29,7 +29,6 @@ export const useProfile = () => {
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: { firstName: '', lastName: '', phone: '' },
-    defaultValues: { firstName: '', lastName: '', phone: '' },
   });
 
   useEffect(() => {

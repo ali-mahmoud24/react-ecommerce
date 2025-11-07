@@ -28,12 +28,13 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useThemeContext } from '@/theme/useThemeContext';
-import { useState, useCallback, memo } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import logo from '@/assets/images/logo.jpg';
 import { useCart } from '@/features/user/cart/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
 import { useLogout } from '@/features/user/auth/hooks/useLogout';
+import { getAllProduct, type Product } from '@/features/user/products/api/products.api';
 
 // ---------------- Styled Search ----------------
 const Search = styled('div')(({ theme }) => ({
@@ -162,9 +163,17 @@ const UserMenu = memo(
 );
 
 // ---------------- Main Navbar ----------------
-function Navbar() {
+type NavbarProps = {
+  onSearchResults?: (results: Product[] | null) => void;
+};
+
+function Navbar({ onSearchResults }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [searchResults, setSearchResults] = useState<Product[]>([]);
+
   const theme = useTheme();
   const { mode, toggleTheme } = useThemeContext();
   const { totalItems } = useCart();
@@ -181,15 +190,39 @@ function Navbar() {
     logout();
   }, [logout]);
 
-  let navLinks = [
+  // Fetch products once
+  useEffect(() => {
+    (async () => {
+      try {
+        const products = await getAllProduct();
+        setAllProducts(products);
+      } catch (err) {
+        console.error('Failed to fetch products', err);
+      }
+    })();
+  }, []);
+
+  // Search filtering + communicate results to layout
+  useEffect(() => {
+    if (!searchTerm.trim()) {
+      setSearchResults([]);
+      onSearchResults?.(null);
+      return;
+    }
+    const results = allProducts.filter((p) =>
+      p.title.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+    setSearchResults(results);
+    onSearchResults?.(results);
+  }, [searchTerm, allProducts]);
+
+  const navLinks = [
     { label: 'Products', to: '/products' },
     { label: 'Categories', to: '/categories' },
     { label: 'Brands', to: '/brands' },
+    ...(isAuthenticated ? [{ label: 'Wishlist', to: '/wishlist' }] : []),
   ];
 
-  if (isAuthenticated) {
-    navLinks.push({ label: 'Wishlist', to: '/wishlist' });
-  }
   const drawer = (
     <Box sx={{ width: 250, p: 2 }}>
       <Box display="flex" alignItems="center" justifyContent="flex-start" mb={2}>
@@ -212,9 +245,7 @@ function Navbar() {
               to={link.to}
               selected={isActive}
               onClick={handleDrawerToggle}
-              sx={{
-                borderRadius: '10px',
-              }}
+              sx={{ borderRadius: '10px' }}
             >
               <ListItemText
                 primary={link.label}
@@ -235,6 +266,8 @@ function Navbar() {
           </SearchIconWrapper>
           <StyledInputBase
             placeholder="Search for products"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             inputProps={{ 'aria-label': 'search' }}
           />
         </Search>
@@ -267,14 +300,7 @@ function Navbar() {
           <Link to="/" style={{ textDecoration: 'none' }}>
             <Box display="flex" alignItems="center" gap={1}>
               <img src={logo} alt="Ecommerce Logo" style={{ width: '30px', height: '30px' }} />
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: 600,
-                  fontSize: '1.25rem',
-                  color: theme.palette.text.primary,
-                }}
-              >
+              <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '1.25rem' }}>
                 Ecommerce
               </Typography>
             </Box>
@@ -335,7 +361,8 @@ function Navbar() {
                 <StyledInputBase
                   placeholder="Search for products"
                   inputProps={{ 'aria-label': 'search' }}
-                  sx={{ fontSize: '14px' }}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </Search>
             </Box>
@@ -353,7 +380,8 @@ function Navbar() {
                 </Badge>
               </IconButton>
             )}
-            {/* Theme Toggle Button */}
+
+            {/* Theme Toggle */}
             <IconButton
               onClick={toggleTheme}
               sx={{
