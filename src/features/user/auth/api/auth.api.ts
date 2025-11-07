@@ -97,6 +97,16 @@ export async function resetPasswordApi(payload: ResetPasswordRequest): Promise<U
   }
 }
 
+
+// Activate Account
+export async function activateAccountApi(payload: { email: string; password: string }) {
+  try {
+    const { data } = await http.post('/users/activateAccount', payload);
+    return data;
+  } catch (err) {
+    throw formatError(err);
+  }
+}
 /**
  * Export grouped API methods
  */
@@ -108,4 +118,5 @@ export const authAPI = {
   forgotPassword: forgotPasswordApi,
   verifyResetCode: verifyResetCodeApi,
   resetPassword: resetPasswordApi,
+  activateAccount: activateAccountApi, 
 };

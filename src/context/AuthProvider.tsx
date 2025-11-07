@@ -13,7 +13,7 @@ export default function AuthProvider({ children }: Props) {
 
   const isAuthenticated = !!user;
 
-  // ✅ Fetch user on mount (via httpOnly cookie)
+  // Fetch current logged-in user via cookie/session
   const fetchCurrentUser = useCallback(async () => {
     try {
       const me = await authAPI.me();
@@ -29,12 +29,10 @@ export default function AuthProvider({ children }: Props) {
     fetchCurrentUser();
   }, [fetchCurrentUser]);
 
-  // ✅ Login (after successful auth)
   const login = useCallback((loggedUser: User) => {
     setUser(loggedUser);
   }, []);
 
-  // ✅ Logout (clear cookie on backend + clear state)
   const logout = useCallback(() => {
     authAPI.logout?.().finally(() => {
       setUser(null);
@@ -42,7 +40,6 @@ export default function AuthProvider({ children }: Props) {
     });
   }, []);
 
-  // ✅ Update user (used after profile update)
   const updateUser = useCallback(
     (updated: UserUpdated) => {
       if (user) {
