@@ -1,4 +1,3 @@
-// src/features/user/auth/components/GoogleLoginButton.tsx
 import { Button } from "@mui/material";
 import { Google } from "@mui/icons-material";
 import { useGoogle } from "../hooks/useGoogle";

@@ -14,7 +14,7 @@ export function useLogout() {
     onSuccess: () => {
       logout();
       toast.success('Logged out successfully');
-      navigate('/');
+      navigate('/login');
     },
     onError: (err: unknown) => {
       const message = err instanceof Error ? err.message : 'Logout failed';

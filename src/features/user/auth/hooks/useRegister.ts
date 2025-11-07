@@ -31,6 +31,8 @@ export function useRegister() {
         lastName: values.lastName,
         email: values.email,
         password: values.password,
+        passwordConfirm: values.password,
+
       }),
 
     onSuccess: async (user: User) => {

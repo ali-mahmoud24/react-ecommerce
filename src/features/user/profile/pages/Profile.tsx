@@ -64,13 +64,12 @@ export default function Profile() {
 
   return (
     <Box sx={{ maxWidth: 700, mx: 'auto', p: 3 }}>
-
       <Paper
         elevation={3}
         sx={{
           p: 4,
           borderRadius: 0.25,
-          boxShadow: (theme) => `0 4px 20px ${theme.palette.divider}`,
+          // boxShadow: (theme) => `0 4px 20px ${theme.palette.divider}`,
         }}
       >
         {/* Header */}
@@ -110,7 +109,7 @@ export default function Profile() {
               {formData.firstName} {formData.lastName}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {user?.role === 'admin' ? 'Administrator' : 'User'}
+              {user?.email}
             </Typography>
           </Box>
 
@@ -148,19 +147,7 @@ export default function Profile() {
               sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0.25 } }}
             />
           </Grid>
-          <Grid size={{xs:12}}>
-            <TextField
-              label="Email"
-              name="email"
-              type="email"
-              value={formData.email || ''}
-              onChange={handleChange}
-              fullWidth
-              disabled={!isEditing}
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0.25 } }}
-            />
-          </Grid>
-          <Grid size={{xs:12}}>
+          <Grid size={{ xs: 12 }}>
             <TextField
               label="Phone"
               name="phone"
