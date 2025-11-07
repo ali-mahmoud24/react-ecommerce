@@ -37,3 +37,4 @@ export const useCart = () => {
     totalItems: cart?.cartItems?.length || 0,
   };
 };
+};

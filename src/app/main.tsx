@@ -18,29 +18,20 @@ const queryClient = new QueryClient({
     },
   },
 });
+import { SnackbarProvider } from 'notistack';
 
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <AppThemeProvider>  
-          <Toaster
-            position="top-center"
-            toastOptions={{
-              style: {
-                borderRadius: '8px',
-                background: '#333',
-                color: '#fff',
-              },
-              success: {
-                iconTheme: {
-                  primary: '#4CAF50',
-                  secondary: '#fff',
-                },
-              },
-            }}
-          />
-          <App />
+        <AppThemeProvider>
+          <SnackbarProvider
+            maxSnack={3}
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            autoHideDuration={3000}
+          >
+            <App />
+          </SnackbarProvider>
         </AppThemeProvider>
       </AuthProvider>
     </QueryClientProvider>

@@ -19,6 +19,15 @@ export const USER_ROUTES = {
   PRODUCT: (id = ':id') => `/product/${id}`,
   CART: '/cart',
   PROFILE: '/profile',
+  ROOT: "/",
+  PRODUCTS: "/products",
+  PRODUCT: (id = ":id") => `/product/${id}`,
+  CATEGORIES: "/categories",
+  CATEGORY: (id: string = ":id") => `/categories/${id}`,
+  BRANDS: "/brands",
+  BRAND: (id: string = ":id") => `/brands/${id}`,
+  CART: "/cart",
+  PROFILE: "/profile",
 } as const;
 
 // =====================
@@ -31,4 +40,11 @@ export const ADMIN_ROUTES = {
   PRODUCTS: '/admin/products',
   ORDERS: '/admin/orders',
   USERS: '/admin/users',
+  ROOT: "/admin",
+  LOGIN: "/admin/login",
+  DASHBOARD: "/admin",
+  PRODUCTS: "/admin/products",
+  ORDERS: "/admin/orders",
+  USERS: "/admin/users",
+  USERS_NEW: "/admin/users/new",
 } as const;

@@ -36,6 +36,15 @@ import { useAuth } from '@/hooks/useAuth';
 import { useLogout } from '@/features/user/auth/hooks/useLogout';
 
 // ---------------- Styled Search Components ----------------
+import { useThemeContext } from '@/theme/useThemeContext';
+import { useState } from 'react';
+import { Link } from 'react-router';
+import logo from '@/assets/images/logo.jpg';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { useCart } from '@/features/user/cart/hooks/useCart';
+import { useNavigate } from 'react-router';
+// import { Link } from 'react-router';
+
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: '20px',
@@ -52,6 +61,12 @@ const Search = styled('div')(({ theme }) => ({
   width: '100%',
   [theme.breakpoints.up('md')]: { width: '180px' },
   [theme.breakpoints.up('lg')]: { width: '500px' },
+  [theme.breakpoints.up('md')]: {
+    width: '180px',
+  },
+  [theme.breakpoints.up('lg')]: {
+    width: '500px',
+  },
 }));
 
 const SearchIconWrapper = styled('div')(({ theme }) => ({
@@ -156,6 +171,7 @@ const UserMenu = memo(({ user, anchorEl, onOpen, onClose, onLogout }: any) => {
 
 // ---------------- Main Navbar ----------------
 function Navbar() {
+export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const theme = useTheme();
@@ -177,6 +193,7 @@ function Navbar() {
     { label: 'Products', to: '/products', active: true },
     { label: 'Categories', to: '/categories' },
     { label: 'Brands', to: '/brands' },
+    // { label: 'Cart', to: '/cart' },
     { label: 'Wishlist', to: '/wishlist' },
   ];
 
@@ -184,6 +201,20 @@ function Navbar() {
     <Box sx={{ width: 250, p: 2 }}>
       <Box display="flex" alignItems="center" justifyContent="flex-start" mb={2}>
         <IconButton onClick={handleDrawerToggle} size="small" sx={{ color: theme.palette.text.secondary }}>
+      {/* Close Button */}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          mb: 2,
+        }}
+      >
+        <IconButton
+          onClick={handleDrawerToggle}
+          size="small"
+          sx={{ color: theme.palette.text.secondary }}
+        >
           <CloseIcon />
         </IconButton>
       </Box>
@@ -197,6 +228,9 @@ function Navbar() {
             selected={link.active}
             onClick={handleDrawerToggle}
             sx={{ borderRadius: '10px' }}
+            sx={{
+              borderRadius: '10px',
+            }}
           >
             <ListItemText
               primary={link.label}
@@ -214,6 +248,10 @@ function Navbar() {
             <SearchIcon />
           </SearchIconWrapper>
           <StyledInputBase placeholder="Search for products" inputProps={{ 'aria-label': 'search' }} />
+          <StyledInputBase
+            placeholder="Search for products"
+            inputProps={{ 'aria-label': 'search' }}
+          />
         </Search>
       </Box>
     </Box>
@@ -237,6 +275,30 @@ function Navbar() {
             <Box display="flex" alignItems="center" gap={1}>
               <img src={logo} alt="Ecommerce Logo" style={{ width: 40, height: 40, borderRadius: 8 }} />
               <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '1.5rem' }}>
+          padding: '0.25rem',
+          borderRadius: 0,
+        }}
+      >
+        <Toolbar
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            px: 2,
+          }}
+        >
+          {/* Logo */}
+          <Link to="/" style={{ textDecoration: 'none' }}>
+            <Box display="flex" alignItems="center" gap={1}>
+              <img src={logo} alt="Ecommerce Logo" style={{ width: '40px', height: '40px' }} />
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 600,
+                  fontSize: '1.5rem',
+                  color: theme.palette.text.primary,
+                }}
+              >
                 Ecommerce
               </Typography>
             </Box>
@@ -271,6 +333,7 @@ function Navbar() {
           {/* Right Section */}
           <Box display="flex" alignItems="center" gap={1}>
             {/* Search */}
+            {/* Search (Desktop view) */}
             <Box sx={{ display: { xs: 'none', md: 'block' } }}>
               <Search>
                 <SearchIconWrapper>
@@ -314,6 +377,45 @@ function Navbar() {
 
             {/* Mobile Menu */}
             <IconButton onClick={handleDrawerToggle} sx={{ display: { md: 'none' } }}>
+                <StyledInputBase
+                  placeholder="Search for products"
+                  inputProps={{ 'aria-label': 'search' }}
+                  sx={{ fontSize: '14px' }}
+                />
+              </Search>
+            </Box>
+            <IconButton color="inherit" onClick={() => navigate('/cart')} sx={{ ml: 1 }}>
+              <Badge
+                badgeContent={totalItems}
+                color="error"
+                overlap="circular"
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+              >
+                <ShoppingCartIcon />
+              </Badge>
+            </IconButton>
+            {/* Theme Toggle Button */}
+            <IconButton
+              onClick={toggleTheme}
+              sx={{
+                color:
+                  theme.palette.mode === 'dark'
+                    ? theme.palette.primary.main
+                    : theme.palette.text.primary,
+                ml: { xs: 0, md: 1 },
+              }}
+            >
+              {mode === 'light' ? <DarkModeIcon /> : <LightModeIcon />}
+            </IconButton>
+
+            {/* Menu Button (Mobile view) */}
+            <IconButton
+              onClick={handleDrawerToggle}
+              sx={{
+                display: { md: 'none' },
+                color: theme.palette.text.secondary,
+              }}
+            >
               <MenuIcon />
             </IconButton>
           </Box>
@@ -322,6 +424,13 @@ function Navbar() {
 
       {/* Drawer (Mobile) */}
       <Drawer anchor="right" open={mobileOpen} onClose={handleDrawerToggle}>
+      {/* Drawer for Mobile */}
+      <Drawer
+        anchor="right"
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        sx={{ '& .MuiDrawer-paper': { borderRadius: 0 } }}
+      >
         {drawer}
       </Drawer>
     </>
