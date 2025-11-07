@@ -24,14 +24,13 @@ export default function UserCreate() {
     });
   };
 
-  <UserForm onSubmit={handleSubmit} />;
 
   return (
     <PageContainer
       title="New Admin User"
       breadcrumbs={[{ title: 'Users', path: '/admin/users' }, { title: 'New' }]}
     >
-      <UserForm onSubmit={handleSubmit} />
+      <UserForm onSubmit={handleSubmit} isLoading={createMutation.isPending} />
     </PageContainer>
   );
 }
