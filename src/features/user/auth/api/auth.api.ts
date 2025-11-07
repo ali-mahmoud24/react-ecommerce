@@ -10,12 +10,8 @@ import type {
   ApiSuccess,
 } from '../types';
 
-// ✅ Make sure axios is configured for cookies
 http.defaults.withCredentials = true;
 
-/**
- * Standardized error formatter
- */
 function formatError(e: unknown): Error {
   if (typeof e === 'object' && e && 'response' in e) {
     const err = e as any;
@@ -30,13 +26,7 @@ function formatError(e: unknown): Error {
   return new Error('Network error');
 }
 
-/**
- * ---------------------------
- * 🔹 AUTH API CALLS
- * ---------------------------
- */
-
-// ✅ Register
+// Register
 export async function registerApi(payload: RegisterRequest): Promise<User> {
   try {
     const { data } = await http.post<AuthResponse>('/auth/signup', payload);
@@ -46,7 +36,7 @@ export async function registerApi(payload: RegisterRequest): Promise<User> {
   }
 }
 
-// ✅ Login
+// Login
 export async function loginApi(credentials: LoginRequest): Promise<User> {
   try {
     const { data } = await http.post<AuthResponse>('/auth/login', credentials);
@@ -56,7 +46,7 @@ export async function loginApi(credentials: LoginRequest): Promise<User> {
   }
 }
 
-// ✅ Logout
+// Logout
 export async function logoutApi(): Promise<void> {
   try {
     await http.post('/auth/logout');
@@ -65,7 +55,7 @@ export async function logoutApi(): Promise<void> {
   }
 }
 
-// ✅ Current user (optional, if backend exposes /profile)
+// Current user (optional, if backend exposes /profile)
 export async function meApi(): Promise<User> {
   try {
     const { data } = await http.get('/users/profile', {
@@ -77,7 +67,7 @@ export async function meApi(): Promise<User> {
   }
 }
 
-// ✅ Forgot password
+// Forgot password
 export async function forgotPasswordApi(payload: ForgotPasswordRequest): Promise<ApiSuccess> {
   try {
     const { data } = await http.post<ApiSuccess>('/auth/forgotPassword', payload);
@@ -87,7 +77,7 @@ export async function forgotPasswordApi(payload: ForgotPasswordRequest): Promise
   }
 }
 
-// ✅ Verify reset code
+// Verify reset code
 export async function verifyResetCodeApi(payload: VerifyResetCodeRequest): Promise<ApiSuccess> {
   try {
     const { data } = await http.post<ApiSuccess>('/auth/verifyResetCode', payload);
@@ -97,7 +87,7 @@ export async function verifyResetCodeApi(payload: VerifyResetCodeRequest): Promi
   }
 }
 
-// ✅ Reset password
+// Reset password
 export async function resetPasswordApi(payload: ResetPasswordRequest): Promise<User> {
   try {
     const { data } = await http.patch<AuthResponse>('/auth/resetPassword', payload);
@@ -107,6 +97,16 @@ export async function resetPasswordApi(payload: ResetPasswordRequest): Promise<U
   }
 }
 
+
+// Activate Account
+export async function activateAccountApi(payload: { email: string; password: string }) {
+  try {
+    const { data } = await http.post('/users/activateAccount', payload);
+    return data;
+  } catch (err) {
+    throw formatError(err);
+  }
+}
 /**
  * Export grouped API methods
  */
@@ -118,4 +118,5 @@ export const authAPI = {
   forgotPassword: forgotPasswordApi,
   verifyResetCode: verifyResetCodeApi,
   resetPassword: resetPasswordApi,
+  activateAccount: activateAccountApi, 
 };

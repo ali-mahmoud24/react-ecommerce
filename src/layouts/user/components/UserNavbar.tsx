@@ -108,12 +108,12 @@ const UserMenu = memo(
         <IconButton onClick={onOpen}>
           <Avatar
             alt={`${user?.firstName || ""} ${user?.lastName || ""}`}
-            src={user?.avatar || ""}
+            src={user?.profileImageUrl || ""}
             variant="square"
             sx={{
               width: 40,
               height: 40,
-              borderRadius: 1,
+              borderRadius: 5,
               bgcolor: user?.avatar
                 ? "transparent"
                 : theme.palette.mode === "light"
@@ -152,7 +152,7 @@ const UserMenu = memo(
           <MenuItem component={Link} to="/orders">
             <InventoryIcon fontSize="small" sx={{ mr: 1 }} /> Orders
           </MenuItem>
-          <MenuItem onClick={onLogout}>
+          <MenuItem component={Link} to="/login" onClick={onLogout}>
             <LogoutIcon fontSize="small" sx={{ mr: 1 }} /> Logout
           </MenuItem>
         </Menu>

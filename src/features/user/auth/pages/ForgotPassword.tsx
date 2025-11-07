@@ -1,4 +1,4 @@
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router';
 import {
   Box,
   Typography,
@@ -27,7 +27,7 @@ export default function ForgotPassword() {
 
   const textFieldSx = {
     '& .MuiOutlinedInput-root': {
-      borderRadius: 0.25,
+      borderRadius: 2,
       transition: 'all 0.2s ease',
       '&:hover fieldset': {
         borderColor: theme.palette.primary.light,
@@ -66,7 +66,7 @@ export default function ForgotPassword() {
           width: '100%',
           maxWidth: 420,
           p: { xs: 4, sm: 5 },
-          borderRadius: 0.25,
+          borderRadius: 2,
           textAlign: 'center',
         }}
       >
@@ -113,7 +113,7 @@ export default function ForgotPassword() {
             disabled={isLoading}
             sx={{
               py: 1.3,
-              borderRadius: 0.25,
+              borderRadius: 2,
               fontWeight: 600,
               textTransform: 'none',
             }}

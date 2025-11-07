@@ -1,4 +1,3 @@
-// context/AuthContext.ts
 import { createContext } from 'react';
 
 export type UserAddress = {
@@ -30,19 +29,21 @@ export type User = {
   updatedAt?: string;
 };
 
+export type UserUpdated = Omit<User, 'email'>; // Updated user info except email
+
 export type AuthContextType = {
-  // User state
   user: User | null;
+  updatedUser: UserUpdated | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  
+
   // Auth actions
   login: (user: User) => void;
   logout: () => void;
-  updateUser: (user: User) => void;
+  updateUser: (updated: UserUpdated) => void;
   setUser: (user: User | null) => void;
-  
-  // Password reset state
+
+  // Password reset
   resetEmail: string | null;
   setResetEmail: (email: string | null) => void;
   isCodeVerified: boolean;

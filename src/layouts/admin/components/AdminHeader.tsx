@@ -1,7 +1,18 @@
-import { AppBar, Toolbar, IconButton, Stack, Tooltip, Typography, Box } from '@mui/material';
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Stack,
+  Tooltip,
+  Typography,
+  Box,
+  CircularProgress,
+} from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
+import LogoutIcon from '@mui/icons-material/Logout';
 import ThemeSwitcher from './ThemeSwitcher';
+import { useLogout } from '@/features/user/auth/hooks/useLogout';
 
 interface Props {
   menuOpen: boolean;
@@ -9,6 +20,8 @@ interface Props {
 }
 
 export default function AdminHeader({ menuOpen, onToggleMenu }: Props) {
+  const logoutMutation = useLogout();
+
   return (
     <AppBar
       position="fixed"
@@ -21,7 +34,13 @@ export default function AdminHeader({ menuOpen, onToggleMenu }: Props) {
         borderRadius: 0,
       }}
     >
-      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', mx: { xs: -0.75, sm: -1 } }}>
+      <Toolbar
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          mx: { xs: -0.75, sm: -1 },
+        }}
+      >
         {/* Left - Hamburger + Logo */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Tooltip title={menuOpen ? 'Collapse menu' : 'Expand menu'}>
@@ -30,7 +49,6 @@ export default function AdminHeader({ menuOpen, onToggleMenu }: Props) {
             </IconButton>
           </Tooltip>
 
-          {/* Logo / Brand Text */}
           <Typography
             variant="h6"
             fontWeight={800}
@@ -49,9 +67,22 @@ export default function AdminHeader({ menuOpen, onToggleMenu }: Props) {
           </Typography>
         </Box>
 
-        {/* Right - Theme Toggle */}
-        <Stack direction="row" spacing={1}>
+        {/* Right - Theme Toggle + Logout */}
+        <Stack direction="row" spacing={1} alignItems="center">
           <ThemeSwitcher />
+
+          <Tooltip title="Logout">
+            <IconButton
+              onClick={() => logoutMutation.mutate()}
+              disabled={logoutMutation.isPending}
+            >
+              {logoutMutation.isPending ? (
+                <CircularProgress size={20} thickness={5} />
+              ) : (
+                <LogoutIcon color="error" />
+              )}
+            </IconButton>
+          </Tooltip>
         </Stack>
       </Toolbar>
     </AppBar>

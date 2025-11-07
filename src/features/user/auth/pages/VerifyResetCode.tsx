@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 import {
   Box,
   Typography,
@@ -31,7 +31,7 @@ export default function VerifyResetCode() {
 
   const textFieldSx = {
     '& .MuiOutlinedInput-root': {
-      borderRadius: 0.25,
+      borderRadius: 2,
       transition: 'all 0.2s ease',
       '&:hover fieldset': {
         borderColor: theme.palette.primary.light,
@@ -130,7 +130,7 @@ export default function VerifyResetCode() {
             disabled={isLoading}
             sx={{
               py: 1.3,
-              borderRadius: 0.25,
+              borderRadius: 2,
               fontWeight: 600,
               textTransform: 'none',
             }}

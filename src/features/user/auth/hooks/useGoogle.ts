@@ -1,7 +1,7 @@
 // src/hooks/useGoogle.ts
 import { useEffect, useState, useCallback } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router";
 import toast from "react-hot-toast";
 import { authAPI } from "@/features/user/auth/api/auth.api";
 import { useAuth } from "@/hooks/useAuth";

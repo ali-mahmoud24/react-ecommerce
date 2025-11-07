@@ -4,17 +4,16 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { profileAPI } from '../api/profile.api';
 import { profileSchema, type ProfileFormData, type ChangePasswordFormData } from '../schemas/profile.schema';
 import type { UserProfile, UpdateProfileRequest } from '../types';
 
 export const useProfile = () => {
-  const { user, updateUser, setUser } = useAuth();
+  const { user, updatedUser, updateUser, setUser } = useAuth();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  // Fetch profile
   const { data: profileData, isLoading: isLoadingProfile } = useQuery<UserProfile>({
     queryKey: ['profile'],
     queryFn: profileAPI.getProfile,
@@ -23,26 +22,26 @@ export const useProfile = () => {
 
   const profile: Partial<UserProfile> = profileData || user || {};
 
-  // ---------------- Profile Form ----------------
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
-    defaultValues: { firstName: '', lastName: '', email: '', phone: '' },
+    defaultValues: { firstName: '', lastName: '', phone: '' },
   });
 
   useEffect(() => {
     form.reset({
       firstName: profile.firstName ?? '',
       lastName: profile.lastName ?? '',
-      email: profile.email ?? '',
       phone: profile.phone ?? '',
     });
   }, [profile, form]);
 
-  // ---------------- Mutations ----------------
   const updateMutation = useMutation<UserProfile, any, UpdateProfileRequest>({
-    mutationFn: profileAPI.updateProfile,
+    mutationFn: async (data) => {
+      const { email, ...cleanData } = data as any;
+      return await profileAPI.updateProfile(cleanData);
+    },
     onSuccess: (updatedProfile) => {
-      updateUser({ ...user, ...updatedProfile } as any);
+      updateUser({ ...updatedUser, ...updatedProfile } as any);
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       toast.success('Profile updated successfully!');
     },
@@ -51,16 +50,15 @@ export const useProfile = () => {
     },
   });
 
+  // ✅ Mutation: Change password
   const changePasswordMutation = useMutation({
     mutationFn: profileAPI.changePassword,
-    onSuccess: () => {
-      toast.success('Password changed successfully!');
-    },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || 'Failed to change password');
-    },
+    onSuccess: () => toast.success('Password changed successfully!'),
+    onError: (error: any) =>
+      toast.error(error?.response?.data?.message || 'Failed to change password'),
   });
 
+  // ✅ Mutation: Deactivate profile
   const deactivateMutation = useMutation({
     mutationFn: () => profileAPI.deactivateProfile(),
     onSuccess: () => {
@@ -68,17 +66,22 @@ export const useProfile = () => {
       toast.success('Your account has been deactivated.');
       navigate('/login');
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || 'Failed to deactivate account');
-    },
+    onError: (error: any) =>
+      toast.error(error?.response?.data?.message || 'Failed to deactivate account'),
   });
 
-  // ---------------- Actions ----------------
-  const onSubmit = (values: ProfileFormData) => updateMutation.mutate(values);
+  // ✅ Handlers
+  const onSubmit = (values: ProfileFormData) => {
+    // explicitly exclude email
+    const { email, ...filteredValues } = values as any;
+    updateMutation.mutate(filteredValues);
+  };
+
   const changePassword = (data: ChangePasswordFormData) => {
     const { oldPassword, newPassword } = data;
     changePasswordMutation.mutate({ oldPassword, newPassword, confirmPassword: newPassword });
   };
+
   const deactivateAccount = () => {
     if (window.confirm('Are you sure you want to deactivate your account? This action is irreversible.')) {
       deactivateMutation.mutate();
