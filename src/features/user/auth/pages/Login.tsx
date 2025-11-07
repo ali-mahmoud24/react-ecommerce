@@ -18,17 +18,16 @@ import GoogleLoginButton from '../components/GoogleLoginButton';
 import { useLogin } from '../hooks/useLogin';
 import { useActivateAccount } from '../hooks/useActivateAccount';
 import { PUBLIC_ROUTES } from '@/constants/routes';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router';
 
 export default function Login() {
   const theme = useTheme();
-  const { form, onSubmit, isLoading,isDeactivated,setIsDeactivated } = useLogin();
+  const { form, onSubmit, isLoading, isDeactivated, setIsDeactivated } = useLogin();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = form;
-
 
   const [credentials, setCredentials] = useState<{ email: string; password: string } | null>(null);
   const { activateAccount, isActivating } = useActivateAccount({
@@ -43,8 +42,8 @@ export default function Login() {
     setCredentials(values);
     try {
       await onSubmit(values);
-    } catch (err: any) {
-      
+    } catch (err) {
+      console.error('Login error:', err);
     }
   };
 

@@ -18,14 +18,14 @@ export const USER_ROUTES = {
   // SHOP: '/shop',
   CART: '/cart',
   PROFILE: '/profile',
-  PRODUCTS: "/products",
-  PRODUCT: (id = ":id") => `/product/${id}`,
-  CATEGORIES: "/categories",
-  CATEGORY: (id: string = ":id") => `/categories/${id}`,
-  BRANDS: "/brands",
-  BRAND: (id: string = ":id") => `/brands/${id}`,
+  PRODUCTS: '/products',
+  PRODUCT: (id = ':id') => `/product/${id}`,
+  CATEGORIES: '/categories',
+  CATEGORY: (id: string = ':id') => `/categories/${id}`,
+  BRANDS: '/brands',
+  BRAND: (id: string = ':id') => `/brands/${id}`,
   // CART: "/cart",
-  WISHLIST: "/wishlist",
+  WISHLIST: '/wishlist',
   // PROFILE: "/profile",
 } as const;
 
@@ -34,13 +34,21 @@ export const USER_ROUTES = {
 // =====================
 export const ADMIN_ROUTES = {
   ROOT: '/admin',
-  LOGIN: '/admin/login',
-  DASHBOARD: '/admin',
   PRODUCTS: '/admin/products',
   PRODUCTS_NEW: '/admin/products/new',
+
+  CATEGORIES: '/admin/categories',
+  CATEGORY_NEW: '/admin/categories/new',
+  CATEGORY: (id: string = ':id') => `admin/categories/${id}`,
+  CATEGORY_EDIT: (id: string = ':id') => `admin/categories/${id}/edit`,
+
+  BRANDS: '/admin/brands',
+  BRAND_NEW: '/admin/brands/new',
+  BRAND: (id: string = ':id') => `/admin/brands/${id}`,
+  BRAND_EDIT: (id: string = ':id') => `/admin/brands/${id}/edit`,
+
   ORDERS: '/admin/orders',
   USERS: '/admin/users',
   USERS_NEW: '/admin/users/new',
-  UNAUTHORIZED: "/unauthorized",
-  
+  UNAUTHORIZED: '/unauthorized',
 } as const;

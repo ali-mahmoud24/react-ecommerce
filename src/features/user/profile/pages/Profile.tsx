@@ -116,11 +116,11 @@ export default function Profile() {
             </Typography>
 
             {/* ✅ Display Email under Role */}
-            {user?.email && (
+            {/* {user?.email && (
               <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                 {user.email}
               </Typography>
-            )}
+            )} */}
           </Box>
 
           <Button

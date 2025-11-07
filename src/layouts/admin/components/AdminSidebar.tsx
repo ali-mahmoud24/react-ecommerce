@@ -31,7 +31,7 @@ export default function AdminSidebar({ open, onToggleMenu, isDesktop }: Props) {
     { label: 'Brands', icon: <LocalOfferIcon />, path: '/admin/brands' },
     { label: 'Categories', icon: <CategoryIcon />, path: '/admin/categories' },
     { label: 'Products', icon: <StoreIcon />, path: '/admin/products' },
-    { label: 'Orders', icon: <ReceiptIcon />, path: '/admin/orders' },
+    // { label: 'Orders', icon: <ReceiptIcon />, path: '/admin/orders' },
   ];
 
   //  Desktop: permanent + collapsible

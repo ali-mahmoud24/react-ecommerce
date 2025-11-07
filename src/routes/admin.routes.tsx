@@ -14,10 +14,8 @@ import BrandsPage from '@/features/admin/brands/pages/BrandsPage';
 import NewBrandPage from '@/features/admin/brands/pages/NewBrandPage';
 import BrandDetailsPage from '@/features/admin/brands/pages/BrandDetailsPage';
 import EditBrandPage from '@/features/admin/brands/pages/EditBrandPage';
-
-// === Placeholder components ===
-const ManageProducts = () => <div>Admin Products</div>;
-const Orders = () => <div>Admin Orders</div>;
+import AdminProtected from '@/auth/AdminProtected';
+import ProductsPage from '@/features/admin/products/pages/ProductsPage';
 
 export const adminRoutes = (
   <>
@@ -30,8 +28,12 @@ export const adminRoutes = (
         </AdminProtected>
       }
     >
-      <Route path={ADMIN_ROUTES.PRODUCTS.replace('/admin/', '')} element={<ManageProducts />} />
-      <Route path={ADMIN_ROUTES.ORDERS.replace('/admin/', '')} element={<Orders />} />
+      <Route index element={<Navigate to={ADMIN_ROUTES.USERS.replace('/admin/', '')} replace />} />
+
+      {/* PRODUCTS */}
+      <Route path={ADMIN_ROUTES.PRODUCTS.replace('/admin/', '')} element={<ProductsPage />} />
+      {/* <Route path={ADMIN_ROUTES.PRODUCTS_NEW.replace('/admin/', '')} element={<ProductForm />} /> */}
+      {/* PRODUCTS */}
 
       {/* USERS */}
       <Route path={ADMIN_ROUTES.USERS.replace('/admin/', '')} element={<UsersPage />} />
