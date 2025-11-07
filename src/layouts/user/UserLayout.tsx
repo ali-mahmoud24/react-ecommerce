@@ -7,9 +7,12 @@ export default function UserLayout() {
     <div>
       {/* User Navbar */}
       <Navbar />
+      {/* Theme Toggle */}
 
       <main style={{ padding: "1rem" }}>
+
         <Outlet />
+        
       </main>
 
       {/* User Footer */}

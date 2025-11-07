@@ -1,7 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
-import { Route } from 'react-router';
+import { Navigate, Route } from 'react-router';
 import AdminLayout from '@/layouts/admin/AdminLayout';
-// import AdminProtected from "@/auth/AdminProtected";
 import { ADMIN_ROUTES } from '@/constants/routes';
 
 import UsersPage from '@/features/admin/users/pages/UsersPage';
@@ -26,9 +25,9 @@ export const adminRoutes = (
     <Route
       path={ADMIN_ROUTES.ROOT}
       element={
-        // <AdminProtected>
-        <AdminLayout />
-        // </AdminProtected>
+        <AdminProtected>
+          <AdminLayout />
+        </AdminProtected>
       }
     >
       <Route path={ADMIN_ROUTES.PRODUCTS.replace('/admin/', '')} element={<ManageProducts />} />

@@ -5,6 +5,9 @@ export const PUBLIC_ROUTES = {
   HOME: '/',
   LOGIN: '/login',
   REGISTER: '/register',
+  FORGOT_PASSWORD: '/forgot-password',
+  VERIFY_RESET_CODE: '/verifyResetCode',
+  RESET_PASSWORD: '/resetPassword',
 } as const;
 
 // =====================
@@ -12,10 +15,15 @@ export const PUBLIC_ROUTES = {
 // =====================
 export const USER_ROUTES = {
   ROOT: '/',
-  PRODUCTS: '/products',
-  PRODUCT: (id = ':id') => `/product/${id}`,
+  SHOP: '/shop',
   CART: '/cart',
   PROFILE: '/profile',
+  PRODUCTS: '/products',
+  PRODUCT: (id = ':id') => `/product/${id}`,
+  CATEGORIES: '/categories',
+  CATEGORY: (id: string = ':id') => `/categories/${id}`,
+  BRANDS: '/brands',
+  BRAND: (id: string = ':id') => `/brands/${id}`,
 } as const;
 
 // =====================
@@ -23,20 +31,13 @@ export const USER_ROUTES = {
 // =====================
 export const ADMIN_ROUTES = {
   ROOT: '/admin',
-
-  CATEGORIES: '/admin/categories',
-  CATEGORY_NEW: '/admin/categories/new',
-  CATEGORY: (id = ':id') => `/admin/categories/${id}`,
-  CATEGORY_EDIT: (id = ':id') => `/admin/categories/${id}/edit`,
-
-
-  BRANDS: '/admin/brands',
-  BRAND_NEW: '/admin/brands/new',
-  BRAND: (id = ':id') => `/admin/brands/${id}`,
-  BRAND_EDIT: (id = ':id') => `/admin/brands/${id}/edit`,
-
+  LOGIN: '/admin/login',
+  DASHBOARD: '/admin',
   PRODUCTS: '/admin/products',
+  PRODUCTS_NEW: '/admin/products/new',
   ORDERS: '/admin/orders',
   USERS: '/admin/users',
   USERS_NEW: '/admin/users/new',
+  UNAUTHORIZED: "/unauthorized",
+  
 } as const;

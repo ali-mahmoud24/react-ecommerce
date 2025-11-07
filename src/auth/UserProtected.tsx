@@ -1,17 +1,23 @@
-import type { ReactNode } from 'react';
-
-
+import { useAuth } from '@/hooks/useAuth';
+import { ADMIN_ROUTES, PUBLIC_ROUTES } from '@/constants/routes';
 import { Navigate } from 'react-router';
+import AppLoader from '@/components/ui/AppLoader';
 
-type UserProtectedProps = {
-  children: ReactNode;
-};
+type Props = { children: React.ReactNode };
 
-export default function UserProtected({ children }: UserProtectedProps) {
-  const isLoggedIn = false; // TODO: replace with real auth logic
+export default function UserProtected({ children }: Props) {
+  const { isAuthenticated, isLoading, isUser, isAdmin } = useAuth();
 
-  if (!isLoggedIn) {
-    return <Navigate to="/login" replace />;
+  if (isLoading) {
+    return <AppLoader />;
+  }
+
+  if (isAuthenticated && isAdmin) {
+    return <Navigate to={ADMIN_ROUTES.ROOT} replace />;
+  }
+
+  if (!isAuthenticated && !isUser) {
+    return <Navigate to={PUBLIC_ROUTES.LOGIN} replace />;
   }
 
   return <>{children}</>;
