@@ -19,11 +19,18 @@ export type CartResponse = {
 
 export const getCart = async (): Promise<CartResponse> => {
   const response = await http.get('/cart');
+  console.log('🛒 Cart Response=========================:', response.data);
+
+  // Ensure data format
   return response.data?.data || { cartItems: [], totalCartPrice: 0 };
 };
 
 export const addToCart = async (productId: string): Promise<CartResponse> => {
+  console.log('🛒 Adding product to cart:', productId);
+
   const response = await http.post('/cart', { productId });
+  console.log('✅ Add to cart response:', response.data);
+
   return response.data?.data || { cartItems: [], totalCartPrice: 0 };
 };
 
@@ -37,10 +44,5 @@ export const updateCartItem = async (
 
 export const deleteCartItem = async (cartItemId: string): Promise<CartResponse> => {
   const response = await http.delete(`/cart/${cartItemId}`);
-  return response.data?.data || { cartItems: [], totalCartPrice: 0 };
-};
-
-export const clearCart = async (): Promise<CartResponse> => {
-  const response = await http.delete('/cart');
   return response.data?.data || { cartItems: [], totalCartPrice: 0 };
 };

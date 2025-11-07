@@ -5,6 +5,9 @@ import {
 } from '@mui/material/styles';
 
 const commonSettings: ThemeOptions = {
+  shape: {
+    borderRadius: 30,
+  },
   typography: {
     fontFamily: `"Inter", "Roboto", "Helvetica", "Arial", sans-serif`,
     h1: {
@@ -58,7 +61,6 @@ const commonSettings: ThemeOptions = {
         },
       },
     },
-    
   },
 };
 

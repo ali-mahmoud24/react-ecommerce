@@ -8,8 +8,6 @@ import App from './App.tsx';
 import './index.css';
 
 import AppThemeProvider from '@/theme/ThemeProvider.tsx';
-import { SnackbarProvider } from 'notistack';
-import { Toaster } from 'react-hot-toast';
 import AuthProvider from '@/context/AuthProvider.tsx';
 
 const queryClient = new QueryClient({
@@ -25,15 +23,24 @@ createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <AppThemeProvider>
-          <SnackbarProvider
-            maxSnack={3}
-            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            autoHideDuration={3000}
-          >
-            <App />
-            <Toaster />
-          </SnackbarProvider>
+        <AppThemeProvider>  
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              style: {
+                borderRadius: '8px',
+                background: '#333',
+                color: '#fff',
+              },
+              success: {
+                iconTheme: {
+                  primary: '#4CAF50',
+                  secondary: '#fff',
+                },
+              },
+            }}
+          />
+          <App />
         </AppThemeProvider>
       </AuthProvider>
     </QueryClientProvider>

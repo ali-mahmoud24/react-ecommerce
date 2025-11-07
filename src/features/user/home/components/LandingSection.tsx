@@ -92,7 +92,7 @@ export default function LandingSection() {
                     }
                     }
                 >
-                    Shop Now 
+                    Shop Now
                 </Button>
                 {/* Stats Section */}
                 <Grid
@@ -109,7 +109,7 @@ export default function LandingSection() {
                         { value: "2,000+", label: "High-Quality Products" },
                         { value: "30,000+", label: "Happy Customers" },
                     ].map((item) => (
-                        <Grid size={{xs: 12, sm: 4}} key={item.label}>
+                        <Grid item xs={12} sm={4} key={item.label}>
                             <Typography
                                 variant="h3"
                                 sx={{
