@@ -14,21 +14,27 @@ export const PUBLIC_ROUTES = {
 // User Routes
 // =====================
 export const USER_ROUTES = {
-  ROOT: '/',
-  SHOP: '/shop',
-  PRODUCT: (id = ':id') => `/product/${id}`,
-  CART: '/cart',
-  PROFILE: '/profile',
+  ROOT: "/",
+  PRODUCTS: "/products",
+  PRODUCT: (id = ":id") => `/product/${id}`,
+  CATEGORIES: "/categories",
+  CATEGORY: (id: string = ":id") => `/categories/${id}`,
+  BRANDS: "/brands",
+  BRAND: (id: string = ":id") => `/brands/${id}`,
+  CART: "/cart",
+  WISHLIST: "/wishlist",
+  PROFILE: "/profile",
 } as const;
 
 // =====================
 // Admin Routes
 // =====================
 export const ADMIN_ROUTES = {
-  ROOT: '/admin',
-  LOGIN: '/admin/login',
-  DASHBOARD: '/admin',
-  PRODUCTS: '/admin/products',
-  ORDERS: '/admin/orders',
-  USERS: '/admin/users',
+  ROOT: "/admin",
+  LOGIN: "/admin/login",
+  DASHBOARD: "/admin",
+  PRODUCTS: "/admin/products",
+  ORDERS: "/admin/orders",
+  USERS: "/admin/users",
+  USERS_NEW: "/admin/users/new",
 } as const;

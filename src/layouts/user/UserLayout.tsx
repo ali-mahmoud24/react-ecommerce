@@ -1,7 +1,6 @@
-// src/layouts/UserLayout.tsx
-import { Outlet } from 'react-router';
-import Navbar from './components/UserNavbar';
-import Footer from './components/UserFooter';
+import { Outlet } from "react-router";
+import Navbar from "./components/UserNavbar";
+import Footer from "./components/UserFooter";
 
 export default function UserLayout() {
   return (
@@ -10,8 +9,10 @@ export default function UserLayout() {
       <Navbar />
       {/* Theme Toggle */}
 
-      <main style={{ padding: '1rem' }}>
+      <main style={{ padding: "1rem" }}>
+
         <Outlet />
+        
       </main>
 
       {/* User Footer */}
