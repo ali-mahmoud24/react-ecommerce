@@ -21,7 +21,7 @@ const queryClient = new QueryClient({
 });
 
 createRoot(document.getElementById('root')!).render(
-  <BrowserRouter>
+  <BrowserRouter basename="/react-ecommerce">
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <AppThemeProvider>
@@ -37,5 +37,5 @@ createRoot(document.getElementById('root')!).render(
         </AppThemeProvider>
       </AuthProvider>
     </QueryClientProvider>
-  </BrowserRouter>
+  </BrowserRouter>,
 );
