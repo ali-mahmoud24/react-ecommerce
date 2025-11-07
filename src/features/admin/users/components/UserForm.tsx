@@ -8,9 +8,10 @@ import { useState } from 'react';
 
 interface UserFormProps {
   onSubmit: (data: FormData) => void;
+  isLoading?: boolean;
 }
 
-export default function UserForm({ onSubmit }: UserFormProps) {
+export default function UserForm({ onSubmit, isLoading }: UserFormProps) {
   const navigate = useNavigate();
   const [preview, setPreview] = useState<string | null>(null);
 
@@ -152,10 +153,10 @@ export default function UserForm({ onSubmit }: UserFormProps) {
         <Button
           variant="contained"
           type="submit"
-          disabled={isSubmitting} // disable during submission
+          disabled={isSubmitting || isLoading} // disable during submission
           sx={{ minWidth: 120 }}
         >
-          {isSubmitting ? 'Creating...' : 'Create'}
+          {isSubmitting || isLoading ? 'Creating...' : 'Create'}
         </Button>
       </Stack>
     </Box>
