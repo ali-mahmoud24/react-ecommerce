@@ -11,11 +11,10 @@ import CategoryDetailsPage from '@/features/user/categories/pages/CategoryDetail
 import BrandsPage from '@/features/user/brands/pages/BrandsPage';
 import BrandDetailsPage from '@/features/user/brands/pages/BrandDetailsPage';
 import Cart from '@/features/user/cart/pages/Cart';
-import Wishlist from '@/features/user/wishlist/pages/Wishlist';
+// import Wishlist from '@/features/user/wishlist/pages/Wishlist';
 
 // routes/user.routes.tsx
-import Login from '@/features/user/auth/pages/Login';
-import Register from '@/features/user/auth/pages/Register';
+
 import Profile from '@/features/user/profile/pages/Profile';
 import Register from '@/features/user/auth/pages/Register';
 import Login from '@/features/user/auth/pages/Login';
@@ -24,6 +23,8 @@ import GuestOnly from '@/auth/GuestOnly';
 import VerifyResetCode from '@/features/user/auth/pages/VerifyResetCode';
 import ResetPassword from '@/features/user/auth/pages/ResetPassword';
 import NotAdmin from '@/auth/NotAdmin';
+import ProductDetailsPage from '@/features/user/products/pages/ProductDetailsPage';
+import Wishlist from './../features/user/wishlist/pages/Wishlist';
 
 // === Placeholder components (replace later) ===
 // const Cart = () => <div>Cart</div>;
@@ -46,17 +47,25 @@ export const userRoutes = (
       <Route path={USER_ROUTES.CATEGORY()} element={<CategoryDetailsPage />} />
       <Route path={USER_ROUTES.BRANDS.replace('/', '')} element={<BrandsPage />} />
       <Route path={USER_ROUTES.BRAND()} element={<BrandDetailsPage />} />
-      <Route path={USER_ROUTES.CART.replace('/', '')} element={<Cart/>} />
-      <Route path={USER_ROUTES.WISHLIST.replace('/', '')} element={<Wishlist/>} />
+      {/* <Route path={USER_ROUTES.CART.replace('/', '')} element={<Cart/>} /> */}
+      {/* <Route path={USER_ROUTES.WISHLIST.replace('/', '')} element={<Wishlist/>} /> */}
 
-      {/* <Route
+      <Route
         path={USER_ROUTES.CART.replace('/', '')}
         element={
           <UserProtected>
             <Cart />
           </UserProtected>
         }
-      /> */}
+      />
+      <Route
+        path={USER_ROUTES.WISHLIST.replace('/', '')}
+        element={
+          <UserProtected>
+            <Wishlist />
+          </UserProtected>
+        }
+      />
 
       <Route
         path={USER_ROUTES.PROFILE.replace('/', '')}

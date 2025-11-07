@@ -15,7 +15,7 @@ export const PUBLIC_ROUTES = {
 // =====================
 export const USER_ROUTES = {
   ROOT: '/',
-  SHOP: '/shop',
+  // SHOP: '/shop',
   CART: '/cart',
   PROFILE: '/profile',
   PRODUCTS: "/products",
@@ -24,9 +24,9 @@ export const USER_ROUTES = {
   CATEGORY: (id: string = ":id") => `/categories/${id}`,
   BRANDS: "/brands",
   BRAND: (id: string = ":id") => `/brands/${id}`,
-  CART: "/cart",
+  // CART: "/cart",
   WISHLIST: "/wishlist",
-  PROFILE: "/profile",
+  // PROFILE: "/profile",
 } as const;
 
 // =====================

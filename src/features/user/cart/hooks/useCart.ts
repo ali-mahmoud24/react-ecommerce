@@ -1,19 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  getCart,
-  addToCart,
-  updateCartItem,
-  deleteCartItem,
-  clearCart,
-} from '../api/cart.api';
+import { getCart, addToCart, updateCartItem, deleteCartItem, clearCart } from '../api/cart.api';
+
 import type { CartResponse } from '../api/cart.api';
 import { useTheme } from '@mui/material/styles';
 import { showToast } from '@/utils/showToast';
+import { useAuth } from '@/hooks/useAuth';
 
 export const useCart = () => {
   const queryClient = useQueryClient();
   const theme = useTheme();
-
+  const { isAuthenticated } = useAuth();
   const { data: cart, isLoading } = useQuery<CartResponse>({
     queryKey: ['cart'],
     queryFn: getCart,
@@ -25,10 +21,14 @@ export const useCart = () => {
     mutationFn: (productId: string) => addToCart(productId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
-      showToast('Item added to cart!', 'success', theme);
+      if (isAuthenticated) {
+        showToast('Item added to cart!', 'success', theme);
+      }
     },
     onError: () => {
-      showToast('Failed to add item to cart.', 'error', theme);
+      if (isAuthenticated) {
+        showToast('Failed to add item to cart.', 'error', theme);
+      }
     },
   });
 
@@ -37,10 +37,14 @@ export const useCart = () => {
       updateCartItem(cartItemId, quantity),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
-      showToast('Cart updated successfully!', 'success', theme);
+      if (isAuthenticated) {
+        showToast('Cart updated successfully!', 'success', theme);
+      }
     },
     onError: () => {
-      showToast('Failed to update cart.', 'error', theme);
+      if (isAuthenticated) {
+        showToast('Failed to update cart.', 'error', theme);
+      }
     },
   });
 
@@ -48,10 +52,14 @@ export const useCart = () => {
     mutationFn: (cartItemId: string) => deleteCartItem(cartItemId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
-      showToast('Item removed from cart.', 'success', theme);
+      if (isAuthenticated) {
+        showToast('Item removed from cart.', 'success', theme);
+      }
     },
     onError: () => {
-      showToast('Failed to remove item from cart.', 'error', theme);
+      if (isAuthenticated) {
+        showToast('Failed to remove item from cart.', 'error', theme);
+      }
     },
   });
 
@@ -59,10 +67,14 @@ export const useCart = () => {
     mutationFn: clearCart,
     onSuccess: () => {
       queryClient.setQueryData(['cart'], { cartItems: [] });
-      showToast('Cart cleared successfully!', 'success', theme);
+      if (isAuthenticated) {
+        showToast('Cart cleared successfully!', 'success', theme);
+      }
     },
     onError: () => {
-      showToast('Failed to clear cart.', 'error', theme);
+      if (isAuthenticated) {
+        showToast('Failed to clear cart.', 'error', theme);
+      }
     },
   });
 
