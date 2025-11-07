@@ -24,6 +24,9 @@ export const USER_ROUTES = {
   CATEGORY: (id: string = ":id") => `/categories/${id}`,
   BRANDS: "/brands",
   BRAND: (id: string = ":id") => `/brands/${id}`,
+  CART: "/cart",
+  WISHLIST: "/wishlist",
+  PROFILE: "/profile",
 } as const;
 
 // =====================

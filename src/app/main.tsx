@@ -8,6 +8,8 @@ import App from './App.tsx';
 import './index.css';
 
 import AppThemeProvider from '@/theme/ThemeProvider.tsx';
+import { SnackbarProvider } from 'notistack';
+import { Toaster } from 'react-hot-toast';
 import AuthProvider from '@/context/AuthProvider.tsx';
 import AppToaster from '@/components/ui/AppToaster.tsx'; // ✅ import it
 
@@ -33,6 +35,7 @@ createRoot(document.getElementById('root')!).render(
           >
             <AppToaster /> {/* ✅ clean and reusable */}
             <App />
+            <Toaster />
           </SnackbarProvider>
         </AppThemeProvider>
       </AuthProvider>

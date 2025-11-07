@@ -13,6 +13,7 @@ export const profileAPI = {
     const formData = new FormData();
     Object.entries(profileData).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         formData.append(key, value as any);
       }
     });
@@ -35,8 +36,8 @@ export const profileAPI = {
     return data;
   },
 
-    changePassword: async (data: { oldPassword: string; newPassword: string; confirmPassword: string }) => {
-    const response = await http.put('/users/changeMyPassword', data, { withCredentials: true });
+    changePassword: async (data: { currentPassword: string; password: string; passwordConfirm: string }) => {
+    const response = await http.patch('/users/changeMyPassword', data, { withCredentials: true });
     return response.data;
   },
 };

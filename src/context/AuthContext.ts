@@ -37,6 +37,7 @@ export type AuthContextType = {
   isAuthenticated: boolean;
   isLoading: boolean;
 
+
   // Auth actions
   login: (user: User) => void;
   logout: () => void;
@@ -51,3 +52,4 @@ export type AuthContextType = {
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
