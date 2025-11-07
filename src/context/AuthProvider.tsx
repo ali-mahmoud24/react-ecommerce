@@ -1,50 +1,73 @@
-import { useState, useEffect, type ReactNode } from 'react';
-import { AuthContext, type User } from './AuthContext';
+import React, { useState, useEffect, useCallback } from "react";
+import { AuthContext, type User, type UpdatedUser } from "./AuthContext";
+import { authAPI } from "@/features/user/auth/api/auth.api";
 
-type AuthProviderProps = {
-  children: ReactNode;
-};
+type Props = { children: React.ReactNode };
 
-export function AuthProvider({ children }: AuthProviderProps) {
-  const [token, setToken] = useState<string | null>(
-    localStorage.getItem('token')
-  );
-  const [user, setUser] = useState<User | null>(() => {
-    const storedUser = localStorage.getItem('user');
-    return storedUser ? JSON.parse(storedUser) : null;
-  });
+export default function AuthProvider({ children }: Props) {
+  const [user, setUser] = useState<User | null>(null);
+  const [updatedUser, setUpdatedUser] = useState<UpdatedUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [resetEmail, setResetEmail] = useState<string | null>(null);
+  const [isCodeVerified, setIsCodeVerified] = useState(false);
 
-  const isAuthenticated = !!token;
+  const isAuthenticated = !!user;
 
-  const login = (jwt: string, userData: User) => {
-    localStorage.setItem('token', jwt);
-    localStorage.setItem('user', JSON.stringify(userData));
+  const fetchCurrentUser = useCallback(async () => {
+    try {
+      const me = await authAPI.me();
+      setUser(me);
+    } catch {
+      setUser(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
-    setToken(jwt);
-    setUser(userData);
-  };
+  useEffect(() => {
+    fetchCurrentUser();
+  }, [fetchCurrentUser]);
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+  const login = useCallback((loggedUser: User) => {
+    setUser(loggedUser);
+  }, []);
 
-    setToken(null);
-    setUser(null);
-  };
+  const logout = useCallback(() => {
+    authAPI.logout().finally(() => {
+      setUser(null);
+    });
+  }, []);
 
-  useEffect(() => {}, []);
+  const updateUser = useCallback((updated: UpdatedUser) => {
+    setUser((prev) => ({ ...prev, ...updated } as User));
+    setUpdatedUser(updated);
+  }, []);
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        token,
+        updatedUser,
+        setUpdatedUser,
+        setUser,
         isAuthenticated,
+        isLoading,
         login,
         logout,
+        updateUser,
+        resetEmail,
+        setResetEmail,
+        isCodeVerified,
+        setIsCodeVerified,
       }}
     >
-      {children}
+      {isLoading ? (
+        <div className="flex h-screen items-center justify-center text-gray-500">
+          Loading...
+        </div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 }

@@ -5,6 +5,9 @@ export const PUBLIC_ROUTES = {
   HOME: '/',
   LOGIN: '/login',
   REGISTER: '/register',
+  FORGOT_PASSWORD: '/forgot-password',
+  VERIFY_RESET_CODE:'/verifyResetCode',
+  RESET_PASSWORD:'/resetPassword'
 } as const;
 
 // =====================
