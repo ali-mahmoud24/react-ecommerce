@@ -1,7 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
-import { Route } from 'react-router';
+import { Navigate, Route } from 'react-router';
 import AdminLayout from '@/layouts/admin/AdminLayout';
-// import AdminProtected from "@/auth/AdminProtected";
 import { ADMIN_ROUTES } from '@/constants/routes';
 
 import UsersPage from '@/features/admin/users/pages/UsersPage';
@@ -14,9 +13,6 @@ import ProductDetail from '@/features/admin/products/components/ProductDetail';
 import ProductForm from '@/features/admin/products/components/ProductForm';
 
 // === Placeholder components ===
-// const AdminLogin = () => <div>Admin Login</div>;
-const Dashboard = () => <div>Admin Dashboard</div>;
-// const ManageProducts = () => <div>Admin Products</div>;
 const Orders = () => <div>Admin Orders</div>;
 
 export const adminRoutes = (
@@ -30,7 +26,7 @@ export const adminRoutes = (
         </AdminProtected>
       }
     >
-      <Route index element={<Dashboard />} />
+      <Route index element={<Navigate to={ADMIN_ROUTES.USERS.replace('/admin/', '')} replace />} />
       <Route
         path={ADMIN_ROUTES.PRODUCTS.replace('/admin/', '')}
         element={
