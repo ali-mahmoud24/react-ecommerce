@@ -1,4 +1,3 @@
-// src/features/admin/products/schema/product.schema.ts
 import { z } from 'zod';
 
 export const productSchema = z.object({
@@ -25,5 +24,4 @@ export const productSchema = z.object({
   images: z.array(z.any()).max(6, 'You can upload up to 6 images').optional(),
 });
 
-// 👇 THIS IS IMPORTANT
 export type ProductFormData = z.infer<typeof productSchema>;

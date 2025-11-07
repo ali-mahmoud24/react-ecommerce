@@ -11,6 +11,7 @@ import AdminProtected from '@/auth/AdminProtected';
 import ProductsPage from '@/features/admin/products/pages/ProductsPage';
 import ProductDetail from '@/features/admin/products/components/ProductDetail';
 import ProductForm from '@/features/admin/products/components/ProductForm';
+import ProductEdit from '@/features/admin/products/components/ProductEdit';
 
 // === Placeholder components ===
 const Orders = () => <div>Admin Orders</div>;
@@ -68,10 +69,26 @@ export const adminRoutes = (
         }
       />
       <Route
+        path={ADMIN_ROUTES.PRODUCTS.replace('/admin/', '')}
+        element={
+          <AdminProtected>
+            <ProductsPage />
+          </AdminProtected>
+        }
+      />
+      <Route
         path={ADMIN_ROUTES.PRODUCTS.replace('/admin/', '') + '/:id'}
         element={
           <AdminProtected>
             <ProductDetail />
+          </AdminProtected>
+        }
+      />
+      <Route
+        path={ADMIN_ROUTES.PRODUCTS.replace('/admin/', '') + '/:id/edit'}
+        element={
+          <AdminProtected>
+            <ProductEdit  />
           </AdminProtected>
         }
       />

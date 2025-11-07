@@ -1,104 +1,96 @@
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { productSchema } from '../schema/product.schema';
-import type { ProductFormData } from '../schema/product.schema';
+import { productSchema, type ProductFormData } from '../schema/product.schema';
 import { useBrands } from '../hooks/useBrands';
 import { useCategories } from '../hooks/useCategories';
-import { useCreateProductMutation } from '../hooks/useProducts';
-
 import {
-  TextField,
-  Button,
   Box,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
-  Chip,
-  OutlinedInput,
+  Button,
   Stack,
-  IconButton,
+  TextField,
   Typography,
-  Alert,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  OutlinedInput,
+  Chip,
+  IconButton,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useEffect, useState } from 'react';
 
-export default function ProductForm() {
+interface ProductFormProps {
+  onSubmit: (formData: FormData) => void;
+  isLoading?: boolean;
+  defaultValues?: Partial<ProductFormData & { images?: (File | string)[]; imageCover?: string }>;
+}
+
+export default function ProductForm({ onSubmit, isLoading, defaultValues }: ProductFormProps) {
+  const isEditMode = !!defaultValues;
+
+  const [coverPreview, setCoverPreview] = useState<string | null>(
+    defaultValues?.imageCover || null,
+  );
+  const [imagesPreview, setImagesPreview] = useState<(File | string)[]>(
+    defaultValues?.images || [],
+  );
+
+  const { data: brands = [], isLoading: brandsLoading } = useBrands();
+  const { data: categories = [], isLoading: categoriesLoading } = useCategories();
+
   const {
     control,
-    handleSubmit,
     register,
-    setValue,
+    handleSubmit,
     watch,
-    formState: { errors },
+    setValue,
+    formState: { errors, isSubmitting },
   } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
     defaultValues: {
-      title: '',
-      description: '',
-      price: 0,
-      priceAfterDiscount: 0,
-      quantity: 0,
-      category: '',
-      brand: '',
-      colors: [],
+      title: defaultValues?.title || '',
+      description: defaultValues?.description || '',
+      price: defaultValues?.price || 0,
+      priceAfterDiscount: defaultValues?.priceAfterDiscount || 0,
+      quantity: defaultValues?.quantity || 0,
+      category: defaultValues?.category || '',
+      brand: defaultValues?.brand || '',
+      colors: defaultValues?.colors || [],
       imageCover: undefined,
       images: [],
     },
   });
 
-  const { mutate, isPending, isError, isSuccess } = useCreateProductMutation();
-  const { data: brands = [], isLoading: brandsLoading } = useBrands();
-  const { data: categories = [], isLoading: categoriesLoading } = useCategories();
-
-  const images = watch('images') || [];
-  const imageCover = watch('imageCover');
-
-  const handleRemoveImage = (index: number) => {
-    const updated = images.filter((_, i) => i !== index);
-    setValue('images', updated);
-  };
-
-  const handleRemoveCover = () => setValue('imageCover', undefined);
-
-  const onSubmit = async (values: ProductFormData) => {
-    const formData = new FormData();
-
-    // Image Cover
-    if (values.imageCover && values.imageCover instanceof File) {
-      formData.append('imageCover', values.imageCover);
-    }
-
-    // Product Images (array)
-    values.images?.forEach((file) => {
-      if (file instanceof File) formData.append('images', file);
-    });
-
-    // Colors
-    values.colors?.forEach((color) => formData.append('colors', color));
-    console.log('imageCover:', values.imageCover, values.imageCover instanceof File);
-    console.log(
-      'images:',
-      values.images,
-      values.images.every((img) => img instanceof File),
-    );
-
-    // Other fields
-    formData.append('title', values.title);
-    formData.append('description', values.description);
-    formData.append('price', String(values.price));
-    formData.append('priceAfterDiscount', String(values.priceAfterDiscount));
-    formData.append('quantity', String(values.quantity));
-    formData.append('category', values.category);
-    formData.append('brand', values.brand);
-
-    mutate(formData);
-  };
+  const watchImages = watch('images') || [];
 
   const availableColors = ['Red', 'Blue', 'Green', 'Black', 'White', 'Yellow'];
 
+  const handleFormSubmit = (data: ProductFormData) => {
+    const formData = new FormData();
+
+    formData.append('title', data.title);
+    formData.append('description', data.description);
+    formData.append('price', String(data.price));
+    formData.append('priceAfterDiscount', String(data.priceAfterDiscount || 0));
+    formData.append('quantity', String(data.quantity));
+    formData.append('category', data.category);
+    formData.append('brand', data.brand);
+    data.colors.forEach((color) => formData.append('colors', color));
+
+    // Append imageCover
+    if (data.imageCover instanceof File) formData.append('imageCover', data.imageCover);
+
+    // Append images
+    watchImages.forEach((img) => {
+      if (img instanceof File) formData.append('images', img);
+    });
+
+    onSubmit(formData);
+  };
+
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ p: 3 }}>
+    <Box component="form" onSubmit={handleSubmit(handleFormSubmit)} sx={{ p: 3 }}>
       {/* Title */}
       <TextField
         label="Title"
@@ -153,74 +145,52 @@ export default function ProductForm() {
       <Controller
         name="category"
         control={control}
-        render={({ field }) => (
-          <FormControl fullWidth margin="normal" error={!!errors.category}>
-            <InputLabel>Category</InputLabel>
-            <Select
-              {...field}
-              value={field.value || ''}
-              input={<OutlinedInput label="Category" />}
-              disabled={categoriesLoading}
-            >
-              {categories.map((cat) => (
-                <MenuItem key={cat.id} value={cat.id}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    {cat.imageUrl && (
-                      <img
-                        src={cat.imageUrl}
-                        alt={cat.name}
-                        style={{ width: 24, height: 24, borderRadius: '50%' }}
-                      />
-                    )}
+        render={({ field }) => {
+          const value = categories.some((c) => c.id === field.value) ? field.value : '';
+          return (
+            <FormControl fullWidth margin="normal" error={!!errors.category}>
+              <InputLabel>Category</InputLabel>
+              <Select
+                {...field}
+                value={value}
+                input={<OutlinedInput label="Category" />}
+                disabled={categoriesLoading}
+              >
+                {categories.map((cat) => (
+                  <MenuItem key={cat.id} value={cat.id}>
                     {cat.name}
-                  </Box>
-                </MenuItem>
-              ))}
-            </Select>
-            {errors.category && (
-              <Typography variant="caption" color="error">
-                {errors.category.message}
-              </Typography>
-            )}
-          </FormControl>
-        )}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          );
+        }}
       />
 
       {/* Brand */}
       <Controller
         name="brand"
         control={control}
-        render={({ field }) => (
-          <FormControl fullWidth margin="normal" error={!!errors.brand}>
-            <InputLabel>Brand</InputLabel>
-            <Select
-              {...field}
-              value={field.value || ''}
-              input={<OutlinedInput label="Brand" />}
-              disabled={brandsLoading}
-            >
-              {brands.map((brand) => (
-                <MenuItem key={brand.id} value={brand.id}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    {brand.imageUrl && (
-                      <img
-                        src={brand.imageUrl}
-                        alt={brand.name}
-                        style={{ width: 24, height: 24, borderRadius: '50%' }}
-                      />
-                    )}
-                    {brand.name}
-                  </Box>
-                </MenuItem>
-              ))}
-            </Select>
-            {errors.brand && (
-              <Typography variant="caption" color="error">
-                {errors.brand.message}
-              </Typography>
-            )}
-          </FormControl>
-        )}
+        render={({ field }) => {
+          const value = brands.some((b) => b.id === field.value) ? field.value : '';
+          return (
+            <FormControl fullWidth margin="normal" error={!!errors.brand}>
+              <InputLabel>Brand</InputLabel>
+              <Select
+                {...field}
+                value={value}
+                input={<OutlinedInput label="Brand" />}
+                disabled={brandsLoading}
+              >
+                {brands.map((b) => (
+                  <MenuItem key={b.id} value={b.id}>
+                    {b.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          );
+        }}
       />
 
       {/* Colors */}
@@ -237,7 +207,7 @@ export default function ProductForm() {
               input={<OutlinedInput label="Colors" />}
               renderValue={(selected) => (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {(selected as string[]).map((color) => (
+                  {selected.map((color) => (
                     <Chip key={color} label={color} />
                   ))}
                 </Box>
@@ -249,11 +219,6 @@ export default function ProductForm() {
                 </MenuItem>
               ))}
             </Select>
-            {errors.colors && (
-              <Typography variant="caption" color="error">
-                {errors.colors.message}
-              </Typography>
-            )}
           </FormControl>
         )}
       />
@@ -265,15 +230,14 @@ export default function ProductForm() {
         render={({ field }) => (
           <Box mt={2}>
             <Typography fontWeight={600}>Image Cover</Typography>
-            {field.value ? (
+            {coverPreview ? (
               <Box sx={{ position: 'relative', width: 150, mt: 1 }}>
-                <img
-                  src={URL.createObjectURL(field.value)}
-                  alt="cover"
-                  style={{ width: '100%', borderRadius: 8 }}
-                />
+                <img src={coverPreview} alt="cover" style={{ width: '100%', borderRadius: 8 }} />
                 <IconButton
-                  onClick={() => field.onChange(undefined)}
+                  onClick={() => {
+                    setCoverPreview(null);
+                    field.onChange(undefined);
+                  }}
                   sx={{ position: 'absolute', top: 4, right: 4, color: 'error.main' }}
                 >
                   <DeleteIcon />
@@ -288,15 +252,11 @@ export default function ProductForm() {
                   hidden
                   onChange={(e) => {
                     const file = e.target.files?.[0];
-                    if (file) field.onChange(file);
+                    field.onChange(file);
+                    if (file) setCoverPreview(URL.createObjectURL(file));
                   }}
                 />
               </Button>
-            )}
-            {errors.imageCover?.message && (
-              <Typography variant="caption" color="error">
-                {String(errors.imageCover.message)}
-              </Typography>
             )}
           </Box>
         )}
@@ -310,22 +270,26 @@ export default function ProductForm() {
           <Box mt={3}>
             <Typography fontWeight={600}>Product Images (max 5)</Typography>
             <Stack direction="row" spacing={2} flexWrap="wrap" mt={1}>
-              {field.value?.map((img, i) => (
+              {imagesPreview.map((img, i) => (
                 <Box key={i} sx={{ position: 'relative' }}>
                   <img
-                    src={URL.createObjectURL(img)}
+                    src={typeof img === 'string' ? img : URL.createObjectURL(img as File)}
                     alt={`product-${i}`}
                     style={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 8 }}
                   />
                   <IconButton
-                    onClick={() => field.onChange(field.value.filter((_, idx) => idx !== i))}
+                    onClick={() => {
+                      const updated = imagesPreview.filter((_, idx) => idx !== i);
+                      setImagesPreview(updated);
+                      field.onChange(updated.filter((f) => f instanceof File));
+                    }}
                     sx={{ position: 'absolute', top: 4, right: 4, color: 'error.main' }}
                   >
                     <DeleteIcon />
                   </IconButton>
                 </Box>
               ))}
-              {(!field.value || field.value.length < 5) && (
+              {imagesPreview.length < 5 && (
                 <Button variant="outlined" component="label" sx={{ width: 120, height: 120 }}>
                   +
                   <input
@@ -335,28 +299,25 @@ export default function ProductForm() {
                     hidden
                     onChange={(e) => {
                       const files = Array.from(e.target.files || []);
-                      field.onChange([...field.value, ...files].slice(0, 5));
+                      const newFiles = [
+                        ...watchImages.filter((f) => f instanceof File),
+                        ...files,
+                      ].slice(0, 5);
+                      setImagesPreview(newFiles);
+                      field.onChange(newFiles);
                     }}
                   />
                 </Button>
               )}
             </Stack>
-            {errors.images && (
-              <Typography variant="caption" color="error">
-                {errors.images.message}
-              </Typography>
-            )}
           </Box>
         )}
       />
 
       {/* Submit */}
-      <Button type="submit" variant="contained" disabled={isPending}>
-        {isPending ? 'Saving...' : 'Save Product'}
+      <Button type="submit" variant="contained" disabled={isSubmitting || isLoading} sx={{ mt: 3 }}>
+        {isSubmitting || isLoading ? 'Saving...' : isEditMode ? 'Update Product' : 'Create Product'}
       </Button>
-
-      {isSuccess && <Alert severity="success">Product added!</Alert>}
-      {isError && <Alert severity="error">Failed to add product</Alert>}
     </Box>
   );
 }

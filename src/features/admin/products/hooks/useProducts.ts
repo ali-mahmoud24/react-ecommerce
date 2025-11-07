@@ -133,18 +133,33 @@ export function useUpdateProductMutation() {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: UpdateProductDto }) =>
-      updateProduct(id, payload),
+    mutationFn: ({ id, formData }: { id: string; formData: FormData }) =>
+      updateProduct(id, formData),
 
-    onMutate: async ({ id, payload }) => {
+    onMutate: async ({ id, formData }) => {
       await qc.cancelQueries({ queryKey: PRODUCTS_QK });
-
       const prev = qc.getQueryData<Product[]>(PRODUCTS_QK) ?? [];
 
-      qc.setQueryData<Product[]>(
-        PRODUCTS_QK,
-        prev.map((p) => (p.id === id ? { ...p, ...payload } : p)),
-      );
+      const optimisticProduct: Partial<Product> = {
+        id,
+        title: (formData.get('title') as string) || '',
+        description: (formData.get('description') as string) || '',
+        price: Number(formData.get('price')) || 0,
+        priceAfterDiscount: Number(formData.get('priceAfterDiscount') || 0),
+        quantity: Number(formData.get('quantity')) || 0,
+        colors: (formData.getAll('colors') as string[]) || [],
+        category: { id: (formData.get('category') as string) || '', name: '' },
+        brand: { id: (formData.get('brand') as string) || '', name: '' },
+        imageCoverUrl: formData.get('imageCover') instanceof File
+          ? URL.createObjectURL(formData.get('imageCover') as File)
+          : prev.find(p => p.id === id)?.imageCoverUrl || null,
+        imageUrls:
+          (formData.getAll('images') as any[]).filter(f => f instanceof File).length > 0
+            ? (formData.getAll('images') as File[]).map((file) => URL.createObjectURL(file))
+            : prev.find(p => p.id === id)?.imageUrls || [],
+      };
+
+      qc.setQueryData(PRODUCTS_QK, prev.map((p) => (p.id === id ? { ...p, ...optimisticProduct } : p)));
 
       return { prev };
     },
@@ -156,6 +171,8 @@ export function useUpdateProductMutation() {
     onSettled: () => qc.invalidateQueries({ queryKey: PRODUCTS_QK }),
   });
 }
+
+
 
 export function useDeleteProductMutation() {
   const qc = useQueryClient();

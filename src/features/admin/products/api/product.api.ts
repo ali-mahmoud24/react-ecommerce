@@ -3,7 +3,6 @@ import type {
   Product,
   PaginatedProductsResponse,
   ProductResponse,
-  
   UpdateProductDto,
 } from '../types/product.type';
 
@@ -41,8 +40,12 @@ export async function createProduct(formData: FormData) {
   return data;
 }
 
-export async function updateProduct(id: string, payload: UpdateProductDto) {
-  const { data } = await http.put<Product>(`${RESOURCE}/${id}`, payload);
+export async function updateProduct(id: string, payload: FormData) {
+  const { data } = await http.put<Product>(`${RESOURCE}/${id}`, payload, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
   return data;
 }
 

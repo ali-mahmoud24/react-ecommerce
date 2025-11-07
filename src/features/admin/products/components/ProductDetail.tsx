@@ -99,7 +99,7 @@ export default function ProductDetail() {
                       boxShadow: 2,
                     }}
                   />
-                )
+                ),
             )}
           </Box>
 
