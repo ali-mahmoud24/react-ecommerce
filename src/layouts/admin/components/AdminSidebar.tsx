@@ -12,6 +12,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import CategoryIcon from '@mui/icons-material/Category';
 import StoreIcon from '@mui/icons-material/Store';
 import ReceiptIcon from '@mui/icons-material/Receipt';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
 const drawerWidth = 240;
 const collapsedWidth = 64;
@@ -27,8 +28,9 @@ export default function AdminSidebar({ open, onToggleMenu, isDesktop }: Props) {
 
   const navItems = [
     { label: 'Users', icon: <PeopleIcon />, path: '/admin/users' },
-    { label: 'Products', icon: <StoreIcon />, path: '/admin/products' },
+    { label: 'Brands', icon: <LocalOfferIcon />, path: '/admin/brands' },
     { label: 'Categories', icon: <CategoryIcon />, path: '/admin/categories' },
+    { label: 'Products', icon: <StoreIcon />, path: '/admin/products' },
     { label: 'Orders', icon: <ReceiptIcon />, path: '/admin/orders' },
   ];
 

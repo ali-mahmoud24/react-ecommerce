@@ -23,13 +23,17 @@ export const USER_ROUTES = {
 // =====================
 export const ADMIN_ROUTES = {
   ROOT: '/admin',
-  LOGIN: '/admin/login',
-  DASHBOARD: '/admin',
 
   CATEGORIES: '/admin/categories',
   CATEGORY_NEW: '/admin/categories/new',
   CATEGORY: (id = ':id') => `/admin/categories/${id}`,
   CATEGORY_EDIT: (id = ':id') => `/admin/categories/${id}/edit`,
+
+
+  BRANDS: '/admin/brands',
+  BRAND_NEW: '/admin/brands/new',
+  BRAND: (id = ':id') => `/admin/brands/${id}`,
+  BRAND_EDIT: (id = ':id') => `/admin/brands/${id}/edit`,
 
   PRODUCTS: '/admin/products',
   ORDERS: '/admin/orders',

@@ -11,10 +11,12 @@ import CategoriesPage from '@/features/admin/categories/pages/CategoriesPage';
 import NewCategoryPage from '@/features/admin/categories/pages/NewCategoryPage';
 import CategoryDetailsPage from '@/features/admin/categories/pages/CategoryDetailsPage';
 import EditCategoryPage from '@/features/admin/categories/pages/EditCategoryPage';
+import BrandsPage from '@/features/admin/brands/pages/BrandsPage';
+import NewBrandPage from '@/features/admin/brands/pages/NewBrandPage';
+import BrandDetailsPage from '@/features/admin/brands/pages/BrandDetailsPage';
+import EditBrandPage from '@/features/admin/brands/pages/EditBrandPage';
 
 // === Placeholder components ===
-// const AdminLogin = () => <div>Admin Login</div>;
-const Dashboard = () => <div>Admin Dashboard</div>;
 const ManageProducts = () => <div>Admin Products</div>;
 const Orders = () => <div>Admin Orders</div>;
 
@@ -29,12 +31,14 @@ export const adminRoutes = (
         // </AdminProtected>
       }
     >
-      <Route index element={<Dashboard />} />
       <Route path={ADMIN_ROUTES.PRODUCTS.replace('/admin/', '')} element={<ManageProducts />} />
-      <Route path={ADMIN_ROUTES.USERS.replace('/admin/', '') + '/:id'} element={<UserDetail />} />
       <Route path={ADMIN_ROUTES.ORDERS.replace('/admin/', '')} element={<Orders />} />
+
+      {/* USERS */}
       <Route path={ADMIN_ROUTES.USERS.replace('/admin/', '')} element={<UsersPage />} />
+      <Route path={ADMIN_ROUTES.USERS.replace('/admin/', '') + '/:id'} element={<UserDetail />} />
       <Route path={ADMIN_ROUTES.USERS_NEW.replace('/admin/', '')} element={<UserCreate />} />
+      {/* USERS */}
 
       {/* CATEGORIES */}
       <Route path={ADMIN_ROUTES.CATEGORIES.replace('/admin/', '')} element={<CategoriesPage />} />
@@ -50,9 +54,14 @@ export const adminRoutes = (
         path={ADMIN_ROUTES.CATEGORY_EDIT().replace('/admin/', '')}
         element={<EditCategoryPage />}
       />
-    </Route>
+      {/* CATEGORIES */}
 
-    {/* Login outside layout */}
-    {/* <Route path={ADMIN_ROUTES.LOGIN} element={<AdminLogin />} /> */}
+      {/* BRANDS */}
+      <Route path={ADMIN_ROUTES.BRANDS.replace('/admin/', '')} element={<BrandsPage />} />
+      <Route path={ADMIN_ROUTES.BRAND_NEW.replace('/admin/', '')} element={<NewBrandPage />} />
+      <Route path={ADMIN_ROUTES.BRAND().replace('/admin/', '')} element={<BrandDetailsPage />} />
+      <Route path={ADMIN_ROUTES.BRAND_EDIT().replace('/admin/', '')} element={<EditBrandPage />} />
+      {/* BRANDS */}
+    </Route>
   </>
 );
