@@ -301,7 +301,7 @@ function Navbar({ onSearchResults }: NavbarProps) {
             <Box display="flex" alignItems="center" gap={1}>
               <img src={logo} alt="Ecommerce Logo" style={{ width: '30px', height: '30px' }} />
               <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '1.25rem' }}>
-                Ecommerce
+                Shoply
               </Typography>
             </Box>
           </Link>
