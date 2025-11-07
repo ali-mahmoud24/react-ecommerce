@@ -7,11 +7,14 @@ import { ADMIN_ROUTES } from '@/constants/routes';
 import UsersPage from '@/features/admin/users/pages/UsersPage';
 import UserCreate from '@/features/admin/users/components/UserCreate';
 import UserDetail from '@/features/admin/users/components/UserDetail';
+import ProductsPage from '@/features/admin/products/pages/ProductsPage';
+import ProductDetail from '@/features/admin/products/components/ProductDetail';
+import ProductForm from '@/features/admin/products/components/ProductForm';
 
 // === Placeholder components ===
 // const AdminLogin = () => <div>Admin Login</div>;
 const Dashboard = () => <div>Admin Dashboard</div>;
-const ManageProducts = () => <div>Admin Products</div>;
+// const ManageProducts = () => <div>Admin Products</div>;
 const Orders = () => <div>Admin Orders</div>;
 
 export const adminRoutes = (
@@ -26,11 +29,17 @@ export const adminRoutes = (
       }
     >
       <Route index element={<Dashboard />} />
-      <Route path={ADMIN_ROUTES.PRODUCTS.replace('/admin/', '')} element={<ManageProducts />} />
+      <Route path={ADMIN_ROUTES.PRODUCTS.replace('/admin/', '')} element={<ProductsPage />} />
       <Route path={ADMIN_ROUTES.USERS.replace('/admin/', '') + '/:id'} element={<UserDetail />} />
       <Route path={ADMIN_ROUTES.ORDERS.replace('/admin/', '')} element={<Orders />} />
       <Route path={ADMIN_ROUTES.USERS.replace('/admin/', '')} element={<UsersPage />} />
       <Route path={ADMIN_ROUTES.USERS_NEW.replace('/admin/', '')} element={<UserCreate />} />
+
+      <Route
+        path={ADMIN_ROUTES.PRODUCTS.replace('/admin/', '') + '/:id'}
+        element={<ProductDetail />}
+      />
+      <Route path={ADMIN_ROUTES.PRODUCTS_NEW.replace('/admin/', '')} element={<ProductForm />} />
     </Route>
 
     {/* Login outside layout */}
