@@ -1,17 +1,18 @@
-import type { ReactNode } from 'react';
+import { Navigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { PUBLIC_ROUTES } from "@/constants/routes";
 
+type Props = { children: React.ReactNode };
 
-import { Navigate } from 'react-router';
+export default function UserProtected({ children }: Props) {
+  const { isAuthenticated, isLoading } = useAuth();
 
-type UserProtectedProps = {
-  children: ReactNode;
-};
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
-export default function UserProtected({ children }: UserProtectedProps) {
-  const isLoggedIn = false; // TODO: replace with real auth logic
-
-  if (!isLoggedIn) {
-    return <Navigate to="/login" replace />;
+  if (!isAuthenticated) {
+    return <Navigate to={PUBLIC_ROUTES.LOGIN} replace />;
   }
 
   return <>{children}</>;
