@@ -1,24 +1,16 @@
-// main.tsx
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter } from 'react-router';
+
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from './queryClient.ts';
 
 import App from './App.tsx';
 import './index.css';
 
+import { AuthProvider } from '@/context/AuthProvider.tsx';
 import AppThemeProvider from '@/theme/ThemeProvider.tsx';
-import AuthProvider from '@/context/AuthProvider.tsx';
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
 import { SnackbarProvider } from 'notistack';
+import { Toaster } from 'react-hot-toast';
 
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
@@ -31,6 +23,7 @@ createRoot(document.getElementById('root')!).render(
             autoHideDuration={3000}
           >
             <App />
+            <Toaster />
           </SnackbarProvider>
         </AppThemeProvider>
       </AuthProvider>
