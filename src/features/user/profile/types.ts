@@ -2,7 +2,7 @@ export type UpdateProfileRequest = {
   firstName?: string;
   lastName?: string;
   phone?: string;
-  profileImage?: File | string; // allow both base64/file or url
+  profileImage?: File | string;
 };
 
 export type UserProfile = {
@@ -17,7 +17,7 @@ export type UserProfile = {
 };
 
 export type ChangePasswordRequest = {
-  oldPassword: string;
-  newPassword: string;
-  confirmPassword: string;
+  currentPassword: string;
+  password: string;
+  passwordConfirm: string;
 };

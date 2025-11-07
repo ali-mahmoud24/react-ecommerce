@@ -1,6 +1,14 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+} from '@mui/material';
 import { useProfile } from '../hooks/useProfile';
 import { changePasswordSchema, type ChangePasswordFormData } from '../schemas/profile.schema';
 
@@ -31,26 +39,29 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
             <TextField
               label="Old Password"
               type="password"
-              {...register('oldPassword')}
-              error={!!formState.errors.oldPassword}
-              helperText={formState.errors.oldPassword?.message}
+              {...register('currentPassword')}
+              error={!!formState.errors.currentPassword}
+              helperText={formState.errors.currentPassword?.message}
               fullWidth
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0.25 } }}
             />
             <TextField
               label="New Password"
               type="password"
-              {...register('newPassword')}
-              error={!!formState.errors.newPassword}
-              helperText={formState.errors.newPassword?.message}
+              {...register('password')}
+              error={!!formState.errors.password}
+              helperText={formState.errors.password?.message}
               fullWidth
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0.25 } }}
             />
             <TextField
               label="Confirm New Password"
               type="password"
-              {...register('confirmPassword')}
-              error={!!formState.errors.confirmPassword}
-              helperText={formState.errors.confirmPassword?.message}
+              {...register('passwordConfirm')}
+              error={!!formState.errors.passwordConfirm}
+              helperText={formState.errors.passwordConfirm?.message}
               fullWidth
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0.25 } }}
             />
           </Box>
         </DialogContent>

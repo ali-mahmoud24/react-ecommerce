@@ -1,12 +1,9 @@
-// hooks/useAuth.ts
 import { useContext } from 'react';
 import { AuthContext } from '@/context/AuthContext';
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
 
   const { 
     user, 
@@ -20,8 +17,7 @@ export function useAuth() {
     resetEmail,
     setResetEmail,
     isCodeVerified,
-    setIsCodeVerified 
-    
+    setIsCodeVerified,
   } = context;
 
   const isAdmin = user?.role === 'admin';
@@ -30,24 +26,17 @@ export function useAuth() {
   const isLoadingProfile = isLoading;
 
   return {
-    // User state
     user,
     updatedUser,
     isAuthenticated,
     isLoading: isLoadingProfile,
-    
-    // User role helpers
     isAdmin,
     isUser,
     fullName,
-    
-    // Auth actions
     login,
     logout,
     updateUser,
     setUser,
-    
-    // Password reset state
     resetEmail,
     setResetEmail,
     isCodeVerified,

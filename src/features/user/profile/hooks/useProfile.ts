@@ -6,7 +6,11 @@ import toast from 'react-hot-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router';
 import { profileAPI } from '../api/profile.api';
-import { profileSchema, type ProfileFormData, type ChangePasswordFormData } from '../schemas/profile.schema';
+import {
+  profileSchema,
+  type ProfileFormData,
+  type ChangePasswordFormData,
+} from '../schemas/profile.schema';
 import type { UserProfile, UpdateProfileRequest } from '../types';
 
 export const useProfile = () => {
@@ -78,12 +82,21 @@ export const useProfile = () => {
   };
 
   const changePassword = (data: ChangePasswordFormData) => {
-    const { oldPassword, newPassword } = data;
-    changePasswordMutation.mutate({ oldPassword, newPassword, confirmPassword: newPassword });
+    const { currentPassword, password, passwordConfirm } = data;
+    changePasswordMutation.mutate({
+      currentPassword,
+      password,
+      passwordConfirm,
+    });
   };
 
+
   const deactivateAccount = () => {
-    if (window.confirm('Are you sure you want to deactivate your account? This action is irreversible.')) {
+    if (
+      window.confirm(
+        'Are you sure you want to deactivate your account? This action is irreversible.',
+      )
+    ) {
       deactivateMutation.mutate();
     }
   };

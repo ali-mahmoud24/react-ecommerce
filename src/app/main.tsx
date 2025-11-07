@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SnackbarProvider } from 'notistack';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -9,7 +9,7 @@ import './index.css';
 
 import AppThemeProvider from '@/theme/ThemeProvider.tsx';
 import AuthProvider from '@/context/AuthProvider.tsx';
-import AppToaster from '@/components/ui/AppToaster.tsx'; // ✅ import it
+import AppToaster from '@/components/ui/AppToaster.tsx';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,7 +31,7 @@ createRoot(document.getElementById('root')!).render(
             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             autoHideDuration={3000}
           >
-            <AppToaster /> {/* ✅ clean and reusable */}
+            <AppToaster />
             <App />
           </SnackbarProvider>
         </AppThemeProvider>
