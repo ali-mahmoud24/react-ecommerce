@@ -15,6 +15,8 @@ import { useRegister } from '../hooks/useRegister';
 import { PUBLIC_ROUTES } from '@/constants/routes';
 import GoogleLoginButton from '../components/GoogleLoginButton';
 
+import registerImage from '@/assets/images/register.jpg'; // or relative path
+
 export default function Register() {
   const { form, onSubmit, isLoading } = useRegister();
   const {
@@ -66,7 +68,7 @@ export default function Register() {
         <Box
           sx={{
             flex: 1,
-            backgroundImage: 'url("/src/assets/images/register.jpg")',
+            backgroundImage: `url(${registerImage})`,
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
@@ -124,7 +126,7 @@ export default function Register() {
               }}
             >
               <Grid container spacing={2}>
-                <Grid size={{xs:12, sm:6}}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     label="First Name"
                     fullWidth
@@ -135,7 +137,7 @@ export default function Register() {
                   />
                 </Grid>
 
-                <Grid size={{xs:12, sm:6}}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     label="Last Name"
                     fullWidth

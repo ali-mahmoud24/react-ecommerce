@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "npx vite build",
+    "postbuild": "node scripts/copy-404.js",
     "lint": "eslint .",
     "preview": "vite preview",
     "deploy": "gh-pages -d dist"
@@ -50,6 +51,7 @@
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.4",
     "autoprefixer": "^10.4.21",
+    "cpy-cli": "^6.0.0",
     "eslint": "^9.36.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.22",

@@ -20,6 +20,8 @@ import { useActivateAccount } from '../hooks/useActivateAccount';
 import { PUBLIC_ROUTES } from '@/constants/routes';
 import { Link as RouterLink } from 'react-router';
 
+import loginImage from '@/assets/images/auth-login.jpg';
+
 export default function Login() {
   const theme = useTheme();
   const { form, onSubmit, isLoading, isDeactivated, setIsDeactivated } = useLogin();
@@ -74,7 +76,7 @@ export default function Login() {
           <Box
             sx={{
               flex: 1,
-              backgroundImage: 'url("/src/assets/images/auth-login.jpg")',
+              backgroundImage: `url(${loginImage})`,
               backgroundRepeat: 'no-repeat',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
