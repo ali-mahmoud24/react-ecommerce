@@ -1,10 +1,5 @@
 import http from '@/lib/axios';
-import type {
-  Product,
-  PaginatedProductsResponse,
-  ProductResponse,
-  UpdateProductDto,
-} from '../types/product.type';
+import type { Product, PaginatedProductsResponse, ProductResponse } from '../types/product.type';
 
 const RESOURCE = '/products';
 
@@ -36,7 +31,11 @@ export async function fetchProductById(id: string) {
 }
 
 export async function createProduct(formData: FormData) {
-  const { data } = await http.post(RESOURCE, formData);
+  const { data } = await http.post(RESOURCE, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
   return data;
 }
 

@@ -1,14 +1,31 @@
 import { type GridColDef } from '@mui/x-data-grid';
 import type { Product } from '../types/product.type';
 
-import { Chip, IconButton, Tooltip } from '@mui/material';
-import { Delete } from '@mui/icons-material';
+import { Avatar, Chip, IconButton, Tooltip } from '@mui/material';
+
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 export type ProductActionsProps = {
   onDelete: (p: Product) => void;
+  onEdit: (category: Product) => void;
 };
 
-export const getProductColumns = ({ onDelete }: ProductActionsProps): GridColDef<Product>[] => [
+export const getProductColumns = ({
+  onDelete,
+  onEdit,
+}: ProductActionsProps): GridColDef<Product>[] => [
+  {
+    field: 'imageCoverUrl',
+    headerName: 'Image',
+    width: 80,
+    sortable: false,
+    filterable: false,
+    renderCell: (params) => (
+      <Avatar alt={params.row.title} src={params.value || ''} sx={{ width: 40, height: 40 }} />
+    ),
+  },
+
   { field: 'title', headerName: 'Title', flex: 1, minWidth: 180, filterable: false },
   {
     field: 'price',
@@ -16,7 +33,7 @@ export const getProductColumns = ({ onDelete }: ProductActionsProps): GridColDef
     width: 110,
     filterable: false,
   },
-  { field: 'quantity', headerName: 'Qty', width: 90, filterable: false },
+  { field: 'quantity', headerName: 'Quantity', width: 90, filterable: false },
 
   { field: 'sold', headerName: 'Sold', width: 90, filterable: false },
 
@@ -24,6 +41,7 @@ export const getProductColumns = ({ onDelete }: ProductActionsProps): GridColDef
     field: 'category',
     headerName: 'Category',
     width: 160,
+    sortable: false,
     renderCell: (params) =>
       params.row.category?.name ? <Chip label={params.row.category.name} size="small" /> : null,
   },
@@ -31,6 +49,7 @@ export const getProductColumns = ({ onDelete }: ProductActionsProps): GridColDef
     field: 'brand',
     headerName: 'Brand',
     width: 140,
+    sortable: false,
     renderCell: (params) =>
       params.row.brand?.name ? <Chip label={params.row.brand.name} size="small" /> : null,
   },
@@ -45,15 +64,21 @@ export const getProductColumns = ({ onDelete }: ProductActionsProps): GridColDef
   {
     field: 'actions',
     headerName: 'Actions',
-    width: 120,
     sortable: false,
-    filterable: false,
     renderCell: (params) => (
-      <Tooltip title="Delete product">
-        <IconButton color="error" onClick={() => onDelete(params.row)}>
-          <Delete fontSize="small" />
-        </IconButton>
-      </Tooltip>
+      <>
+        <Tooltip title="Edit">
+          <IconButton onClick={() => onEdit?.(params.row)} color="primary">
+            <EditIcon />
+          </IconButton>
+        </Tooltip>
+
+        <Tooltip title="Delete">
+          <IconButton onClick={() => onDelete(params.row)} color="error">
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
+      </>
     ),
   },
 ];

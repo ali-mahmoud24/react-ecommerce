@@ -1,8 +1,8 @@
+import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { productSchema, type ProductFormData } from '../schema/product.schema';
-import { useBrands } from '../hooks/useBrands';
-import { useCategories } from '../hooks/useCategories';
+
 import {
   Box,
   Button,
@@ -14,11 +14,12 @@ import {
   Select,
   MenuItem,
   OutlinedInput,
-  Chip,
   IconButton,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useEffect, useState } from 'react';
+
+import { useBrands } from '../hooks/useBrands';
+import { useCategories } from '../hooks/useCategories';
 
 interface ProductFormProps {
   onSubmit: (formData: FormData) => void;
@@ -44,7 +45,6 @@ export default function ProductForm({ onSubmit, isLoading, defaultValues }: Prod
     register,
     handleSubmit,
     watch,
-    setValue,
     formState: { errors, isSubmitting },
   } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
@@ -52,19 +52,15 @@ export default function ProductForm({ onSubmit, isLoading, defaultValues }: Prod
       title: defaultValues?.title || '',
       description: defaultValues?.description || '',
       price: defaultValues?.price || 0,
-      priceAfterDiscount: defaultValues?.priceAfterDiscount || 0,
       quantity: defaultValues?.quantity || 0,
       category: defaultValues?.category || '',
       brand: defaultValues?.brand || '',
-      colors: defaultValues?.colors || [],
-      imageCover: undefined,
-      images: [],
+      imageCover: defaultValues?.imageCover || undefined, //  preserve string URL for edit mode
+      images: defaultValues?.images || [], //  preserve image URLs for edit mode
     },
   });
 
   const watchImages = watch('images') || [];
-
-  const availableColors = ['Red', 'Blue', 'Green', 'Black', 'White', 'Yellow'];
 
   const handleFormSubmit = (data: ProductFormData) => {
     const formData = new FormData();
@@ -72,19 +68,29 @@ export default function ProductForm({ onSubmit, isLoading, defaultValues }: Prod
     formData.append('title', data.title);
     formData.append('description', data.description);
     formData.append('price', String(data.price));
-    formData.append('priceAfterDiscount', String(data.priceAfterDiscount || 0));
     formData.append('quantity', String(data.quantity));
     formData.append('category', data.category);
     formData.append('brand', data.brand);
-    data.colors.forEach((color) => formData.append('colors', color));
 
-    // Append imageCover
-    if (data.imageCover instanceof File) formData.append('imageCover', data.imageCover);
+    //  Handle imageCover
+    if (data.imageCover instanceof File) {
+      formData.append('imageCover', data.imageCover);
+    } else if (typeof data.imageCover === 'string') {
+      formData.append('imageCover', data.imageCover); // keep old URL
+    }
 
-    // Append images
-    watchImages.forEach((img) => {
-      if (img instanceof File) formData.append('images', img);
-    });
+    //  Handle images (keep old URLs if no new files)
+    const imageFiles = data.images?.filter((img) => img instanceof File) as File[];
+    const imageUrls = data.images?.filter((img) => typeof img === 'string') as string[];
+
+    if (imageFiles.length > 0) {
+      imageFiles.forEach((file) => formData.append('images', file));
+    } else if (imageUrls.length > 0) {
+      imageUrls.forEach((url) => formData.append('images', url));
+    }
+
+    // Debug log (optional)
+    // for (const [key, value] of formData.entries()) console.log(key, value);
 
     onSubmit(formData);
   };
@@ -121,14 +127,6 @@ export default function ProductForm({ onSubmit, isLoading, defaultValues }: Prod
           {...register('price', { valueAsNumber: true })}
           error={!!errors.price}
           helperText={errors.price?.message}
-          fullWidth
-        />
-        <TextField
-          label="Price After Discount"
-          type="number"
-          {...register('priceAfterDiscount', { valueAsNumber: true })}
-          error={!!errors.priceAfterDiscount}
-          helperText={errors.priceAfterDiscount?.message}
           fullWidth
         />
         <TextField
@@ -193,36 +191,6 @@ export default function ProductForm({ onSubmit, isLoading, defaultValues }: Prod
         }}
       />
 
-      {/* Colors */}
-      <Controller
-        name="colors"
-        control={control}
-        render={({ field }) => (
-          <FormControl fullWidth margin="normal" error={!!errors.colors}>
-            <InputLabel>Colors</InputLabel>
-            <Select
-              multiple
-              value={field.value}
-              onChange={field.onChange}
-              input={<OutlinedInput label="Colors" />}
-              renderValue={(selected) => (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {selected.map((color) => (
-                    <Chip key={color} label={color} />
-                  ))}
-                </Box>
-              )}
-            >
-              {availableColors.map((color) => (
-                <MenuItem key={color} value={color}>
-                  {color}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        )}
-      />
-
       {/* Image Cover */}
       <Controller
         name="imageCover"
@@ -281,7 +249,7 @@ export default function ProductForm({ onSubmit, isLoading, defaultValues }: Prod
                     onClick={() => {
                       const updated = imagesPreview.filter((_, idx) => idx !== i);
                       setImagesPreview(updated);
-                      field.onChange(updated.filter((f) => f instanceof File));
+                      field.onChange(updated);
                     }}
                     sx={{ position: 'absolute', top: 4, right: 4, color: 'error.main' }}
                   >
@@ -299,10 +267,7 @@ export default function ProductForm({ onSubmit, isLoading, defaultValues }: Prod
                     hidden
                     onChange={(e) => {
                       const files = Array.from(e.target.files || []);
-                      const newFiles = [
-                        ...watchImages.filter((f) => f instanceof File),
-                        ...files,
-                      ].slice(0, 5);
+                      const newFiles = [...imagesPreview, ...files].slice(0, 5);
                       setImagesPreview(newFiles);
                       field.onChange(newFiles);
                     }}

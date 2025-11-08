@@ -15,18 +15,16 @@ export const PUBLIC_ROUTES = {
 // =====================
 export const USER_ROUTES = {
   ROOT: '/',
-  // SHOP: '/shop',
-  CART: '/cart',
-  PROFILE: '/profile',
+
   PRODUCTS: '/products',
   PRODUCT: (id = ':id') => `/product/${id}`,
   CATEGORIES: '/categories',
   CATEGORY: (id: string = ':id') => `/categories/${id}`,
   BRANDS: '/brands',
   BRAND: (id: string = ':id') => `/brands/${id}`,
-  // CART: "/cart",
+  CART: '/cart',
+  PROFILE: '/profile',
   WISHLIST: '/wishlist',
-  // PROFILE: "/profile",
 } as const;
 
 // =====================
@@ -34,8 +32,9 @@ export const USER_ROUTES = {
 // =====================
 export const ADMIN_ROUTES = {
   ROOT: '/admin',
-  PRODUCTS: '/admin/products',
-  PRODUCTS_NEW: '/admin/products/new',
+
+  USERS: '/admin/users',
+  USERS_NEW: '/admin/users/new',
 
   CATEGORIES: '/admin/categories',
   CATEGORY_NEW: '/admin/categories/new',
@@ -47,8 +46,10 @@ export const ADMIN_ROUTES = {
   BRAND: (id: string = ':id') => `/admin/brands/${id}`,
   BRAND_EDIT: (id: string = ':id') => `/admin/brands/${id}/edit`,
 
+  PRODUCTS: '/admin/products',
+  PRODUCTS_NEW: '/admin/products/new',
+  PRODUCT: (id: string = ':id') => `/admin/products/${id}`,
+  PRODUCT_EDIT: (id: string = ':id') => `/admin/products/${id}/edit`,
+
   ORDERS: '/admin/orders',
-  USERS: '/admin/users',
-  USERS_NEW: '/admin/users/new',
-  UNAUTHORIZED: '/unauthorized',
 } as const;

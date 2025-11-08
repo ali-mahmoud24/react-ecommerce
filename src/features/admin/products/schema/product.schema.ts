@@ -2,22 +2,24 @@ import { z } from 'zod';
 
 export const productSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters'),
-  description: z.string().min(10, 'Description must be at least 10 characters'),
+  description: z
+    .string()
+    .min(20, 'Description must be at least 10 characters')
+    .max(2000, 'Description must be at most 2000 characters'),
   price: z
     .number({ invalid_type_error: 'Price must be a number' })
     .positive('Price must be greater than zero'),
-  priceAfterDiscount: z
-    .number({ invalid_type_error: 'Price must be a number' })
-    .positive('Price after discount must be greater than zero')
-    .optional(),
-
+  // priceAfterDiscount: z
+  //   .number({ invalid_type_error: 'Price must be a number' })
+  //   .positive('Price after discount must be greater than zero')
+  //   .optional(),
   quantity: z
     .number({ invalid_type_error: 'Quantity must be a number' })
     .int()
     .nonnegative('Quantity must be 0 or more'),
   category: z.string().min(1, 'Category is required'),
   brand: z.string().min(1, 'Brand is required'),
-  colors: z.array(z.string()).nonempty('Select at least one color'),
+  // colors: z.array(z.string()).nonempty('Select at least one color'),
   imageCover: z.any().refine((file) => file instanceof File || typeof file === 'string', {
     message: 'Image cover is required',
   }),

@@ -1,6 +1,5 @@
 import { type GridColDef } from '@mui/x-data-grid';
 import { Avatar, IconButton, Tooltip, Typography, Stack } from '@mui/material';
-// import { Delete } from '@mui/icons-material';
 import type { Category } from '../types/category.type';
 
 import EditIcon from '@mui/icons-material/Edit';
@@ -48,7 +47,6 @@ export const getCategoryColumns = ({ onDelete, onEdit }: CategoryActionsProps): 
     field: 'actions',
     headerName: 'Actions',
     sortable: false,
-    // flex: 0.5,
     renderCell: (params) => (
       <>
         <Tooltip title="Edit">

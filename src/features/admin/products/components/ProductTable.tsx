@@ -57,7 +57,14 @@ export default function ProductTable() {
     });
   };
 
-  const columns = getProductColumns({ onDelete: handleDelete });
+  const handleEdit = (product: Product) => {
+    navigate(`/admin/products/${product.id}/edit`);
+  };
+
+  const columns = getProductColumns({
+    onDelete: handleDelete,
+    onEdit: handleEdit,
+  });
 
   const handleFilterModelChange = (m: GridFilterModel) => {
     setFilterModel(m);
@@ -106,7 +113,7 @@ export default function ProductTable() {
         onClose={() => setDeleteTarget(null)}
         onConfirm={confirmDelete}
         name={deleteTarget?.title ?? ''}
-        loading={deleteMutation.isLoading}
+        loading={deleteMutation.isPending}
       />
     </>
   );

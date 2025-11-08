@@ -1,12 +1,8 @@
 import { type GridColDef } from '@mui/x-data-grid';
 import { Chip, IconButton, Tooltip } from '@mui/material';
-import {
-  CheckCircle,
-  Cancel,
-  AdminPanelSettings,
-  Person,
-  Delete,
-} from '@mui/icons-material';
+import { CheckCircle, Cancel, AdminPanelSettings, Person } from '@mui/icons-material';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 import type { User } from '../types/user.type';
 
 export type UserActionsProps = {
@@ -21,6 +17,7 @@ export const getUserColumns = ({ onDelete }: UserActionsProps): GridColDef[] => 
     field: 'role',
     headerName: 'Role',
     width: 140,
+    sortable: false,
     type: 'singleSelect',
     valueOptions: [
       { value: 'admin', label: 'Admin' },
@@ -38,6 +35,7 @@ export const getUserColumns = ({ onDelete }: UserActionsProps): GridColDef[] => 
     field: 'active',
     headerName: 'Status',
     width: 130,
+    sortable: false,
     type: 'singleSelect',
     valueOptions: [
       { value: 'true', label: 'Active' },
@@ -54,13 +52,7 @@ export const getUserColumns = ({ onDelete }: UserActionsProps): GridColDef[] => 
           variant="outlined"
         />
       ) : (
-        <Chip
-          icon={<Cancel />}
-          label="Inactive"
-          color="error"
-          size="small"
-          variant="outlined"
-        />
+        <Chip icon={<Cancel />} label="Inactive" color="error" size="small" variant="outlined" />
       ),
   },
 
@@ -75,15 +67,15 @@ export const getUserColumns = ({ onDelete }: UserActionsProps): GridColDef[] => 
   {
     field: 'actions',
     headerName: 'Actions',
-    width: 120,
     sortable: false,
-    filterable: false,
     renderCell: (params) => (
-      <Tooltip title="Delete user">
-        <IconButton color="error" onClick={() => onDelete(params.row)}>
-          <Delete fontSize="small" />
-        </IconButton>
-      </Tooltip>
+      <>
+        <Tooltip title="Delete">
+          <IconButton onClick={() => onDelete(params.row)} color="error">
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
+      </>
     ),
   },
 ];

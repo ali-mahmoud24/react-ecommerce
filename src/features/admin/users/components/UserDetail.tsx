@@ -1,5 +1,5 @@
-import { useNavigate, useParams } from 'react-router';
 import { useState } from 'react';
+import { useNavigate, useParams } from 'react-router';
 import {
   Alert,
   Box,
@@ -11,11 +11,10 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
+import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 
 import PageContainer from './PageContainer';
@@ -23,12 +22,13 @@ import UserAvatar from './UserAvatar';
 import ConfirmDialog from './ConfirmDeleteDialog';
 import InfoCard from './InfoCard';
 import RoleBadge from './RoleBadge';
-import { useSnackbar } from 'notistack';
+
 import { useUserByIdQuery, useDeleteUserMutation } from '../hooks/useUsers';
 
 export default function UserDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const { enqueueSnackbar } = useSnackbar();
 
   const { data: user, isLoading, isError, error } = useUserByIdQuery(id!);
@@ -112,14 +112,6 @@ export default function UserDetail() {
         </Button>
 
         <Stack direction="row" spacing={2}>
-          <Button
-            variant="contained"
-            startIcon={<EditIcon />}
-            onClick={() => navigate(`/admin/users/${user.id}/edit`)}
-          >
-            Edit
-          </Button>
-
           <Button
             variant="contained"
             color="error"

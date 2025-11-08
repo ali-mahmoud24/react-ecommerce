@@ -5,14 +5,12 @@ import {
   QuickFilterClear,
   QuickFilterTrigger,
   ToolbarButton,
-  FilterPanelTrigger,
   Toolbar,
   QuickFilterControl,
 } from '@mui/x-data-grid';
-import { Tooltip, InputAdornment, Divider, Badge, TextField } from '@mui/material';
+import { Tooltip, InputAdornment, Divider, TextField } from '@mui/material';
 import { GridSearchIcon } from '@mui/x-data-grid';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { styled } from '@mui/material/styles';
@@ -53,25 +51,17 @@ export default memo(function CustomToolbar() {
         </ColumnsPanelTrigger>
       </Tooltip>
 
-      <Tooltip title="Filters">
-        <FilterPanelTrigger
-          render={(props, state) => (
-            <ToolbarButton {...props} color="default">
-              <Badge badgeContent={state.filterCount} color="primary" variant="dot">
-                <FilterListIcon fontSize="small" />
-              </Badge>
-            </ToolbarButton>
-          )}
-        />
-      </Tooltip>
-
       <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
 
       <StyledQuickFilter>
         <QuickFilterTrigger
           render={(triggerProps, state) => (
             <Tooltip title="Search">
-              <StyledToolbarButton {...triggerProps} ownerState={{ expanded: state.expanded }} color="default">
+              <StyledToolbarButton
+                {...triggerProps}
+                ownerState={{ expanded: state.expanded }}
+                color="default"
+              >
                 <GridSearchIcon fontSize="small" />
               </StyledToolbarButton>
             </Tooltip>
@@ -103,7 +93,9 @@ export default memo(function CustomToolbar() {
                         size="small"
                         aria-label="Clear search"
                         onClick={() => {
-                          const syntheticEvent = { target: { value: '' } } as React.ChangeEvent<HTMLInputElement>;
+                          const syntheticEvent = {
+                            target: { value: '' },
+                          } as React.ChangeEvent<HTMLInputElement>;
                           onChange?.(syntheticEvent);
                           if (ref && typeof ref !== 'function' && ref.current) {
                             setTimeout(() => ref.current?.focus(), 0);

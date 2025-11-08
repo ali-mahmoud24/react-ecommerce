@@ -41,7 +41,7 @@ export default function ProductDetail() {
 
     deleteMutation.mutate(id, {
       onSuccess: () => enqueueSnackbar('Product deleted successfully', { variant: 'success' }),
-      onError: (err: any) =>
+      onError: (err) =>
         enqueueSnackbar(err.message || 'Failed to delete product', { variant: 'error' }),
     });
   };
@@ -113,25 +113,25 @@ export default function ProductDetail() {
           <Divider sx={{ width: '100%', my: 2 }} />
 
           <Grid container spacing={2} sx={{ width: '100%' }}>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <InfoCard label="Price">
                 <Typography sx={{ fontWeight: 500 }}>{product.price} EGP</Typography>
               </InfoCard>
             </Grid>
 
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <InfoCard label="Quantity">
                 <Typography sx={{ fontWeight: 500 }}>{product.quantity}</Typography>
               </InfoCard>
             </Grid>
 
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <InfoCard label="Sold">
                 <Typography sx={{ fontWeight: 500 }}>{product.sold}</Typography>
               </InfoCard>
             </Grid>
 
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <InfoCard label="Brand">
                 <Typography sx={{ fontWeight: 500 }}>
                   {product.brand?.name || 'Unbranded'}
@@ -139,15 +139,23 @@ export default function ProductDetail() {
               </InfoCard>
             </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <InfoCard label="Created">
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <InfoCard label="Created At">
                 <Typography sx={{ fontWeight: 500 }}>
                   {dayjs(product.createdAt).format('MMM D, YYYY')}
                 </Typography>
               </InfoCard>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <InfoCard label="Updated At">
+                <Typography sx={{ fontWeight: 500 }}>
+                  {dayjs(product.updatedAt).format('MMM D, YYYY')}
+                </Typography>
+              </InfoCard>
+            </Grid>
+
+            <Grid size={{ xs: 12 }}>
               <InfoCard label="Description">
                 <Typography sx={{ whiteSpace: 'pre-line', fontWeight: 400 }}>
                   {product.description || 'No description provided.'}
