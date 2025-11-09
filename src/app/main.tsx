@@ -21,7 +21,7 @@ const queryClient = new QueryClient({
 });
 
 createRoot(document.getElementById('root')!).render(
-  <BrowserRouter basename="/react-ecommerce">
+<BrowserRouter basename={import.meta.env.MODE === 'production' ? '/react-ecommerce' : '/'}>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <AppThemeProvider>

@@ -25,7 +25,7 @@ import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
-import InventoryIcon from '@mui/icons-material/Inventory';
+// import InventoryIcon from '@mui/icons-material/Inventory';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useThemeContext } from '@/theme/useThemeContext';
 import { useState, useEffect, useCallback, memo } from 'react';
@@ -150,9 +150,9 @@ const UserMenu = memo(
           <MenuItem component={Link} to="/profile">
             <AccountCircleIcon fontSize="small" sx={{ mr: 1 }} /> Profile
           </MenuItem>
-          <MenuItem component={Link} to="/orders">
+          {/* <MenuItem component={Link} to="/orders">
             <InventoryIcon fontSize="small" sx={{ mr: 1 }} /> Orders
-          </MenuItem>
+          </MenuItem> */}
           <MenuItem component={Link} to="/login" onClick={onLogout}>
             <LogoutIcon fontSize="small" sx={{ mr: 1 }} /> Logout
           </MenuItem>

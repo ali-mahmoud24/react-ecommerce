@@ -5,13 +5,13 @@ export const showToast = (message: string, type: 'success' | 'error' = 'success'
     const isDark = theme.palette.mode === 'dark';
 
     toast[type](message, {
-        position: 'top-right',
+        position: 'top-center',
         duration: 3000,
         style: {
-            // background: isDark ? '#1E1E1E' : '#F3F4F6',
-            // color: isDark ? '#F3F4F6' : '#111111',
-            background: isDark ? '#FFFFFF' : '#111111',
-            color: isDark ? '#111111' : '#F3F4F6',
+            background: isDark ? '#1E1E1E' : '#F3F4F6',
+            color: isDark ? '#F3F4F6' : '#111111',
+            // background: isDark ? '#FFFFFF' : '#111111',
+            // color: isDark ? '#111111' : '#F3F4F6',
             borderRadius: 12,
             fontFamily: theme.typography.fontFamily,
             fontWeight: 500,

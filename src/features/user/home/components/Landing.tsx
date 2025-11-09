@@ -3,10 +3,10 @@ import { Box, Typography, Button, useTheme, Grid } from '@mui/material';
 import { motion } from 'framer-motion';
 import bgImage from '@/assets/images/landing.svg';
 
+
 export default function Landing() {
   const theme = useTheme();
   const navigate = useNavigate();
-  const handleShopNowClick = () => navigate('/products');
 
   return (
     <Box
@@ -78,10 +78,10 @@ export default function Landing() {
           variant="contained"
           color="primary"
           size="large"
+          onClick={() => navigate('/products')}
           component={motion.button}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={handleShopNowClick}
           sx={{
             px: 8,
             py: 1.5,

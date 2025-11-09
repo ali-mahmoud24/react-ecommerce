@@ -38,6 +38,7 @@ export default function CartList() {
   const theme = useTheme();
   const navigate = useNavigate();
 
+
   if (isLoading)
     return (
       <Box textAlign="center" mt={4}>
@@ -282,7 +283,7 @@ export default function CartList() {
             Total: {formatCurrency(totalPrice)}
           </Typography>
 
-          <Button
+          {/* <Button
             variant="contained"
             color="primary"
             size="large"
@@ -300,7 +301,7 @@ export default function CartList() {
             }}
           >
             Proceed to Checkout
-          </Button>
+          </Button> */}
         </Stack>
       </Stack>
     </Box>

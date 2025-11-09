@@ -14,6 +14,8 @@ import { ArrowBackIosNew, ArrowForwardIos } from '@mui/icons-material';
 import { formatCurrency } from '@/utils/formatCurrency';
 import { useCart } from '@/features/user/cart/hooks/useCart';
 import { useWishlist } from '../../wishlist/hooks/useWishlist';
+import ProductReviews from './ProductReviews';
+
 
 interface ProductDetailsProps {
   product: Product | undefined;
@@ -228,7 +230,6 @@ export default function ProductDetails({ product, isLoading }: ProductDetailsPro
             value={product.numOfRatings || 0}
             readOnly
             precision={0.5}
-            sx={{ color: 'black' }}
           />
           <Typography variant="body2" color="text.secondary" ml={1}>
             {product.numOfRatings.toFixed(1)} / 5
@@ -309,6 +310,7 @@ export default function ProductDetails({ product, isLoading }: ProductDetailsPro
         >
           Add to Wishlist
         </Button>
+            {product && <ProductReviews productId={product.id} />}
       </Box>
     </Box>
   );
