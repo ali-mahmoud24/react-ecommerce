@@ -5,6 +5,7 @@ import { PUBLIC_ROUTES } from '@/constants/routes';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { CircularProgress, Box } from '@mui/material';
 import { useAuth } from '@/hooks/useAuth';
+import ScrollToTop from '../components/ui/ScrollToTop';
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ export default function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <ScrollToTop />
       <Routes>
         {userRoutes}
         {adminRoutes}
