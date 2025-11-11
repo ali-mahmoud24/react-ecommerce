@@ -196,8 +196,8 @@ export default function ProductDetails({ product, isLoading }: ProductDetailsPro
               alt={`${product.title}-${idx}`}
               onClick={() => setCurrentIndex(idx)}
               sx={{
-                width: 80,
-                height: 80,
+                width: { xs: 45, sm: 70, md: 80 },
+                height: { xs: 45, sm: 70, md: 80 },
                 objectFit: 'cover',
                 cursor: 'pointer',
                 border: currentIndex === idx ? '3px solid black' : '1px solid #ddd',
@@ -227,12 +227,12 @@ export default function ProductDetails({ product, isLoading }: ProductDetailsPro
 
         <Box display="flex" alignItems="center" mb={2}>
           <Rating
-            value={product.numOfRatings || 0}
+            value={product.averageRating || 0}
             readOnly
             precision={0.5}
           />
           <Typography variant="body2" color="text.secondary" ml={1}>
-            {product.numOfRatings.toFixed(1)} / 5
+            {(product.averageRating ?? 0).toFixed(1)} / 5
           </Typography>
         </Box>
 
@@ -310,7 +310,7 @@ export default function ProductDetails({ product, isLoading }: ProductDetailsPro
         >
           Add to Wishlist
         </Button>
-            {product && <ProductReviews productId={product.id} />}
+        {product && <ProductReviews productId={product.id} />}
       </Box>
     </Box>
   );

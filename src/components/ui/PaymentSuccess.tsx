@@ -1,10 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
+import { useCart } from "@/features/user/cart/hooks/useCart";
 
 const PaymentSuccess: React.FC = () => {
   const navigate = useNavigate();
+  const { clearAllItems } = useCart();
+
+  useEffect(() => {
+    clearAllItems({ suppressToast: true });
+  }, [])
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center p-4">
@@ -16,7 +22,7 @@ const PaymentSuccess: React.FC = () => {
       >
         <CheckCircleIcon className="w-20 h-20 text-green-500 mx-auto mb-4" />
 
-        <h1 className="text-2xl font-bold mb-2">Payment Successful</h1>
+        <h1 className="text-2xl text-black font-bold mb-2">Payment Successful</h1>
 
         <p className="text-gray-600 dark:text-gray-300 mb-6">
           Your order is now being processed. Thank you for your purchase!
@@ -25,8 +31,8 @@ const PaymentSuccess: React.FC = () => {
         <button
           onClick={() => navigate("/")}
           className="w-full py-3 mb-3 rounded-lg font-semibold cursor-pointer
-                     bg-black text-white dark:bg-white dark:text-black
-                     hover:opacity-90 transition"
+                    bg-black text-white dark:bg-white dark:text-black
+                    hover:opacity-90 transition"
         >
           Back to Home
         </button>

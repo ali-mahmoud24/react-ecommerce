@@ -24,16 +24,18 @@ export const useReviews = (productId: string) => {
 
     const submitReview = async (title: string, rating: number) => {
         try {
-            const { data } = await http.post(`/products/${productId}/reviews`, { title, rating });
-            setReviews(prev => [data, ...prev]);
-        } catch {
-            setError('Failed to submit review.');
+            await http.post(`/products/${productId}/reviews`, { title, rating });
+            await fetchReviews();
+        } catch (err) {
+            console.error(err);
+            setError('You have already submitted a review for this product.');
         }
     };
 
+
     useEffect(() => {
         fetchReviews();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [productId]);
 
     return { reviews, loading, error, submitReview };

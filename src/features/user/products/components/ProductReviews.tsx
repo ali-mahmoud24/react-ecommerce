@@ -24,7 +24,7 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
     return (
         <Box mt={4}>
             <Typography variant="h5" mb={2}>Add a Review</Typography>
-            {error && <Alert severity="error">{error}</Alert>}
+            {error && <Alert sx={{ mb: 2 }} severity="error">{error}</Alert>}
 
             <TextField
                 fullWidth
@@ -40,7 +40,7 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
                 onChange={(_, value) => setReviewRating(value)}
                 sx={{ mb: 2 }}
             />
-            <Button variant="contained" sx={{ml: 3}} onClick={handleSubmit} disabled={submitting}>
+            <Button variant="contained" sx={{ ml: 3 }} onClick={handleSubmit} disabled={submitting}>
                 {submitting ? 'Submitting...' : 'Submit Review'}
             </Button>
 

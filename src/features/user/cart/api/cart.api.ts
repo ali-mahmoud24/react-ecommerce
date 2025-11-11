@@ -13,6 +13,7 @@ export type CartItem = {
 };
 
 export type CartResponse = {
+  id: string;
   cartItems: CartItem[];
   totalCartPrice: number;
 };

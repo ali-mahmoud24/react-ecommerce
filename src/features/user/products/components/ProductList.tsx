@@ -31,7 +31,7 @@ export default function ProductList() {
                 (p) =>
                     p.price >= priceFilter[0] &&
                     p.price <= priceFilter[1] &&
-                    p.numOfRatings >= rating
+                    (p.averageRating ?? 0) >= rating
             ) || []
         );
     }, [data, priceFilter, rating]);
@@ -71,7 +71,7 @@ export default function ProductList() {
                                 id={product.id}
                                 title={product.title}
                                 imageCoverUrl={product.imageCoverUrl}
-                                numOfRatings={product.numOfRatings}
+                                averageRating={product.averageRating || 0}
                                 price={product.price}
                                 onClick={handleClick}
                             />

@@ -63,11 +63,15 @@ export const useCart = () => {
     },
   });
 
-  const { mutate: clearAllItems, isPending } = useMutation({
+  const clearAllItems = (options?: { suppressToast?: boolean }) => {
+    return clearCartMutation.mutate(options || {});
+  };
+
+  const clearCartMutation = useMutation({
     mutationFn: clearCart,
-    onSuccess: () => {
+    onSuccess: (_data, variables?: { suppressToast?: boolean }) => {
       queryClient.setQueryData(['cart'], { cartItems: [] });
-      if (isAuthenticated) {
+      if (isAuthenticated && !variables?.suppressToast) {
         showToast('Cart cleared successfully!', 'success', theme);
       }
     },
@@ -78,6 +82,7 @@ export const useCart = () => {
     },
   });
 
+
   return {
     cart,
     isLoading,
@@ -85,7 +90,6 @@ export const useCart = () => {
     deleteItem: deleteItem.mutate,
     updateItem: updateItem.mutate,
     clearAllItems,
-    isPending,
     totalItems: cart?.cartItems?.length || 0,
   };
 };

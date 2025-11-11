@@ -7,7 +7,7 @@ export type Product = {
     price: number;
     imageCoverUrl: string;
     imageUrls: string[];
-    numOfRatings: number;
+    averageRating: number;
 };
 
 export const getAllProduct = async (): Promise<Product[]> => {

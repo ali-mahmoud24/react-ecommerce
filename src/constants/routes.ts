@@ -25,7 +25,7 @@ export const USER_ROUTES = {
   CART: '/cart',
   PROFILE: '/profile',
   WISHLIST: '/wishlist',
-  PAYMENT_SUCCESS: '/payment-success',
+  PAYMENT_SUCCESS: '/payment/success',
 } as const;
 
 // =====================

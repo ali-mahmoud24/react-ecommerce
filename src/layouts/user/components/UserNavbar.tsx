@@ -106,7 +106,7 @@ const UserMenu = memo(
 
     return (
       <>
-        <IconButton onClick={onOpen}>
+        <IconButton sx={{ p: { xs: 0.5, sm: 1 } }} onClick={onOpen}>
           <Avatar
             alt={`${user?.firstName || ''} ${user?.lastName || ''}`}
             src={user?.profileImageUrl || ''}
@@ -118,15 +118,15 @@ const UserMenu = memo(
               bgcolor: user?.avatar
                 ? 'transparent'
                 : theme.palette.mode === 'light'
-                ? theme.palette.primary.main
-                : theme.palette.primary.light,
+                  ? theme.palette.primary.main
+                  : theme.palette.primary.light,
               color: user?.avatar
                 ? 'inherit'
                 : theme.palette.getContrastText(
-                    theme.palette.mode === 'light'
-                      ? theme.palette.primary.main
-                      : theme.palette.primary.light,
-                  ),
+                  theme.palette.mode === 'light'
+                    ? theme.palette.primary.main
+                    : theme.palette.primary.light,
+                ),
               fontWeight: 600,
               fontSize: '1rem',
               border: `1px solid ${alpha(theme.palette.text.primary, 0.1)}`,
@@ -369,7 +369,7 @@ function Navbar({ onSearchResults }: NavbarProps) {
 
             {/* Cart */}
             {isAuthenticated && (
-              <IconButton color="inherit" onClick={() => navigate('/cart')}>
+              <IconButton sx={{ p: { xs: 0.5, sm: 1 } }} color="inherit" onClick={() => navigate('/cart')}>
                 <Badge
                   badgeContent={totalItems}
                   color="error"
@@ -389,6 +389,7 @@ function Navbar({ onSearchResults }: NavbarProps) {
                   theme.palette.mode === 'dark'
                     ? theme.palette.primary.main
                     : theme.palette.text.primary,
+                p: { xs: 0.5, sm: 1 },
               }}
             >
               {mode === 'light' ? <DarkModeIcon /> : <LightModeIcon />}
@@ -416,7 +417,7 @@ function Navbar({ onSearchResults }: NavbarProps) {
             )}
 
             {/* Mobile Menu */}
-            <IconButton onClick={handleDrawerToggle} sx={{ display: { md: 'none' } }}>
+            <IconButton onClick={handleDrawerToggle} sx={{ p: { xs: 0.5, sm: 1 }, display: { md: 'none' } }}>
               <MenuIcon />
             </IconButton>
           </Box>

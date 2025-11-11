@@ -14,21 +14,21 @@ import { useCart } from '@/features/user/cart/hooks/useCart';
 import { useWishlist } from '@/features/user/wishlist/hooks/useWishlist';
 
 type ProductCardProps = {
-  id: string;
-  title: string;
-  imageCoverUrl: string;
-  numOfRatings: number;
-  price: number;
-  onClick: (id: string) => void;
+    id: string;
+    title: string;
+    imageCoverUrl: string;
+    averageRating: number;
+    price: number;
+    onClick: (id: string) => void;
 };
 
 export default function ProductCard({
-  id,
-  title,
-  imageCoverUrl,
-  numOfRatings,
-  price,
-  onClick,
+    id,
+    title,
+    imageCoverUrl,
+    averageRating,
+    price,
+    onClick,
 }: ProductCardProps) {
   const theme = useTheme();
   const { addItemToCart } = useCart();
@@ -112,12 +112,12 @@ export default function ProductCard({
           {title}
         </Typography>
 
-        <Box display="flex" justifyContent="center" alignItems="center" mt={1}>
-          <Rating value={numOfRatings} precision={0.5} readOnly size="small" />
-          <Typography variant="body2" ml={0.5} color="text.secondary">
-            {numOfRatings.toFixed(1)} / 5
-          </Typography>
-        </Box>
+                <Box display="flex" justifyContent="center" alignItems="center" mt={1}>
+                    <Rating value={averageRating} precision={0.5} readOnly size="small" />
+                    <Typography variant="body2" ml={0.5} color="text.secondary">
+                        {(averageRating ?? 0).toFixed(1)} / 5
+                    </Typography>
+                </Box>
 
         <Typography
           variant="subtitle1"
