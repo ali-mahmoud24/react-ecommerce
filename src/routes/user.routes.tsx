@@ -25,6 +25,7 @@ import ResetPassword from '@/features/user/auth/pages/ResetPassword';
 import NotAdmin from '@/auth/NotAdmin';
 import ProductDetailsPage from '@/features/user/products/pages/ProductDetailsPage';
 import Wishlist from './../features/user/wishlist/pages/Wishlist';
+import PaymentSuccess from '@/components/ui/PaymentSuccess';
 
 // === Placeholder components (replace later) ===
 // const Cart = () => <div>Cart</div>;
@@ -77,6 +78,14 @@ export const userRoutes = (
       />
     </Route>
 
+    <Route
+      path={USER_ROUTES.PAYMENT_SUCCESS.replace('/', '')}
+      element={
+        <UserProtected>
+          <PaymentSuccess />
+        </UserProtected>
+      }
+    />
     {/* Auth pages without layout */}
 
     <Route
