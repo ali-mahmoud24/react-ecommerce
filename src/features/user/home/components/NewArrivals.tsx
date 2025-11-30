@@ -1,20 +1,15 @@
 import { Box, Grid, Typography, useTheme } from "@mui/material";
 import { useNavigate } from "react-router";
-import { useHomeProducts } from "../hooks/useHomeProducts";
+import { useNewArrivals } from "../hooks/useHomeProducts";
 import ProductCard from "@/components/ui/ProductCard";
 import SkeletonCard from "@/components/ui/SkeletonCard";
 
 export default function NewArrivals() {
     const theme = useTheme();
     const navigate = useNavigate();
-    const { data, isLoading, error } = useHomeProducts();
+    const { data: latest, isLoading, error } = useNewArrivals();
 
     const handleClick = (id: string) => navigate(`/product/${id}`);
-
-    // Sort & slice products to get latest 4
-    const latest = data
-        ?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-        .slice(0, 4);
 
     return (
         <Box
@@ -61,7 +56,7 @@ export default function NewArrivals() {
                                     id={product.id}
                                     title={product.title}
                                     imageCoverUrl={product.imageCoverUrl}
-                                    numOfRatings={product.numOfRatings}
+                                    averageRating={product.averageRating}
                                     price={product.price}
                                     onClick={handleClick}
                                 />

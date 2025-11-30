@@ -1,18 +1,16 @@
 import { Box, Grid, Typography, useTheme } from "@mui/material";
 import { useNavigate } from "react-router";
-import { useHomeProducts } from "../hooks/useHomeProducts";
+import { useMostSoldProducts } from "../hooks/useHomeProducts";
 import ProductCard from "@/components/ui/ProductCard";
 import SkeletonCard from "@/components/ui/SkeletonCard";
 
 export default function TopSelling() {
     const theme = useTheme();
     const navigate = useNavigate();
-    const { data, isLoading, error } = useHomeProducts();
+    const { data: topSelling, isLoading, error } = useMostSoldProducts();
 
     const handleClick = (id: string) => navigate(`/product/${id}`);
 
-    // Sort by sales and take top 4
-    const topSelling = data?.sort((a, b) => b.sold - a.sold).slice(0, 4);
 
     return (
         <Box
@@ -59,7 +57,7 @@ export default function TopSelling() {
                                     id={product.id}
                                     title={product.title}
                                     imageCoverUrl={product.imageCoverUrl}
-                                    numOfRatings={product.numOfRatings}
+                                    averageRating={product.averageRating}
                                     price={product.price}
                                     onClick={handleClick}
                                 />

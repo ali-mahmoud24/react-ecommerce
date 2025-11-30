@@ -1,18 +1,16 @@
 import { Box, Grid, Typography, useTheme } from "@mui/material";
 import { useNavigate } from "react-router";
-import { useHomeProducts } from "../hooks/useHomeProducts";
+import { useOnSaleProducts } from "../hooks/useHomeProducts";
 import ProductCard from "@/components/ui/ProductCard";
 import SkeletonCard from "@/components/ui/SkeletonCard";
 
 export default function OnSale() {
     const theme = useTheme();
     const navigate = useNavigate();
-    const { data, isLoading, error } = useHomeProducts();
+    const { data: onSale, isLoading, error } = useOnSaleProducts();
 
     const handleClick = (id: string) => navigate(`/product/${id}`);
 
-    // Filter discounted products
-    const onSale = data?.filter((p) => p.price < 1200).slice(0, 4);
 
     return (
         <Box
@@ -59,7 +57,7 @@ export default function OnSale() {
                                     id={product.id}
                                     title={product.title}
                                     imageCoverUrl={product.imageCoverUrl}
-                                    numOfRatings={product.numOfRatings}
+                                    averageRating={product.averageRating}
                                     price={product.price}
                                     onClick={handleClick}
                                 />

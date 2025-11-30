@@ -1,9 +1,28 @@
 import { useQuery } from "@tanstack/react-query";
-import { getHomeProducts, type HomeProduct } from "../api/home.api";
+import {
+    getNewArrivals,
+    getOnSaleProducts,
+    getMostSoldProducts,
+    type HomeProduct,
+} from "../api/home.api";
 
-export const useHomeProducts = () => {
+export const useNewArrivals = () => {
     return useQuery<HomeProduct[]>({
-        queryKey: ["home-products"],
-        queryFn: getHomeProducts,
+        queryKey: ["home", "new-arrivals"],
+        queryFn: getNewArrivals,
+    });
+};
+
+export const useOnSaleProducts = () => {
+    return useQuery<HomeProduct[]>({
+        queryKey: ["home", "on-sale"],
+        queryFn: getOnSaleProducts,
+    });
+};
+
+export const useMostSoldProducts = () => {
+    return useQuery<HomeProduct[]>({
+        queryKey: ["home", "most-sold"],
+        queryFn: getMostSoldProducts,
     });
 };
