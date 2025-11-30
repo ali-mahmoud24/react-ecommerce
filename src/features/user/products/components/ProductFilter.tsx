@@ -96,6 +96,7 @@ export default function ProductFilter({
                     value={rating}
                     onChange={onRatingChange}
                     size="large"
+                    precision={0.5}
                     sx={{
                         color: theme.palette.primary.main,
                         '& .MuiRating-iconHover': {

@@ -10,7 +10,7 @@ import {
   IconButton,
   useTheme,
 } from '@mui/material';
-import { ArrowBackIosNew, ArrowForwardIos } from '@mui/icons-material';
+import { ArrowBackIosNew, ArrowForwardIos, FavoriteBorder } from '@mui/icons-material';
 import { formatCurrency } from '@/utils/formatCurrency';
 import { useCart } from '@/features/user/cart/hooks/useCart';
 import { useWishlist } from '../../wishlist/hooks/useWishlist';
@@ -152,6 +152,33 @@ export default function ProductDetails({ product, isLoading }: ProductDetailsPro
           }}
         />
 
+        {/* Wishlist button on top-left */}
+        <IconButton
+          onClick={() =>
+            addItemToWishlist(product.id)
+          }
+          sx={{
+            position: 'absolute',
+            top: 8,
+            right: 8,
+            bgcolor: theme.palette.mode === 'light' ? theme.palette.text.primary : theme.palette.primary.main,
+            border: '1px solid #ddd',
+            color: theme.palette.getContrastText(
+              theme.palette.mode === 'light' ? theme.palette.text.primary : theme.palette.primary.main
+            ),
+            width: 45,
+            height: 45,
+            borderRadius: '50%',
+            '&:hover': {
+              bgcolor: theme.palette.mode === 'light' ? theme.palette.text.secondary : theme.palette.secondary,
+            },
+            boxShadow: 1,
+
+          }}
+        >
+          <FavoriteBorder />
+        </IconButton>
+
         {images.length > 1 && (
           <>
             <IconButton
@@ -263,53 +290,12 @@ export default function ProductDetails({ product, isLoading }: ProductDetailsPro
             py: 1.5,
             fontSize: '1rem',
             fontWeight: 600,
-            backgroundColor:
-              theme.palette.mode === 'light'
-                ? theme.palette.text.primary
-                : theme.palette.primary.main,
-            color: theme.palette.getContrastText(
-              theme.palette.mode === 'light'
-                ? theme.palette.text.primary
-                : theme.palette.primary.main,
-            ),
-            '&:hover': {
-              bgcolor:
-                theme.palette.mode === 'light'
-                  ? theme.palette.text.primary
-                  : theme.palette.primary.main,
-            },
           }}
         >
           Add to Cart
         </Button>
-        <Button
-          variant="contained"
-          fullWidth
-          onClick={() => addItemToWishlist(product.id)}
-          sx={{
-            py: 1.5,
-            my: 1.5,
-            fontSize: '1rem',
-            fontWeight: 600,
-            backgroundColor:
-              theme.palette.mode === 'light'
-                ? theme.palette.text.primary
-                : theme.palette.primary.main,
-            color: theme.palette.getContrastText(
-              theme.palette.mode === 'light'
-                ? theme.palette.text.primary
-                : theme.palette.primary.main,
-            ),
-            '&:hover': {
-              bgcolor:
-                theme.palette.mode === 'light'
-                  ? theme.palette.text.primary
-                  : theme.palette.primary.main,
-            },
-          }}
-        >
-          Add to Wishlist
-        </Button>
+
+
         {product && <ProductReviews productId={product.id} />}
       </Box>
     </Box>

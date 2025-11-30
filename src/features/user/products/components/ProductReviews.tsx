@@ -8,51 +8,40 @@ interface ProductReviewsProps {
 
 export default function ProductReviews({ productId }: ProductReviewsProps) {
     const { reviews, loading, error, submitReview } = useReviews(productId);
+
     const [reviewTitle, setReviewTitle] = useState('');
     const [reviewRating, setReviewRating] = useState<number | null>(null);
     const [submitting, setSubmitting] = useState(false);
 
-    const handleSubmit = async () => {
+    const handleSubmit = () => {
         if (!reviewTitle || !reviewRating) return;
         setSubmitting(true);
-        await submitReview(reviewTitle, reviewRating);
+        submitReview(reviewTitle, reviewRating);
         setReviewTitle('');
         setReviewRating(null);
         setSubmitting(false);
     };
 
     return (
-        <Box mt={4}>
-            <Typography variant="h5" mb={2}>Add a Review</Typography>
+        <Box mt={4} width="100%">
             {error && <Alert sx={{ mb: 2 }} severity="error">{error}</Alert>}
 
-            <TextField
-                fullWidth
-                label="Review Title"
-                value={reviewTitle}
-                onChange={(e) => setReviewTitle(e.target.value)}
-                sx={{ mb: 2 }}
-            />
-            <Rating
-                name="rating"
-                value={reviewRating}
-                precision={0.5}
-                onChange={(_, value) => setReviewRating(value)}
-                sx={{ mb: 2 }}
-            />
-            <Button variant="contained" sx={{ ml: 3 }} onClick={handleSubmit} disabled={submitting}>
-                {submitting ? 'Submitting...' : 'Submit Review'}
-            </Button>
-
-            <Box mt={4}>
+            {/* Reviews List */}
+            <Box>
                 <Typography variant="h5" mb={2}>Reviews</Typography>
                 {loading ? (
                     <Typography>Loading reviews...</Typography>
                 ) : reviews.length === 0 ? (
                     <Typography>No reviews yet.</Typography>
                 ) : (
-                    reviews?.map((rev, idx) => (
-                        <Box key={rev.id || `review-${idx}`} mb={2} p={2} border="1px solid #ddd" borderRadius={2}>
+                    reviews.map((rev, idx) => (
+                        <Box
+                            key={rev.id || `review-${idx}`}
+                            mb={2}
+                            p={2}
+                            border="1px solid #ddd"
+                            borderRadius={2}
+                        >
                             <Typography fontWeight="bold">{rev.title}</Typography>
                             <Rating value={rev.rating} readOnly precision={0.5} size="small" />
                             <Typography variant="body2" color="text.secondary">
@@ -61,6 +50,35 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
                         </Box>
                     ))
                 )}
+            </Box>
+
+
+
+            {/* Add Review Form */}
+            <Box mb={4}>
+                <Typography variant="h5" mb={2}>Add a Review</Typography>
+                <TextField
+                    fullWidth
+                    label="Review Title"
+                    value={reviewTitle}
+                    onChange={(e) => setReviewTitle(e.target.value)}
+                    sx={{ mb: 2 }}
+                />
+                <Rating
+                    name="rating"
+                    value={reviewRating}
+                    precision={0.5}
+                    onChange={(_, value) => setReviewRating(value)}
+                    sx={{ mb: 2 }}
+                />
+                <Button
+                    fullWidth
+                    variant="contained"
+                    onClick={handleSubmit}
+                    disabled={submitting}
+                >
+                    {submitting ? 'Submitting...' : 'Submit Review'}
+                </Button>
             </Box>
         </Box>
     );

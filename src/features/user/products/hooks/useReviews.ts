@@ -1,42 +1,56 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import http from '@/lib/axios';
-import { useState, useEffect } from 'react';
 import type { Review } from '../api/reviews.api';
-
+import { useTheme } from '@mui/material';
+import { useNavigate } from 'react-router';
+import { useAuth } from '@/hooks/useAuth';
+import { showToast } from '@/utils/showToast';
 
 export const useReviews = (productId: string) => {
-    const [reviews, setReviews] = useState<Review[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const theme = useTheme();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
-    const fetchReviews = async () => {
-        if (!productId) return;
-        setLoading(true);
-        try {
-            const response = await http.get(`/products/${productId}/reviews`);
-            setReviews(response.data.data || []);
-        } catch (err) {
-            console.log(err)
-            setError('Failed to fetch reviews.');
-        } finally {
-            setLoading(false);
-        }
-    };
+  // ========================
+  // FETCH REVIEWS
+  // ========================
+  const { data, isLoading, isError, error } = useQuery<Review[]>({
+    queryKey: ['reviews', productId],
+    queryFn: async () => {
+      const response = await http.get(`/products/${productId}/reviews`);
+      return response.data.data || [];
+    },
+    enabled: !!productId, // only fetch if productId exists
+  });
 
-    const submitReview = async (title: string, rating: number) => {
-        try {
-            await http.post(`/products/${productId}/reviews`, { title, rating });
-            await fetchReviews();
-        } catch (err) {
-            console.error(err);
-            setError('You have already submitted a review for this product.');
-        }
-    };
+  // ========================
+  // SUBMIT REVIEW
+  // ========================
+  const submitReview = useMutation({
+    mutationFn: async ({ title, rating }: { title: string; rating: number }) => {
+      await http.post(`/products/${productId}/reviews`, { title, rating });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reviews', productId] });
+      showToast('Review submitted successfully!', 'success', theme);
+    },
+    onError: () => {
+      if (!isAuthenticated) {
+        showToast('Please log in to submit a review.', 'error', theme);
+        navigate('/login');
+        return;
+      }
+      // You can check error.response?.status if needed
+      showToast('Failed to submit review.', 'error', theme);
+    },
+  });
 
-
-    useEffect(() => {
-        fetchReviews();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [productId]);
-
-    return { reviews, loading, error, submitReview };
+  return {
+    reviews: data || [],
+    loading: isLoading,
+    error: isError ? (error as Error)?.message || 'Failed to fetch reviews' : null,
+    submitReview: (title: string, rating: number) =>
+      submitReview.mutate({ title, rating }),
+  };
 };
