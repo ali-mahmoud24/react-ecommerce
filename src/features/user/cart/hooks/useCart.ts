@@ -5,11 +5,14 @@ import type { CartResponse } from '../api/cart.api';
 import { useTheme } from '@mui/material/styles';
 import { showToast } from '@/utils/showToast';
 import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router';
 
 export const useCart = () => {
   const queryClient = useQueryClient();
   const theme = useTheme();
   const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
   const { data: cart, isLoading } = useQuery<CartResponse>({
     queryKey: ['cart'],
     queryFn: getCart,
@@ -26,9 +29,12 @@ export const useCart = () => {
       }
     },
     onError: () => {
-      if (isAuthenticated) {
-        showToast('Failed to add item to cart.', 'error', theme);
+      if (!isAuthenticated) {
+        showToast('Please log in to add items to your cart.', 'error', theme);
+        navigate('/login');
+        return;
       }
+      showToast('Failed to add item to cart.', 'error', theme);
     },
   });
 
@@ -81,7 +87,6 @@ export const useCart = () => {
       }
     },
   });
-
 
   return {
     cart,

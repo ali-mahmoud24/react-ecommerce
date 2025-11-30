@@ -125,7 +125,7 @@ export default function CartList() {
 
       showToast("Order placed successfully!", "success", theme);
       navigate(`/orders/${order.id}`);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error(err);
       setCheckoutError(err.response?.data?.message || "Failed to create cash order.");
@@ -149,7 +149,7 @@ export default function CartList() {
       } else {
         setCheckoutError("No checkout URL returned from server.");
       }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error(err);
       setCheckoutError(err.response?.data?.message || "Failed to initiate Stripe checkout.");
@@ -246,9 +246,22 @@ export default function CartList() {
                 onChange={(e) =>
                   handleQuantityChange(item.id, parseInt(e.target.value))
                 }
-                inputProps={{ min: 1, style: { textAlign: "center" } }}
-                sx={{ width: 70, "& input": { textAlign: "center" } }}
+                inputProps={{
+                  min: 1,
+                  style: { textAlign: "center" },
+                }}
+                sx={{
+                  width: 70,
+                  "& input": {
+                    textAlign: "center",
+                    // Remove default number input arrows
+                    "&::-webkit-outer-spin-button": { WebkitAppearance: "none", margin: 0 },
+                    "&::-webkit-inner-spin-button": { WebkitAppearance: "none", margin: 0 },
+                    "&[type=number]": { MozAppearance: "textfield" }, // Firefox
+                  },
+                }}
               />
+
 
               <IconButton
                 size="small"
