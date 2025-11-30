@@ -10,7 +10,7 @@ const PaymentSuccess: React.FC = () => {
 
   useEffect(() => {
     clearAllItems({ suppressToast: true });
-  }, [])
+  }, [clearAllItems])
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center p-4">

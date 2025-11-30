@@ -186,8 +186,8 @@ export default function BrandForm({ onSubmit, isLoading, defaultValues }: BrandF
               ? 'Updating...'
               : 'Creating...'
             : isEditMode
-            ? 'Update'
-            : 'Create'}
+              ? 'Update'
+              : 'Create'}
         </Button>
       </Stack>
     </Box>
