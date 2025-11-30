@@ -4,274 +4,65 @@ import {
   Toolbar,
   IconButton,
   Typography,
-  InputBase,
   Drawer,
-  List,
-  ListItemButton,
-  ListItemText,
-  alpha,
   useTheme,
   Badge,
   Button,
-  Avatar,
-  Menu,
-  MenuItem,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import LogoutIcon from '@mui/icons-material/Logout';
-// import InventoryIcon from '@mui/icons-material/Inventory';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useThemeContext } from '@/theme/useThemeContext';
-import { useState, useEffect, useCallback, memo } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router';
-import logo from '@/assets/images/logo.jpg';
+import { useState, memo } from 'react';
+import { Link, useNavigate } from 'react-router';
+// import logo from '@/assets/images/logo.jpg';
 import { useCart } from '@/features/user/cart/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
 import { useLogout } from '@/features/user/auth/hooks/useLogout';
-import { getAllProduct, type Product } from '@/features/user/products/api/products.api';
+import { UserMenu } from './UserMenu';
+import NavLinks from './NavLinks';
+import SearchInput from './SearchInput';
 
-// ---------------- Styled Search ----------------
-const Search = styled('div')(({ theme }) => ({
-  position: 'relative',
-  borderRadius: '20px',
-  backgroundColor:
-    theme.palette.mode === 'light'
-      ? alpha(theme.palette.common.black, 0.05)
-      : alpha(theme.palette.common.white, 0.1),
-  '&:hover': {
-    backgroundColor:
-      theme.palette.mode === 'light'
-        ? alpha(theme.palette.common.black, 0.1)
-        : alpha(theme.palette.common.white, 0.15),
-  },
-  width: '100%',
-  [theme.breakpoints.up('md')]: {
-    width: '180px',
-  },
-  [theme.breakpoints.up('lg')]: {
-    width: '500px',
-  },
-}));
 
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  color: theme.palette.mode === 'light' ? theme.palette.text.secondary : theme.palette.grey[400],
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  width: '100%',
-  '& .MuiInputBase-input': {
-    padding: theme.spacing(1, 1, 1, 0),
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-  },
-}));
-
-// ---------------- User Menu ----------------
-const UserMenu = memo(
-  ({
-    user,
-    anchorEl,
-    onOpen,
-    onClose,
-    onLogout,
-  }: {
-    user: any;
-    anchorEl: HTMLElement | null;
-    onOpen: (e: React.MouseEvent<HTMLElement>) => void;
-    onClose: () => void;
-    onLogout: () => void;
-  }) => {
-    const theme = useTheme();
-
-    const getInitials = () => {
-      if (!user) return '?';
-      const first = user.firstName?.[0] || '';
-      const last = user.lastName?.[0] || '';
-      return (first + last).toUpperCase() || 'U';
-    };
-
-    return (
-      <>
-        <IconButton sx={{ p: { xs: 0.5, sm: 1 } }} onClick={onOpen}>
-          <Avatar
-            alt={`${user?.firstName || ''} ${user?.lastName || ''}`}
-            src={user?.profileImageUrl || ''}
-            variant="square"
-            sx={{
-              width: 40,
-              height: 40,
-              borderRadius: 5,
-              bgcolor: user?.avatar
-                ? 'transparent'
-                : theme.palette.mode === 'light'
-                  ? theme.palette.primary.main
-                  : theme.palette.primary.light,
-              color: user?.avatar
-                ? 'inherit'
-                : theme.palette.getContrastText(
-                  theme.palette.mode === 'light'
-                    ? theme.palette.primary.main
-                    : theme.palette.primary.light,
-                ),
-              fontWeight: 600,
-              fontSize: '1rem',
-              border: `1px solid ${alpha(theme.palette.text.primary, 0.1)}`,
-              transition: 'all 0.2s ease-in-out',
-              '&:hover': {
-                transform: 'scale(1.05)',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-              },
-            }}
-          >
-            {!user?.avatar && getInitials()}
-          </Avatar>
-        </IconButton>
-
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={onClose}
-          PaperProps={{ sx: { borderRadius: 1, mt: 1, minWidth: 160 } }}
-        >
-          <MenuItem component={Link} to="/profile">
-            <AccountCircleIcon fontSize="small" sx={{ mr: 1 }} /> Profile
-          </MenuItem>
-          {/* <MenuItem component={Link} to="/orders">
-            <InventoryIcon fontSize="small" sx={{ mr: 1 }} /> Orders
-          </MenuItem> */}
-          <MenuItem component={Link} to="/login" onClick={onLogout}>
-            <LogoutIcon fontSize="small" sx={{ mr: 1 }} /> Logout
-          </MenuItem>
-        </Menu>
-      </>
-    );
-  },
-);
-
-// ---------------- Main Navbar ----------------
-type NavbarProps = {
-  onSearchResults?: (results: Product[] | null) => void;
-};
-
-function Navbar({ onSearchResults }: NavbarProps) {
+function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
-  const [searchResults, setSearchResults] = useState<Product[]>([]);
 
   const theme = useTheme();
   const { mode, toggleTheme } = useThemeContext();
   const { totalItems } = useCart();
-  const location = useLocation();
   const { isAuthenticated, user } = useAuth();
   const { mutate: logout } = useLogout();
   const navigate = useNavigate();
-
-  const handleDrawerToggle = () => setMobileOpen((prev) => !prev);
-  const handleMenuOpen = (e: React.MouseEvent<HTMLElement>) => setAnchorEl(e.currentTarget);
-  const handleMenuClose = () => setAnchorEl(null);
-  const handleLogout = useCallback(() => {
-    handleMenuClose();
-    logout();
-  }, [logout]);
-
-  // Fetch products once
-  useEffect(() => {
-    (async () => {
-      try {
-        const products = await getAllProduct();
-        setAllProducts(products);
-      } catch (err) {
-        console.error('Failed to fetch products', err);
-      }
-    })();
-  }, []);
-
-  // Search filtering + communicate results to layout
-  useEffect(() => {
-    if (!searchTerm.trim()) {
-      setSearchResults([]);
-      onSearchResults?.(null);
-      return;
-    }
-    const results = allProducts.filter((p) =>
-      p.title.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
-    setSearchResults(results);
-    onSearchResults?.(results);
-  }, [searchTerm, allProducts]);
 
   const navLinks = [
     { label: 'Products', to: '/products' },
     { label: 'Categories', to: '/categories' },
     { label: 'Brands', to: '/brands' },
-    ...(isAuthenticated ? [{ label: 'Wishlist', to: '/wishlist' }] : []),
+    ...(isAuthenticated ? [{ label: 'Wishlist', to: '/wishlist' }, { label: 'Cart', to: '/cart' }] : []),
   ];
+
+  const handleDrawerToggle = () => setMobileOpen((prev) => !prev);
+  const handleMenuOpen = (e: React.MouseEvent<HTMLElement>) => setAnchorEl(e.currentTarget);
+  const handleMenuClose = () => setAnchorEl(null);
+  const handleLogout = () => {
+    handleMenuClose();
+    logout();
+  };
 
   const drawer = (
     <Box sx={{ width: 250, p: 2 }}>
       <Box display="flex" alignItems="center" justifyContent="flex-start" mb={2}>
-        <IconButton
-          onClick={handleDrawerToggle}
-          size="small"
-          sx={{ color: theme.palette.text.secondary }}
-        >
+        <IconButton onClick={handleDrawerToggle} size="small" sx={{ color: theme.palette.text.secondary }}>
           <CloseIcon />
         </IconButton>
       </Box>
 
-      <List>
-        {navLinks.map((link) => {
-          const isActive = location.pathname.startsWith(link.to);
-          return (
-            <ListItemButton
-              key={link.label}
-              component={Link}
-              to={link.to}
-              selected={isActive}
-              onClick={handleDrawerToggle}
-              sx={{ borderRadius: '10px' }}
-            >
-              <ListItemText
-                primary={link.label}
-                primaryTypographyProps={{
-                  color: isActive ? theme.palette.primary.main : theme.palette.text.primary,
-                  fontWeight: isActive ? 600 : 500,
-                }}
-              />
-            </ListItemButton>
-          );
-        })}
-      </List>
-
-      <Box mt={3}>
-        <Search>
-          <SearchIconWrapper>
-            <SearchIcon />
-          </SearchIconWrapper>
-          <StyledInputBase
-            placeholder="Search for products"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            inputProps={{ 'aria-label': 'search' }}
-          />
-        </Search>
-      </Box>
+      <NavLinks links={navLinks} onClick={handleDrawerToggle} isMobile />
     </Box>
   );
 
@@ -279,13 +70,12 @@ function Navbar({ onSearchResults }: NavbarProps) {
     <>
       <AppBar
         position="sticky"
-        elevation={0}
+        elevation={1}
         sx={{
           bgcolor: theme.palette.background.default,
-          color: theme.palette.text.primary,
           borderBottom: `1px solid ${theme.palette.divider}`,
-          padding: '0.25rem',
-          borderRadius: 0,
+          px: { xs: 2, sm: 3, md: 5 },
+          py: { xs: 1, md: 0 },
         }}
       >
         <Toolbar
@@ -293,109 +83,71 @@ function Navbar({ onSearchResults }: NavbarProps) {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            px: { xs: 2 },
+            minHeight: 64,
+            gap: { xs: 1, md: 3 },
           }}
         >
           {/* Logo */}
           <Link to="/" style={{ textDecoration: 'none' }}>
-            <Box display="flex" alignItems="center" gap={1}>
-              <img src={logo} alt="Ecommerce Logo" style={{ width: '30px', height: '30px' }} />
-              <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '1.25rem' }}>
-                Shoply
-              </Typography>
-            </Box>
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: 700,
+                letterSpacing: 1.2,
+                fontFamily: "'Poppins', sans-serif",
+                color: theme.palette.mode === 'light' ? '#000' : '#fff',
+                cursor: 'pointer',
+                transition: 'opacity 0.2s',
+                '&:hover': { opacity: 0.85 },
+              }}
+            >
+              Shoply
+            </Typography>
           </Link>
 
-          {/* Nav Links */}
+          {/* Desktop nav + search */}
           <Box
             sx={{
               display: { xs: 'none', md: 'flex' },
-              gap: 3,
               alignItems: 'center',
+              gap: 4,
               flexGrow: 1,
               justifyContent: 'center',
             }}
           >
-            {navLinks.map((link) => {
-              const isActive = location.pathname.startsWith(link.to);
-              return (
-                <Typography
-                  key={link.label}
-                  component={Link}
-                  to={link.to}
-                  sx={{
-                    textDecoration: 'none',
-                    color: isActive
-                      ? theme.palette.primary.contrastText
-                      : theme.palette.text.primary,
-                    fontWeight: 600,
-                    px: 0.875,
-                    py: 1,
-                    borderRadius: '8px',
-                    backgroundColor: isActive ? theme.palette.primary.main : 'transparent',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      backgroundColor: isActive
-                        ? theme.palette.primary.main
-                        : alpha(theme.palette.primary.main, 0.1),
-                      color: isActive
-                        ? theme.palette.primary.contrastText
-                        : theme.palette.primary.main,
-                    },
-                  }}
-                >
-                  {link.label}
-                </Typography>
-              );
-            })}
+            <NavLinks links={navLinks} />
+            <Box sx={{ width: 300 }}>
+              <SearchInput value={searchTerm} onChange={setSearchTerm} />
+            </Box>
           </Box>
 
-          {/* Right Section */}
-          <Box display="flex" alignItems="center" gap={1}>
-            {/* Search */}
-            <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-              <Search>
-                <SearchIconWrapper>
-                  <SearchIcon />
-                </SearchIconWrapper>
-                <StyledInputBase
-                  placeholder="Search for products"
-                  inputProps={{ 'aria-label': 'search' }}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </Search>
-            </Box>
-
-            {/* Cart */}
+          {/* Right actions */}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: { xs: 0.5, sm: 1.5, md: 2 },
+            }}
+          >
             {isAuthenticated && (
-              <IconButton sx={{ p: { xs: 0.5, sm: 1 } }} color="inherit" onClick={() => navigate('/cart')}>
-                <Badge
-                  badgeContent={totalItems}
-                  color="error"
-                  overlap="circular"
-                  anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                >
-                  <ShoppingCartIcon />
+              <IconButton
+                color="inherit"
+                onClick={() => navigate('/cart')}
+                sx={{ p: { xs: 0.5, md: 1 } }}
+              >
+                <Badge badgeContent={totalItems} color="error">
+                  <ShoppingCartIcon fontSize="medium" />
                 </Badge>
               </IconButton>
             )}
 
-            {/* Theme Toggle */}
             <IconButton
               onClick={toggleTheme}
-              sx={{
-                color:
-                  theme.palette.mode === 'dark'
-                    ? theme.palette.primary.main
-                    : theme.palette.text.primary,
-                p: { xs: 0.5, sm: 1 },
-              }}
+              sx={{ p: { xs: 0.5, md: 1 } }}
             >
-              {mode === 'light' ? <DarkModeIcon /> : <LightModeIcon />}
+              {mode === 'light' ? <DarkModeIcon fontSize="medium" /> : <LightModeIcon fontSize="medium" />}
             </IconButton>
 
-            {/* Auth */}
             {isAuthenticated ? (
               <UserMenu
                 user={user}
@@ -409,28 +161,37 @@ function Navbar({ onSearchResults }: NavbarProps) {
                 component={Link}
                 to="/login"
                 variant="outlined"
-                startIcon={<AccountCircleIcon />}
-                sx={{ textTransform: 'none', fontWeight: 500, borderRadius: 0.25 }}
+                startIcon={<AccountCircleIcon fontSize="small" />}
+                sx={{ textTransform: 'none', fontWeight: 500 }}
               >
                 Login
               </Button>
             )}
 
-            {/* Mobile Menu */}
-            <IconButton onClick={handleDrawerToggle} sx={{ p: { xs: 0.5, sm: 1 }, display: { md: 'none' } }}>
-              <MenuIcon />
+            <IconButton
+              onClick={handleDrawerToggle}
+              sx={{ display: { md: 'none' }, p: { xs: 0.5, md: 1 } }}
+            >
+              <MenuIcon fontSize="medium" />
             </IconButton>
           </Box>
         </Toolbar>
+
+        {/* Mobile search centered */}
+        <Box
+          sx={{
+            display: { xs: 'flex', md: 'none' },
+            justifyContent: 'center',
+            px: 2,
+            py: 1,
+          }}
+        >
+          <SearchInput value={searchTerm} onChange={setSearchTerm} />
+        </Box>
       </AppBar>
 
-      {/* Drawer for Mobile */}
-      <Drawer
-        anchor="right"
-        open={mobileOpen}
-        onClose={handleDrawerToggle}
-        sx={{ '& .MuiDrawer-paper': { borderRadius: 0 } }}
-      >
+
+      <Drawer anchor="right" open={mobileOpen} onClose={handleDrawerToggle} sx={{ '& .MuiDrawer-paper': { borderRadius: 0 } }}>
         {drawer}
       </Drawer>
     </>
