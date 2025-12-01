@@ -28,7 +28,7 @@ export default function Footer() {
             sx={{ textAlign: { xs: 'center', sm: 'center', md: 'left' } }}
           >
             <Typography variant="h6" fontWeight={700} gutterBottom sx={{ letterSpacing: 1 }}>
-              Ecommerce
+              Shoply
             </Typography>
             <Typography variant="body1" color="text.secondary">
               We have clothes that suit your style and which you’re proud to wear. From women to
@@ -140,7 +140,7 @@ export default function Footer() {
           }}
         >
           <Typography variant="body2" color="text.secondary" sx={{ mb: { xs: 2, md: 0 } }}>
-            © 2025 Ecommerce. All Rights Reserved.
+            © 2025 Shoply. All Rights Reserved.
           </Typography>
 
           <Box>

@@ -76,6 +76,7 @@ function Navbar() {
           borderBottom: `1px solid ${theme.palette.divider}`,
           px: { xs: 2, sm: 3, md: 5 },
           py: { xs: 1, md: 0 },
+          borderRadius: 0,
         }}
       >
         <Toolbar
