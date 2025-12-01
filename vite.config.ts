@@ -6,7 +6,7 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: process.env.NODE_ENV === 'production' ? '/react-ecommerce/' : '/',
+  base: process.env.NODE_ENV === 'production' ? '/shoply/' : '/',
   build: {
     outDir: 'dist',
   },

@@ -21,7 +21,7 @@ const queryClient = new QueryClient({
 });
 
 createRoot(document.getElementById('root')!).render(
-<BrowserRouter basename={import.meta.env.MODE === 'production' ? '/react-ecommerce' : '/'}>
+<BrowserRouter basename={import.meta.env.MODE === 'production' ? '/shoply' : '/'}>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <AppThemeProvider>
