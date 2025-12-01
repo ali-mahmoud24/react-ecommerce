@@ -1,138 +1,115 @@
-import { useNavigate } from 'react-router';
-import { Box, Typography, Button, useTheme, Grid } from '@mui/material';
-import { motion } from 'framer-motion';
-import bgImage from '@/assets/images/landing.svg';
-
+import { useNavigate } from "react-router";
+import { Box, Typography, Button, Grid, useTheme } from "@mui/material";
+import { motion } from "framer-motion";
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import SellIcon from '@mui/icons-material/Sell';
+import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
 
 export default function Landing() {
   const theme = useTheme();
   const navigate = useNavigate();
 
+  const bgGradient = theme.palette.mode === "light"
+    ? "linear-gradient(135deg, #ffffff 0%, #eef1ff 40%, #e5ebff 60%, #ffffff 100%)"
+    : "linear-gradient(135deg, #000000 0%, #141722 40%, #1c2433 60%, #000000 100%)";
+
+  const icons = [
+    { icon: <ShoppingCartIcon fontSize="large" />, x: "18%", y: "22%", duration: 5 },
+    { icon: <LocalShippingIcon fontSize="large" />, x: "58%", y: "38%", duration: 6 },
+    { icon: <SellIcon fontSize="large" />, x: "38%", y: "62%", duration: 7 },
+    { icon: <ShoppingBagIcon fontSize="large" />, x: "72%", y: "18%", duration: 5.5 },
+    { icon: <CreditCardIcon fontSize="large" />, x: "48%", y: "78%", duration: 6.5 },
+  ];
+
   return (
     <Box
+      component="section"
       sx={{
-        display: 'flex',
-        flexDirection: {
-          xs: 'column',
-          md: 'row',
-        },
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        backgroundColor: theme.palette.background.default,
-        overflow: 'hidden',
-        minHeight: { md: '100vh' },
+        position: "relative",
+        minHeight: "90vh",
+        width: "100%",
+        display: "flex",
+        alignItems: "center",
+        overflow: "hidden",
+        background: bgGradient,
+        m: 0,
+        p: { xs: 3, md: 0 }, // Add padding on small screens
+        mt: '-1rem', // compensate layout top padding
       }}
     >
-      {/* Text */}
+      {/* LEFT TEXT */}
       <Box
         component={motion.div}
-        initial={{
-          opacity: 0,
-          x: -40,
-        }}
-        animate={{
-          opacity: 1,
-          x: 0,
-        }}
-        transition={{
-          duration: 1,
-        }}
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 1 }}
         sx={{
           flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: { xs: 'center', md: 'flex-start' },
-          textAlign: { xs: 'start', md: 'left' },
-          px: { xs: 2, md: 8 },
-          color: theme.palette.text.primary,
-          mb: { xs: 6, md: 0 },
+          zIndex: 5,
+          pl: { xs: 0, md: 10 }, // no left padding on small screens, add on md+
+          textAlign: { xs: "center", md: "left" }, // center text on small screens
         }}
       >
         <Typography
-          variant="h2"
+          variant="h1"
           sx={{
             fontWeight: 900,
-            mb: 3,
-            lineHeight: { lg: '60px' },
-            fontSize: { xs: '1.875rem', sm: '3rem' },
+            mb: 2,
+            maxWidth: { xs: "100%", md: 600 },
+            fontSize: { xs: "2.4rem", sm: "3rem", lg: "3.6rem" },
+            lineHeight: { xs: "42px", sm: "50px" },
+            mx: { xs: "auto", md: 0 }, // center horizontally on small screens
           }}
         >
-          FIND CLOTHES THAT MATCHES YOUR STYLE
+          Your Favorite Products,
+          <br /> All in One Place
         </Typography>
 
         <Typography
-          variant="body1"
           sx={{
-            mb: 4,
             color: theme.palette.text.secondary,
-            maxWidth: 600,
-            fontSize: { xs: '1rem' },
+            maxWidth: { xs: "100%", md: 520 },
+            mb: 5,
+            fontSize: "1.1rem",
+            mx: { xs: "auto", md: 0 }, // center horizontally on small screens
           }}
         >
-          Browse through our diverse range of meticulously crafted garments, designed to bring out
-          your individuality and cater to your sense of style.
+          Shop electronics, lifestyle, home essentials, and more — with fast delivery and secure checkout.
         </Typography>
 
         <Button
           variant="contained"
-          color="primary"
           size="large"
-          onClick={() => navigate('/products')}
+          onClick={() => navigate("/products")}
           component={motion.button}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.06 }}
+          whileTap={{ scale: 0.97 }}
           sx={{
             px: 8,
-            py: 1.5,
-            fontWeight: 'bold',
-            boxShadow:
-              theme.palette.mode === 'light'
-                ? theme.palette.text.primary
-                : theme.palette.primary.main,
-            '&:hover': {
-              bgcolor:
-                theme.palette.mode === 'light'
-                  ? theme.palette.text.primary
-                  : theme.palette.primary.main,
-            },
+            py: 1.8,
+            borderRadius: "14px",
+            fontWeight: 700,
+            display: "block",
+            mx: { xs: "auto", md: "inherit" }, // center button on small screens
           }}
         >
-          Shop Now
+          Start Shopping
         </Button>
-        {/* Stats Section */}
-        <Grid
-          container
-          spacing={4}
-          sx={{
-            mt: 8,
-            textAlign: { xs: 'center', md: 'left' },
-            color: theme.palette.text.primary,
-          }}
-        >
+
+        {/* STATS */}
+        <Grid container spacing={4} sx={{ mt: 10, maxWidth: 550, mx: { xs: "auto", md: 0 } }}>
           {[
-            { value: '200+', label: 'International Brands' },
-            { value: '2,000+', label: 'High-Quality Products' },
-            { value: '30,000+', label: 'Happy Customers' },
+            { value: "500+", label: "Brands" },
+            { value: "10,000+", label: "Products" },
+            { value: "100,000+", label: "Customers" },
           ].map((item) => (
-            <Grid size={{ xs: 12, sm: 4 }} key={item.label}>
-              <Typography
-                variant="h3"
-                sx={{
-                  fontWeight: 800,
-                  color: theme.palette.text.primary,
-                  mb: 1,
-                }}
-              >
+            <Grid key={item.label} size={{ xs: 12, sm: 4 }} >
+              <Typography variant="h3" sx={{ fontWeight: 900, textAlign: { xs: "center", md: "left" } }}>
                 {item.value}
               </Typography>
-              <Typography
-                variant="body1"
-                sx={{
-                  color: theme.palette.text.secondary,
-                  fontSize: '1rem',
-                }}
-              >
+              <Typography sx={{ color: theme.palette.text.secondary, textAlign: { xs: "center", md: "left" } }}>
                 {item.label}
               </Typography>
             </Grid>
@@ -140,41 +117,45 @@ export default function Landing() {
         </Grid>
       </Box>
 
-      {/* Background Image  */}
+      {/* RIGHT PANEL — only visible on md+ */}
       <Box
         component={motion.div}
-        initial={{
-          opacity: 0,
-          y: 40,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
-        transition={{
-          duration: 1,
-        }}
+        initial={{ opacity: 0, x: 40 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 1.3 }}
         sx={{
           flex: 1,
-          width: '100%',
-          height: {
-            xs: 'auto',
-            md: '100vh',
-          },
-          minHeight: {
-            xs: 'auto',
-            md: 'auto',
-          },
-          backgroundImage: `url(${bgImage})`,
-          backgroundSize: {
-            xs: 'contain',
-            md: 'contain',
-          },
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          display: { xs: 'none', md: 'block' },
+          height: "100vh",
+          display: { xs: "none", md: "block" },
+          position: "relative",
+          clipPath: "path('M0,0 C60,160 140,160 240,0 L1000,0 L1000,1000 L0,1000 Z')",
+          background: theme.palette.mode === "light"
+            ? "linear-gradient(160deg, #e8ecff 0%, #f5f7ff 45%, #ffffff 85%)"
+            : "linear-gradient(160deg, #12151d 0%, #181c27 50%, #1c212f 100%)",
         }}
-      />
+      >
+        {/* Floating Icons */}
+        {icons.map((item, idx) => (
+          <motion.div
+            key={idx}
+            animate={{ y: [0, -20, 0] }}
+            transition={{ duration: item.duration, repeat: Infinity, ease: "easeInOut" }}
+            style={{
+              position: "absolute",
+              left: item.x,
+              top: item.y,
+              fontSize: 40,
+              opacity: 0.9,
+              color: theme.palette.mode === "light" ? "#3f51b5" : "#90caf9",
+              filter: theme.palette.mode === "light"
+                ? "drop-shadow(0px 6px 16px rgba(0,0,0,0.18))"
+                : "drop-shadow(0px 6px 16px rgba(255,255,255,0.15))",
+            }}
+          >
+            {item.icon}
+          </motion.div>
+        ))}
+      </Box>
     </Box>
   );
 }
